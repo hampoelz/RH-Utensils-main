@@ -1,0 +1,75 @@
+﻿<Page x:Class="Main.Wpf.Pages.Login"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="13"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{DynamicResource MaterialDesignFont}"
+
+      Title="Login"
+
+      d:DesignHeight="500" d:DesignWidth="700" Loaded="Page_Loaded" x:ClassModifier="internal">
+
+    <Grid>
+        <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+            <materialDesign:Card Padding="10" Width="450" Height="315" Panel.ZIndex="1"
+                                 Background="{DynamicResource MaterialDesignPaper}" VerticalAlignment="Stretch">
+                <Grid>
+                    <materialDesign:PackIcon VerticalAlignment="Top" Kind="LoginVariant" Margin="10" Height="35"
+                                             Width="35" Foreground="{DynamicResource MaterialDesignBody}" />
+                    <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="60,10,10,0" FontSize="30"
+                               Foreground="{DynamicResource MaterialDesignBody}">
+                        Anmelden
+                    </TextBlock>
+
+                    <Image x:Name="Logo" HorizontalAlignment="Left" Height="75" Margin="10,60,0,0"
+                           VerticalAlignment="Top"
+                           Width="75" Source="Logo.png" />
+                    <!-- ReSharper disable once MarkupAttributeTypo -->
+                    <TextBlock x:Name="Welcome" FontFamily="Segoe UI Black" FontSize="24" Margin="90,60,0,0"
+                               VerticalAlignment="Top" Height="75" TextAlignment="Center"
+                               TextWrapping="WrapWithOverflow"
+                               Padding="5">
+                        Willkommen bei RH Utensils!
+                    </TextBlock>
+                    <!-- ReSharper disable MarkupAttributeTypo -->
+                    <TextBlock FontFamily="Segoe UI Semibold" Margin="10,145,10,60" TextWrapping="Wrap" FontSize="20"
+                               TextAlignment="Center">
+                        <!-- ReSharper restore MarkupAttributeTypo -->
+                        Du kannst dich anmelden um die Programm Einstellungen zwischen deinen Geräten zu Synchronisieren.
+                    </TextBlock>
+
+                    <Grid Height="60" VerticalAlignment="Bottom">
+                        <Button x:Name="BtnLogin" HorizontalAlignment="Left" Content="Anmelden" Width="110" Height="35"
+                                Foreground="White" Click="Login_Click" FontSize="15" Margin="10,0,0,0" />
+                        <Button x:Name="BtnSkip" HorizontalAlignment="Right" Content="Ohne Anmelden nutzen" Width="200"
+                                Height="35" Click="Skip_Click" Style="{DynamicResource MaterialDesignFlatButton}"
+                                FontSize="15" Margin="0,0,10,0" />
+                    </Grid>
+                </Grid>
+            </materialDesign:Card>
+
+            <materialDesign:Card x:Name="InfoBox" Padding="10" Width="445" Height="50" Background="#B00020"
+                                 VerticalAlignment="Stretch" Margin="0,0,0,255" Visibility="Visible">
+                <Grid>
+                    <materialDesign:PackIcon x:Name="InfoBoxIcon" VerticalAlignment="Center" Height="30" Width="30"
+                                             Foreground="White" />
+                    <TextBlock x:Name="InfoBoxText" VerticalAlignment="Top" TextWrapping="WrapWithOverflow"
+                               Margin="34,7,25,0" Foreground="White" />
+                    <Button x:Name="InfoBoxClose" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right"
+                            Width="20" Padding="0" Background="Transparent" BorderThickness="0" Foreground="White"
+                            Click="InfoBoxClose_OnClick">
+                        <materialDesign:PackIcon Kind="close" />
+                    </Button>
+                </Grid>
+            </materialDesign:Card>
+        </Grid>
+    </Grid>
+</Page>
