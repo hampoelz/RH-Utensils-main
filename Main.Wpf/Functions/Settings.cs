@@ -69,17 +69,35 @@ namespace Main.Wpf.Functions
                 new PaletteHelper().ReplacePrimaryColor(Color);
                 new PaletteHelper().ReplaceAccentColor(Color);
 
-                if (App.ExtensionName != "" && Json.ConvertToString(App.SettingsJson, "theme") == "light")
+                if (App.ExtensionName != "")
                 {
-                    new PaletteHelper().SetLightDark(false);
+                    if (Json.ConvertToString(App.SettingsJson, "theme") == "light")
+                    {
+                        new PaletteHelper().SetLightDark(false);
 
-                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseLight"));
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseLight"));
+                    }
+                    else
+                    {
+                        new PaletteHelper().SetLightDark(true);
+
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseDark"));
+                    }
                 }
                 else
                 {
-                    new PaletteHelper().SetLightDark(true);
+                    if (App.DefaultTheme.ToLower() == "light")
+                    {
+                        new PaletteHelper().SetLightDark(false);
 
-                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseDark"));
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseLight"));
+                    }
+                    else
+                    {
+                        new PaletteHelper().SetLightDark(true);
+
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseDark"));
+                    }
                 }
             }
             catch (Exception e)

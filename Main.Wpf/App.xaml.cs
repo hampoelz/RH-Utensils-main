@@ -19,6 +19,7 @@ namespace Main.Wpf
 
         public static string Name = "RH Utensils";
         public static string Color = "Blue";
+        public static string DefaultTheme = "Dark";
         public static string Favicon = "";
 
         //Extension
@@ -190,6 +191,9 @@ namespace Main.Wpf
 
                 if (Xml.ReadString(ConfigFile, "color") != "")
                     Color = Xml.ReadString(ConfigFile, "color");
+
+                if (Xml.ReadString(ConfigFile, "defaultTheme") != "")
+                    DefaultTheme = Xml.ReadString(ConfigFile, "defaultTheme");
 
                 if (Xml.ReadBool(ConfigFile, "showFirstPage"))
                     ShowFirstPage = Xml.ReadBool(ConfigFile, "showFirstPage");
@@ -384,11 +388,11 @@ namespace Main.Wpf
                 {
                     SettingsFile = ReplaceVariables(SettingsFile);
 
-                    const string defaultSettingsFile = "<settings>" +
+                    string defaultSettingsFile = "<settings>" +
                                                        "<lastChange>01.01.0001 00:00:00</lastChange>" +
                                                        "<updateChannel>release</updateChannel>" +
                                                        "<menuState>expanded</menuState>" +
-                                                       "<theme>dark</theme>" +
+                                                       "<theme>" + DefaultTheme.ToLower() + "</theme>" +
                                                        "</settings>";
 
                     if (!File.Exists(SettingsFile))
