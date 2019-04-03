@@ -32,17 +32,14 @@
                     <Image x:Name="Logo" HorizontalAlignment="Left" Height="75" Margin="10,60,0,0"
                            VerticalAlignment="Top"
                            Width="75" Source="Logo.png" />
-                    <!-- ReSharper disable once MarkupAttributeTypo -->
                     <TextBlock x:Name="Welcome" FontFamily="Segoe UI Black" FontSize="24" Margin="90,60,0,0"
                                VerticalAlignment="Top" Height="75" TextAlignment="Center"
                                TextWrapping="WrapWithOverflow"
                                Padding="5">
                         Willkommen bei RH Utensils!
                     </TextBlock>
-                    <!-- ReSharper disable MarkupAttributeTypo -->
                     <TextBlock FontFamily="Segoe UI Semibold" Margin="10,145,10,60" TextWrapping="Wrap" FontSize="20"
                                TextAlignment="Center">
-                        <!-- ReSharper restore MarkupAttributeTypo -->
                         Du kannst dich anmelden um die Programm Einstellungen zwischen deinen Geräten zu Synchronisieren.
                     </TextBlock>
 

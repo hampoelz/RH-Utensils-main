@@ -75,6 +75,8 @@ namespace Main.Wpf.Pages
         {
             var extensionsDirectory = App.ExtensionsDirectory;
 
+            if (!Directory.Exists(extensionsDirectory)) return;
+
             var extensionsDirectories = Directory.GetDirectories(extensionsDirectory);
             var extensions = Directory.GetDirectories(extensionsDirectory);
 
@@ -91,7 +93,6 @@ namespace Main.Wpf.Pages
 
                     try
                     {
-                        // ReSharper disable once ObjectCreationAsStatement
                         new Version(installedVersions[ii]);
                     }
                     catch
@@ -117,6 +118,8 @@ namespace Main.Wpf.Pages
         {
             var extensionsDirectory = App.ExtensionsDirectory;
 
+            if (!Directory.Exists(extensionsDirectory)) return;
+
             var extensionsDirectories = Directory.GetDirectories(extensionsDirectory);
             var extensions = Directory.GetDirectories(extensionsDirectory);
 
@@ -133,7 +136,6 @@ namespace Main.Wpf.Pages
 
                     try
                     {
-                        // ReSharper disable once ObjectCreationAsStatement
                         new Version(installedVersions[ii]);
                     }
                     catch

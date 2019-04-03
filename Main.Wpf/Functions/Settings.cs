@@ -102,7 +102,6 @@ namespace Main.Wpf.Functions
         {
             Get();
 
-            // ReSharper disable once ConvertClosureToMethodGroup
             await Task.Run(() => SyncWithServer());
         }
 
@@ -137,7 +136,6 @@ namespace Main.Wpf.Functions
 
             Set(Json.ChangeValue(App.SettingsJson, "lastChange", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)));
 
-            // ReSharper disable once ConvertClosureToMethodGroup
             if (_syncSettingsOnChange) await Task.Run(() => SyncWithServer());
 
             await Task.Delay(500);

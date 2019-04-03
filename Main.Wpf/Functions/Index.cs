@@ -18,8 +18,9 @@ namespace Main.Wpf.Functions
 
         public static async Task SetExeAsync(string path, string argument, int loadTime)
         {
-            if (Application.Current.MainWindow is MainWindow mw)
-                await mw.SetExe(path, argument, loadTime);
+            if (!(Application.Current.MainWindow is MainWindow mw)) return;
+
+            await mw.SetExe(path, argument, loadTime);
         }
 
         public static void SetError(string exception, string title, string file = "-")

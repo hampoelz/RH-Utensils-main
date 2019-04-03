@@ -32,7 +32,6 @@ namespace Main.Wpf.Functions
 
             try
             {
-                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 XDocument.Load(file);
                 return true;
             }
@@ -46,7 +45,6 @@ namespace Main.Wpf.Functions
         {
             try
             {
-                // ReSharper disable once ObjectCreationAsStatement
                 new MailAddress(mail);
                 return true;
             }

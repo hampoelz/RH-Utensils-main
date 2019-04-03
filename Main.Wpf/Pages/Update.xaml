@@ -28,7 +28,6 @@
                     </TextBlock>
                     <TextBlock Margin="10,60" TextWrapping="Wrap" FontSize="20"
                                TextAlignment="Center">
-                        <!-- ReSharper restore MarkupAttributeTypo -->
                         Eine neue Programmversion liegt vor.<LineBreak /><LineBreak />Wir empfehlen die Aktualisierung herunterzulaufen und mittels Setup dieses Update zu installieren.
                     </TextBlock>
 

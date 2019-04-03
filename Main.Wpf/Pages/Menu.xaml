@@ -16,7 +16,6 @@
                           Checked="ToggleMenu_Checked" Unchecked="ToggleMenu_Unchecked" />
         </Grid>
 
-        <!-- ReSharper disable once IdentifierTypo -->
         <materialDesign:TransitioningContent x:Name="TrainsitionigContentSlide"
                                              OpeningEffect="{materialDesign:TransitionEffect SlideInFromLeft, Duration=0:0:0.2}">
             <Grid x:Name="GridCursor" Margin="0 100 0 0" Background="{DynamicResource PrimaryHueMidBrush}" Width="10"

@@ -37,7 +37,7 @@ namespace Main.Wpf
         public static bool CustomVersion;
 
         public static Version ProgrammVersion = Assembly.GetExecutingAssembly().GetName().Version;
-        public static string ProgrammVersionsHistoryFile = "xxx";
+        public static string ProgrammVersionsHistoryFile = "https://raw.githubusercontent.com/rh-utensils/main/master/Main.Wpf/VersionHistory.xml";
         public static string ProgrammUpdateChannel;
         public static string ProgrammUpdateVersion = "-";
 

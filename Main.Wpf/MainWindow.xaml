@@ -25,7 +25,7 @@
                    BorderThickness="1"
                    WindowStartupLocation="CenterScreen"
                    TitleCharacterCasing="Normal"
-                   Icon="Logo.ico"
+                   Icon="Assets/Logo.ico"
                    ShowIconOnTitleBar="False"
 
                    MinHeight="700"
