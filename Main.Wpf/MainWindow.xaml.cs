@@ -32,7 +32,7 @@ namespace Main.Wpf
 
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            if (App.ExtensionName != "") Functions.Settings.SyncTheme();
+            Functions.Settings.SyncTheme();
 
             if (App.Favicon != "")
                 Icon = new BitmapImage(new Uri(App.Favicon));

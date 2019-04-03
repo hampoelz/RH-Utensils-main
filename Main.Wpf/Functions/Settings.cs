@@ -15,6 +15,8 @@ namespace Main.Wpf.Functions
     {
         private static void Get()
         {
+            if (App.ExtensionName == "") return;
+
             LogFile.WriteLog("Update local settings file ...");
 
             var json = "";
@@ -38,6 +40,8 @@ namespace Main.Wpf.Functions
 
         public static void Set(string newJson)
         {
+            if (App.ExtensionName == "") return;
+
             LogFile.WriteLog("Change local settings file ...");
 
             try
@@ -65,17 +69,17 @@ namespace Main.Wpf.Functions
                 new PaletteHelper().ReplacePrimaryColor(Color);
                 new PaletteHelper().ReplaceAccentColor(Color);
 
-                if (Json.ConvertToString(App.SettingsJson, "theme") == "dark")
-                {
-                    new PaletteHelper().SetLightDark(true);
-
-                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseDark"));
-                }
-                else
+                if (App.ExtensionName != "" && Json.ConvertToString(App.SettingsJson, "theme") == "light")
                 {
                     new PaletteHelper().SetLightDark(false);
 
                     ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseLight"));
+                }
+                else
+                {
+                    new PaletteHelper().SetLightDark(true);
+
+                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseDark"));
                 }
             }
             catch (Exception e)

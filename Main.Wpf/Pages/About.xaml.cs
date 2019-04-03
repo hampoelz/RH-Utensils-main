@@ -49,7 +49,7 @@ namespace Main.Wpf.Pages
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            if (Functions.Json.ConvertToString(App.SettingsJson, "updateChannel") != ExtensionUpdateChannel.Text)
+            if (App.ExtensionName != "" && Functions.Json.ConvertToString(App.SettingsJson, "updateChannel") != ExtensionUpdateChannel.Text)
                 Functions.Settings.Set(Functions.Json.ChangeValue(App.SettingsJson, "updateChannel", ExtensionUpdateChannel.Text));
 
             if (Properties.Settings.Default.updateChannel != MainProgrammUpdateChannel.Text)

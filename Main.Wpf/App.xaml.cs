@@ -394,7 +394,7 @@ namespace Main.Wpf
                     if (!File.Exists(SettingsFile))
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(SettingsFile));
-
+                        File.Create(SettingsFile);
                         Functions.Settings.Set(Json.ConvertToString(Json.ConvertFromXml(defaultSettingsFile), "settings"));
                     }
 

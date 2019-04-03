@@ -77,12 +77,12 @@
                     <materialDesign:TransitionEffect Kind="SlideInFromBottom" />
                 </materialDesign:TransitioningContent.OpeningEffects>
                 <materialDesign:Card Padding="10" Width="800" Height="300" Panel.ZIndex="1"
-                                 Background="{DynamicResource PrimaryHueDarkBrush}" VerticalAlignment="Bottom">
+                                 Background="{DynamicResource PrimaryHueDarkBrush}" VerticalAlignment="Bottom" Foreground="White">
                     <Grid>
                         <materialDesign:PackIcon VerticalAlignment="Top" Kind="ProgressDownload" Margin="10" Height="35"
-                                             Width="35" Foreground="{DynamicResource MaterialDesignBody}" />
+                                             Width="35" Foreground="White" />
                         <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="60,10,10,0" FontSize="30"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="Update Information" />
+                               Foreground="White" Text="Update Information" />
 
                         <materialDesign:TransitioningContent>
                             <materialDesign:TransitioningContent.OpeningEffects>
@@ -90,29 +90,29 @@
                             </materialDesign:TransitioningContent.OpeningEffects>
                             <Button x:Name="btn" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10" Padding="0" Height="35" Width="35" Style="{DynamicResource MaterialDesignFloatingActionAccentButton}" Click="Button_Click">
                                 <Grid>
-                                    <materialDesign:PackIcon x:Name="btn_icon" Kind="Autorenew" Height="25" Width="25" Foreground="{DynamicResource MaterialDesignBody}" Opacity="1" />
-                                    <ProgressBar x:Name="btn_load" Style="{StaticResource MaterialDesignCircularProgressBar}" IsIndeterminate="True" Foreground="{DynamicResource MaterialDesignBody}" Opacity="0" />
+                                    <materialDesign:PackIcon x:Name="btn_icon" Kind="Autorenew" Height="25" Width="25" Foreground="White" Opacity="1" />
+                                    <ProgressBar x:Name="btn_load" Style="{StaticResource MaterialDesignCircularProgressBar}" IsIndeterminate="True" Foreground="White" Opacity="0" />
                                 </Grid>
                             </Button>
                         </materialDesign:TransitioningContent>
 
                         <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="10,60,0,0" FontSize="18"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="Main Programm" FontWeight="Bold" HorizontalAlignment="Left" Width="200" />
+                               Foreground="White" Text="Main Programm" FontWeight="Bold" HorizontalAlignment="Left" Width="200" />
 
                         <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="20,90,0,0" FontSize="14"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="Installierte Version" FontWeight="Bold" HorizontalAlignment="Left" Width="235" />
+                               Foreground="White" Text="Installierte Version" FontWeight="Bold" HorizontalAlignment="Left" Width="235" />
                         <TextBlock x:Name="MainProgrammVersion" VerticalAlignment="Top" TextWrapping="Wrap" Margin="260,90,0,0" FontSize="14"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="-" HorizontalAlignment="Left" Width="70" />
+                               Foreground="White" Text="-" HorizontalAlignment="Left" Width="70" />
 
                         <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="20,140,0,0" FontSize="14"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="Aktuellste Version" FontWeight="Bold" HorizontalAlignment="Left" Width="235" />
+                               Foreground="White" Text="Aktuellste Version" FontWeight="Bold" HorizontalAlignment="Left" Width="235" />
                         <TextBlock x:Name="MainProgrammNewestVersion" VerticalAlignment="Top" TextWrapping="Wrap" Margin="260,140,0,0" FontSize="14"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="-" HorizontalAlignment="Left" Width="70" />
+                               Foreground="White" Text="-" HorizontalAlignment="Left" Width="70" />
 
                         <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="20,190,0,0" FontSize="14"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="Update Channel" FontWeight="Bold" HorizontalAlignment="Left" Width="130" />
-                        <ComboBox x:Name="MainProgrammUpdateChannel" VerticalAlignment="Top" Margin="190,180,0,0" FontSize="14" BorderBrush="{DynamicResource MaterialDesignBody}" Focusable="False"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="-" HorizontalAlignment="Left" Width="140" materialDesign:HintAssist.Hint="Update-Channel auswählen" SelectedIndex="0">
+                               Foreground="White" Text="Update Channel" FontWeight="Bold" HorizontalAlignment="Left" Width="130" />
+                        <ComboBox x:Name="MainProgrammUpdateChannel" VerticalAlignment="Top" Margin="190,180,0,0" FontSize="14" BorderBrush="White" Focusable="False"
+                               Foreground="White" Text="-" HorizontalAlignment="Left" Width="140" materialDesign:HintAssist.Hint="Update-Channel auswählen" SelectedIndex="0">
                             <sys:String>release</sys:String>
                             <sys:String>beta</sys:String>
                             <sys:String>developer</sys:String>
@@ -120,26 +120,26 @@
                         </ComboBox>
 
                         <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="360,60,0,0" FontSize="18"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="Add-on" FontWeight="Bold" HorizontalAlignment="Left" Width="200" />
+                               Foreground="White" Text="Add-on" FontWeight="Bold" HorizontalAlignment="Left" Width="200" />
 
                         <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="370,90,0,0" FontSize="14"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="Aktuellste installierte Version" FontWeight="Bold" HorizontalAlignment="Left" Width="235" />
+                               Foreground="White" Text="Aktuellste installierte Version" FontWeight="Bold" HorizontalAlignment="Left" Width="235" />
                         <TextBlock x:Name="AddonInstalledVersion" VerticalAlignment="Top" TextWrapping="Wrap" Margin="610,90,0,0" FontSize="14"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="-" HorizontalAlignment="Left" Width="70" />
+                               Foreground="White" Text="-" HorizontalAlignment="Left" Width="70" />
                         <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="370,110,0,0" FontSize="14"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="Gestartete Version" FontWeight="Bold" HorizontalAlignment="Left" Width="235" />
+                               Foreground="White" Text="Gestartete Version" FontWeight="Bold" HorizontalAlignment="Left" Width="235" />
                         <TextBlock x:Name="AddonVersion" VerticalAlignment="Top" TextWrapping="Wrap" Margin="610,110,0,0" FontSize="14"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="-" HorizontalAlignment="Left" Width="70" />
+                               Foreground="White" Text="-" HorizontalAlignment="Left" Width="70" />
 
                         <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="370,140,0,0" FontSize="14"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="Aktuellste Version" FontWeight="Bold" HorizontalAlignment="Left" Width="235" />
+                               Foreground="White" Text="Aktuellste Version" FontWeight="Bold" HorizontalAlignment="Left" Width="235" />
                         <TextBlock x:Name="AddonNewestVersion" VerticalAlignment="Top" TextWrapping="Wrap" Margin="610,140,0,0" FontSize="14"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="-" HorizontalAlignment="Left" Width="70" />
+                               Foreground="White" Text="-" HorizontalAlignment="Left" Width="70" />
 
                         <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="370,190,0,0" FontSize="14"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="Update Channel" FontWeight="Bold" HorizontalAlignment="Left" Width="130" />
-                        <ComboBox x:Name="ExtensionUpdateChannel" VerticalAlignment="Top" Margin="540,180,0,0" FontSize="14" BorderBrush="{DynamicResource MaterialDesignBody}" Focusable="False"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="-" HorizontalAlignment="Left" Width="140" materialDesign:HintAssist.Hint="Update-Channel auswählen" SelectedIndex="0">
+                               Foreground="White" Text="Update Channel" FontWeight="Bold" HorizontalAlignment="Left" Width="130" />
+                        <ComboBox x:Name="ExtensionUpdateChannel" VerticalAlignment="Top" Margin="540,180,0,0" FontSize="14" BorderBrush="White" Focusable="False"
+                               Foreground="White" Text="-" HorizontalAlignment="Left" Width="140" materialDesign:HintAssist.Hint="Update-Channel auswählen" SelectedIndex="0">
                             <sys:String>release</sys:String>
                             <sys:String>beta</sys:String>
                             <sys:String>developer</sys:String>
@@ -150,9 +150,9 @@
                                  Background="{DynamicResource SecondaryAccentBrush}" VerticalAlignment="Bottom" Margin="10,0,310,5">
                             <Grid HorizontalAlignment="Center">
                                 <materialDesign:PackIcon VerticalAlignment="Center" Margin="5,0,0,0" Kind="InformationVariant"  Height="20"
-                                             Width="20" Foreground="{DynamicResource MaterialDesignBody}" />
+                                             Width="20" Foreground="White" />
                                 <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Margin="30,0,10,0" FontSize="15"
-                               Foreground="{DynamicResource MaterialDesignBody}" Text="Um Updates zu installieren starte das Programm einfach neu" />
+                               Foreground="White" Text="Um Updates zu installieren starte das Programm einfach neu" />
                             </Grid>
                         </materialDesign:Card>
                     </Grid>
