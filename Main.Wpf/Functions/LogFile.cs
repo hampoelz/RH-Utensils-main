@@ -32,8 +32,7 @@ namespace Main.Wpf.Functions
         {
             try
             {
-                var filename = MBaseDir
-                    + GetFilenameYYYMMDD("_LOG", ".log");
+                var filename = Path.Combine(MBaseDir, GetFilenameYYYMMDD("_LOG", ".log"));
                 var sw = new System.IO.StreamWriter(filename, true);
                 var xmlEntry = new XElement("logEntry",
                     new XElement("Date", System.DateTime.Now.ToString(CultureInfo.InvariantCulture)),
@@ -51,8 +50,7 @@ namespace Main.Wpf.Functions
         {
             try
             {
-                var filename = MBaseDir
-                    + GetFilenameYYYMMDD("_LOG", ".log");
+                var filename = Path.Combine(MBaseDir, GetFilenameYYYMMDD("_LOG", ".log"));
                 var sw = new System.IO.StreamWriter(filename, true);
                 var xmlEntry = new XElement("logEntry",
                     new XElement("Date", System.DateTime.Now.ToString(CultureInfo.InvariantCulture)),

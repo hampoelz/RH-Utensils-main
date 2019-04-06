@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 
 namespace Main.Wpf.Pages
@@ -36,7 +37,7 @@ namespace Main.Wpf.Pages
                                     + newLine
                                     + "```";
 
-            var logFile = Functions.LogFile.MBaseDir + GetFilenameYYYMMDD("_LOG", ".log");
+            var logFile = Path.Combine(Functions.LogFile.MBaseDir, GetFilenameYYYMMDD("_LOG", ".log"));
             var logFileContent = "Datei ist nicht verfügbar!";
 
             if (System.IO.File.Exists(logFile))

@@ -149,10 +149,11 @@ namespace Main.Wpf
                     SitesPaths = ReplaceVariables(Xml.ReadStringList(ConfigFile, "sitePath"));
                     SitesPathsArguments = ReplaceVariables(Xml.ReadStringList(ConfigFile, "sitePathArgument"));
 
+                    SitesIcons.Clear();
+
                     for (var i = 0; i != Xml.ReadStringList(ConfigFile, "siteIcon").Count; ++i)
                     {
-                        SitesIcons.Clear();
-                        if (Validation.IsImageValid(Xml.ReadStringList(ConfigFile, "siteIcon")[i]))
+                        if (Validation.IsImageValid(ReplaceVariables(Xml.ReadStringList(ConfigFile, "siteIcon")[i])))
                             SitesIcons.Add(ReplaceVariables(Xml.ReadStringList(ConfigFile, "siteIcon")[i]));
                         else
                             SitesIcons.Add("application.png");

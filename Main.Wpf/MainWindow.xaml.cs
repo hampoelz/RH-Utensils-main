@@ -37,7 +37,10 @@ namespace Main.Wpf
             try
             {
                 if (App.Favicon != "")
-                    Icon = new BitmapImage(new Uri(App.Favicon));
+                {
+                    Uri iconUri = new Uri(App.Favicon, UriKind.RelativeOrAbsolute);
+                    Icon = BitmapFrame.Create(iconUri);
+                }
             }
             catch (Exception ex)
             {
