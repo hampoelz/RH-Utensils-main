@@ -17,7 +17,15 @@ namespace Main.Wpf.Pages
 
             Title = "Über " + App.Name;
 
-            if (App.Favicon != "") Image.Source = new BitmapImage(new Uri(App.Favicon));
+            try
+            {
+                if (App.Favicon != "")
+                    Image.Source = new BitmapImage(new Uri(App.Favicon));
+            }
+            catch (Exception ex)
+            {
+                Functions.LogFile.WriteLog(ex);
+            }
         }
 
         public static DispatcherTimer _timer = new DispatcherTimer();

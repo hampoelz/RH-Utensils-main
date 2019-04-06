@@ -7,7 +7,7 @@ namespace Main.Wpf.Functions
 {
     public static class Index
     {
-        public static void SetIndex(string page)
+        public static void Set(string page)
         {
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
 

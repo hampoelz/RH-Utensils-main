@@ -23,16 +23,17 @@ namespace Main.Wpf
         public static string Favicon = "";
 
         //Extension
-        public static string ExtensionsDirectory = @"..\Extensions";
+        public static string ExtensionsDirectory = Path.GetFullPath(@"..\Extensions");
 
         public static string ExtensionName = "";
 
         //Auth0 access
+        public static string Auth0Domain = "hampoelz.eu.auth0.com";
+
         public static string Auth0ApiClientId = "GTgQvzJvhsSPT0w8sirtIj69cTwfS9AW";
 
         public static string Auth0ApiClientSecret = "J4db362UcFbgrQBaXb0doKt4MNEjyPh4W2kueckfCpEppl2zHzB8xyLu3N7REknh";
         public static string Auth0ClientId = "_9ZvrbGJUX4MfWdzt6F7pW2e0Z0Zc0OA";
-        public static string Auth0Domain = "hampoelz.eu.auth0.com";
 
         //Updates
         public static bool CustomVersion;
@@ -100,7 +101,7 @@ namespace Main.Wpf
                     (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
                     ExtensionVersionsHistoryFile = uriResult.ToString();
 
-                if (Validation.IsImageValid(Xml.ReadString(ConfigFile, "favicon")))
+                if (Validation.IsImageValid(ReplaceVariables(Xml.ReadString(ConfigFile, "favicon"))))
                     Favicon = ReplaceVariables(Xml.ReadString(ConfigFile, "favicon"));
 
                 if (Uri.TryCreate(Xml.ReadString(ConfigFile, "website"), UriKind.Absolute, out uriResult) &&
@@ -157,6 +158,13 @@ namespace Main.Wpf
                             SitesIcons.Add("application.png");
                     }
 
+                    //Add space
+                    SitesTitles.Add("");
+                    SitesLoadingTimes.Add(0);
+                    SitesPaths.Add("");
+                    SitesPathsArguments.Add("");
+                    SitesIcons.Add("");
+
                     //Add about page
                     SitesTitles.Add("Information");
                     SitesLoadingTimes.Add(0);
@@ -182,8 +190,8 @@ namespace Main.Wpf
 
                     Exe = ReplaceVariables(Xml.ReadString(ConfigFile, "loadExe"));
 
-                    ExeLoadTime = Validation.IsStringValidInt(Xml.ReadString(ConfigFile, "loadExe"))
-                        ? int.Parse(Xml.ReadString(ConfigFile, "loadExe"))
+                    ExeLoadTime = Validation.IsStringValidInt(Xml.ReadString(ConfigFile, "exeLoadTime"))
+                        ? int.Parse(Xml.ReadString(ConfigFile, "exeLoadTime"))
                         : 500;
 
                     ExeArguments = Xml.ReadString(ConfigFile, "exeArguments");
@@ -212,7 +220,8 @@ namespace Main.Wpf
         {
             return value.Replace("{extensionsDirectory}", ExtensionsDirectory)
                 .Replace("{extensionName}", ExtensionName)
-                .Replace("{extensionVersion}", ExtensionVersion.ToString()).Replace("{appName}", Name)
+                .Replace("{extensionVersion}", ExtensionVersion.ToString())
+                .Replace("{appName}", Name)
                 .Replace("{username}", Environment.UserName);
         }
 
@@ -243,7 +252,7 @@ namespace Main.Wpf
 
         private async void App_Startup(object sender, StartupEventArgs e)
         {
-            Parameters = String.Join("", e.Args);
+            Parameters = String.Join(" ", e.Args);
 
             try
             {
@@ -276,7 +285,7 @@ namespace Main.Wpf
                         }
                         catch
                         {
-                            ExtensionsDirectory = @"..\Extensions";
+                            ExtensionsDirectory = Path.GetFullPath(@"..\Extensions");
                             Directory.CreateDirectory(ExtensionsDirectory);
                         }
 
@@ -316,9 +325,9 @@ namespace Main.Wpf
                         if (tempMaxVersion == null)
                             continue;
 
-                        var tempProgramDirectory = extensionsDirectories[extension] + @"\" + tempMaxVersion + @"\";
+                        var tempProgramDirectory = Path.Combine(extensionsDirectories[extension], tempMaxVersion.ToString());
 
-                        var tempConfigFile = tempProgramDirectory + "config.xml";
+                        var tempConfigFile = Path.Combine(tempProgramDirectory, "config.xml");
 
                         if (!Validation.IsXmlValid(tempConfigFile))
                             continue;

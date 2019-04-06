@@ -76,8 +76,15 @@ namespace Main.Wpf.Pages
 
             Welcome.Text = "Willkommen bei " + Environment.NewLine + App.Name + "!";
 
-            if (App.Favicon != "")
-                Logo.Source = new BitmapImage(new Uri(App.Favicon));
+            try
+            {
+                if (App.Favicon != "")
+                    Logo.Source = new BitmapImage(new Uri(App.Favicon));
+            }
+            catch (Exception ex)
+            {
+                Functions.LogFile.WriteLog(ex);
+            }
 
             if (!App.ShowLogin && (!Settings.Default.login || App.ShowFirstPage || App.SkipLogin)) return;
 

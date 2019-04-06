@@ -234,9 +234,9 @@ namespace Main.Wpf.Pages
                 }
 
                 if (App.SitesPaths[menuItem] == "selector.exe")
-                    Functions.Index.SetIndex("Selector");
+                    Functions.Index.Set("Selector");
                 else if (App.SitesPaths[menuItem] == "info.exe")
-                    Functions.Index.SetIndex("About");
+                    Functions.Index.Set("About");
                 else
                     await Functions.Index.SetExeAsync(App.SitesPaths[menuItem], App.SitesPathsArguments[menuItem],
                         App.SitesLoadingTimes[menuItem]);

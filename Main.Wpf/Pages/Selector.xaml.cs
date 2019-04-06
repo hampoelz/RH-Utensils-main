@@ -177,7 +177,7 @@ namespace Main.Wpf.Pages
         {
             try
             {
-                var extensionsDirectory = App.ExtensionsDirectory + @"\" + Extension.Text + @"\" + Version.Text;
+                var extensionsDirectory = Path.Combine(App.ExtensionsDirectory, Extension.Text, Version.Text);
 
                 Directory.Delete(extensionsDirectory, true);
 

@@ -27,6 +27,8 @@
                    TitleCharacterCasing="Normal"
                    Icon="Assets/Logo.ico"
                    ShowIconOnTitleBar="False"
+                   ShowMaxRestoreButton="False"
+                   ResizeMode="CanResizeWithGrip"
 
                    MinHeight="700"
                    MinWidth="1200"

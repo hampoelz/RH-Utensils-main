@@ -34,8 +34,15 @@ namespace Main.Wpf
         {
             Functions.Settings.SyncTheme();
 
-            if (App.Favicon != "")
-                Icon = new BitmapImage(new Uri(App.Favicon));
+            try
+            {
+                if (App.Favicon != "")
+                    Icon = new BitmapImage(new Uri(App.Favicon));
+            }
+            catch (Exception ex)
+            {
+                Functions.LogFile.WriteLog(ex);
+            }
 
             if (!App.HideMenu)
             {
@@ -55,7 +62,7 @@ namespace Main.Wpf
 
             CenterWindowOnScreen();
 
-            if (File.Exists(App.ExtensionsDirectory + @"\" + App.ExtensionName + @"\" + "updater.exe"))
+            if (File.Exists(Path.Combine(App.ExtensionsDirectory, App.ExtensionName, "updater.exe")))
             {
                 Index.Navigate(new Uri("Pages/Update.xaml", UriKind.Relative));
                 return;

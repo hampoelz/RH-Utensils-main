@@ -19,10 +19,7 @@ namespace Main.Wpf.Functions
             {
                 if (!InternetChecker.Check()) return;
 
-                var file = updateExtension
-                    ? App.ExtensionsDirectory + @"\" + App.ExtensionName + @"\" + App.ExtensionVersion + @"\" +
-                      "VersionHistory.xml"
-                    : @".\VersionHistory.xml";
+                var file = updateExtension ? Path.Combine(App.ExtensionsDirectory, App.ExtensionName, App.ExtensionVersion.ToString(), "VersionHistory.xml") : Path.GetFullPath(@".\VersionHistory.xml");
 
                 try
                 {
@@ -141,18 +138,14 @@ namespace Main.Wpf.Functions
                     {
                         LogFile.WriteLog("Download and install update ...");
 
-                        var localUpdateFile = updateExtension
-                            ? App.ExtensionsDirectory + @"\" + App.ExtensionName + @"\" + "update.zip"
-                            : @".\update.zip";
+                        var localUpdateFile = updateExtension ? Path.Combine(App.ExtensionsDirectory, App.ExtensionName, "update.zip") : Path.GetFullPath(@".\update.zip");
 
                         using (var client = new WebClient())
                         {
                             client.DownloadFile(serverUpdateFile, localUpdateFile);
                         }
 
-                        var newExtensionDirectory = updateExtension
-                            ? App.ExtensionsDirectory + @"\" + App.ExtensionName + @"\" + latestVersion
-                            : @".\update";
+                        var newExtensionDirectory = updateExtension ? Path.Combine(App.ExtensionsDirectory, App.ExtensionName, latestVersion.ToString()) : Path.GetFullPath(@".\update");
 
                         Directory.CreateDirectory(newExtensionDirectory);
                         ZipFile.ExtractToDirectory(localUpdateFile, newExtensionDirectory);
@@ -162,9 +155,7 @@ namespace Main.Wpf.Functions
                     {
                         LogFile.WriteLog("Download the setup ...");
 
-                        var localUpdateFile = updateExtension
-                            ? App.ExtensionsDirectory + @"\" + App.ExtensionName + @"\" + "updater.exe"
-                            : @".\updater.exe";
+                        var localUpdateFile = updateExtension ? Path.Combine(App.ExtensionsDirectory, App.ExtensionName, "updater.exe") : Path.GetFullPath(@".\updater.exe");
 
                         using (var client = new WebClient())
                         {

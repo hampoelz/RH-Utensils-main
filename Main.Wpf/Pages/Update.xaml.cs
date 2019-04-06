@@ -23,9 +23,9 @@ namespace Main.Wpf.Pages
         {
             try
             {
-                if (File.Exists(App.ExtensionsDirectory + @"\" + App.ExtensionName + @"\" + "updater.exe"))
+                if (File.Exists(Path.Combine(App.ExtensionsDirectory, App.ExtensionName, "updater.exe")))
                 {
-                    var ps = new ProcessStartInfo(App.ExtensionsDirectory + @"\" + App.ExtensionName + @"\" + "updater.exe");
+                    var ps = new ProcessStartInfo(Path.Combine(App.ExtensionsDirectory, App.ExtensionName, "updater.exe"));
                     Functions.LogFile.WriteLog("Setup wird gestartet.");
                     Process.Start(ps);
 
