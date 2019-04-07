@@ -238,8 +238,7 @@ namespace Main.Wpf.Pages
                 else if (App.SitesPaths[menuItem] == "info.exe")
                     Functions.Index.Set("About");
                 else
-                    await Functions.Index.SetExeAsync(App.SitesPaths[menuItem], App.SitesPathsArguments[menuItem],
-                        App.SitesLoadingTimes[menuItem]);
+                    await Functions.Index.SetExeAsync(App.SitesPaths[menuItem], App.SitesPathsArguments[menuItem]);
 
                 if (Application.Current.MainWindow is MainWindow mw)
                     mw.Title = App.SitesTitles[menuItem] + " - " + App.Name;

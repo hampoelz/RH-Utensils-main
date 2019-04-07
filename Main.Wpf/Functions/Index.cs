@@ -16,11 +16,11 @@ namespace Main.Wpf.Functions
             mw.IndexGrid.Visibility = Visibility.Collapsed;
         }
 
-        public static async Task SetExeAsync(string path, string argument, int loadTime)
+        public static async Task SetExeAsync(string path, string argument)
         {
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
 
-            await mw.SetExe(path, argument, loadTime);
+            await mw.SetExe(path, argument);
         }
 
         public static void SetError(string exception, string title, string file = "-")

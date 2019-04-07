@@ -68,7 +68,6 @@ namespace Main.Wpf
         public static bool SkipLogin;
 
         public static List<string> SitesIcons = new List<string> { "", "", "" };
-        public static List<int> SitesLoadingTimes = new List<int> { 0, 0, 0 };
         public static List<string> SitesPaths = new List<string> { "selector.exe", "info.exe", "account.exe" };
         public static List<string> SitesPathsArguments = new List<string> { "", "", "" };
         public static List<string> SitesTitles = new List<string> { "Add-ons", "Information", "Dein Konto" };
@@ -137,15 +136,12 @@ namespace Main.Wpf
 
                 if (Xml.ReadStringList(ConfigFile, "sitePath").Count ==
                     Xml.ReadStringList(ConfigFile, "siteTitle").Count &&
-                    Xml.ReadStringList(ConfigFile, "siteLoadingTime").Count ==
-                    Xml.ReadStringList(ConfigFile, "siteTitle").Count &&
                     Xml.ReadStringList(ConfigFile, "sitePathArgument").Count ==
                     Xml.ReadStringList(ConfigFile, "siteTitle").Count &&
                     Xml.ReadStringList(ConfigFile, "siteIcon").Count ==
                     Xml.ReadStringList(ConfigFile, "siteTitle").Count)
                 {
                     SitesTitles = Xml.ReadStringList(ConfigFile, "siteTitle");
-                    SitesLoadingTimes = StringListToIntList(Xml.ReadStringList(ConfigFile, "siteLoadingTime"), 500);
                     SitesPaths = ReplaceVariables(Xml.ReadStringList(ConfigFile, "sitePath"));
                     SitesPathsArguments = ReplaceVariables(Xml.ReadStringList(ConfigFile, "sitePathArgument"));
 
@@ -161,21 +157,18 @@ namespace Main.Wpf
 
                     //Add space
                     SitesTitles.Add("");
-                    SitesLoadingTimes.Add(0);
                     SitesPaths.Add("");
                     SitesPathsArguments.Add("");
                     SitesIcons.Add("");
 
                     //Add about page
                     SitesTitles.Add("Information");
-                    SitesLoadingTimes.Add(0);
                     SitesPaths.Add("info.exe");
                     SitesPathsArguments.Add("");
                     SitesIcons.Add("");
 
                     //Add login/logout page
                     SitesTitles.Add("Konto");
-                    SitesLoadingTimes.Add(0);
                     SitesPaths.Add("account.exe");
                     SitesPathsArguments.Add("");
                     SitesIcons.Add("");

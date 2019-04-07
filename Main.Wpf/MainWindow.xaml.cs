@@ -135,7 +135,7 @@ namespace Main.Wpf
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool MoveWindow(IntPtr hWnd, int x, int y, int cx, int cy, bool repaint);
 
-        public async Task SetExe(string exe, string argument, int loadTime)
+        public async Task SetExe(string exe, string argument)
         {
             var host = new WindowsFormsHost();
 
@@ -163,8 +163,11 @@ namespace Main.Wpf
 
                 _currentProcess = p;
 
-                await Task.Delay(loadTime);
-                //Thread.Sleep(loadTime);
+                while (string.IsNullOrEmpty(p.MainWindowTitle))
+                {
+                    await Task.Delay(100);
+                    p.Refresh();
+                }
 
                 Index.Visibility = Visibility.Collapsed;
                 IndexGrid.Visibility = Visibility.Visible;
