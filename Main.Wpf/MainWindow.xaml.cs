@@ -101,7 +101,7 @@ namespace Main.Wpf
                 //Index
                 Index.Visibility = Visibility.Collapsed;
 
-                await Functions.Index.SetExeAsync(App.Exe, App.ExeArguments, App.ExeLoadTime);
+                await Functions.Index.SetExeAsync(App.Exe, App.ExeArguments);
             }
             else
             {
