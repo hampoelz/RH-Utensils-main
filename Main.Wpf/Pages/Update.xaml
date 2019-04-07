@@ -13,7 +13,7 @@
       Background="{DynamicResource MaterialDesignPaper}"
       FontFamily="{DynamicResource MaterialDesignFont}"
 
-      d:DesignHeight="400" d:DesignWidth="700" x:ClassModifier="internal">
+      d:DesignHeight="670" d:DesignWidth="950" x:ClassModifier="internal">
 
     <Grid>
         <Grid VerticalAlignment="Center" HorizontalAlignment="Center">

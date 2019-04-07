@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d"
-      d:DesignHeight="614" d:DesignWidth="250"
+      d:DesignHeight="670" d:DesignWidth="250"
       Title="Menu">
 
     <Grid x:Name="GridMenu" Width="250" HorizontalAlignment="Left" Background="#FF222222">

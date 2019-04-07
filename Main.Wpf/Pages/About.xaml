@@ -17,7 +17,7 @@
 
       Title="Login"
 
-      d:DesignHeight="700" d:DesignWidth="1200" x:ClassModifier="internal" Loaded="Page_Loaded">
+      d:DesignHeight="670" d:DesignWidth="950" x:ClassModifier="internal" Loaded="Page_Loaded">
 
     <Grid>
         <Grid HorizontalAlignment="Center" Height="620">
