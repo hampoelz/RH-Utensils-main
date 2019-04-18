@@ -5,6 +5,7 @@
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                   xmlns:wpf="clr-namespace:Main.Wpf"
                    mc:Ignorable="d"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
                    TextElement.FontWeight="Regular"
@@ -25,10 +26,8 @@
                    BorderThickness="1"
                    WindowStartupLocation="CenterScreen"
                    TitleCharacterCasing="Normal"
-                   Icon="Assets/Logo.ico"
+                   Icon="Assets/Logo.png"
                    ShowIconOnTitleBar="False"
-                   ShowMaxRestoreButton="False"
-                   ResizeMode="CanResizeWithGrip"
 
                    MinHeight="700"
                    MinWidth="1200"
@@ -36,7 +35,7 @@
                    Height="700" Width="1200"
                    Title="RH Utensils" Closed="MetroWindow_Closed" Loaded="MetroWindow_Loaded">
 
-    <Grid Name="Grid">
+    <Grid Name="MainGrid">
         <Frame x:Name="Index" NavigationUIVisibility="Hidden" />
     </Grid>
 </metro:MetroWindow>

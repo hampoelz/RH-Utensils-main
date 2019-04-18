@@ -1,59 +1,64 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Xml;
-using Formatting = Newtonsoft.Json.Formatting;
 
 namespace Main.Wpf.Functions
 {
     public static class Json
     {
-        public static string ConvertToString(string json, string parameter)
+        public static string ReadString(string json, string parameter)
         {
+            var value = "";
+
             try
             {
                 var jsonData = JObject.Parse(json);
 
-                return jsonData[parameter].ToString();
+                value = jsonData[parameter].ToString();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogFile.WriteLog(e);
-                return "";
+                LogFile.WriteLog(ex);
             }
+
+            return value;
         }
 
-        public static string ConvertFromXml(string xml)
+        public static bool ReadBool(string json, string parameter)
         {
+            var value = false;
+
             try
             {
-                var xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(xml);
+                var jsonData = JObject.Parse(json);
 
-                return JsonConvert.SerializeXmlNode(xmlDoc);
+                value = Convert.ToBoolean(jsonData[parameter].ToString());
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogFile.WriteLog(e);
-                return "";
+                LogFile.WriteLog(ex);
             }
+
+            return value;
         }
 
         public static string ChangeValue(string json, string parameter, string newValue)
         {
+            var output = "";
+
             try
             {
                 dynamic jsonObj = JsonConvert.DeserializeObject(json);
                 jsonObj[parameter] = newValue;
-                string output = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
 
-                return output;
+                output = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogFile.WriteLog(e);
-                return "";
+                LogFile.WriteLog(ex);
             }
+
+            return output;
         }
     }
 }

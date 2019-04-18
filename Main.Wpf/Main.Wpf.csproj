@@ -7,7 +7,7 @@
     <ProjectGuid>{DCE53F88-3E42-4D1B-A6BB-E4266D256BF8}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Main.Wpf</RootNamespace>
-    <AssemblyName>Main.Wpf</AssemblyName>
+    <AssemblyName>RH Utensils</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -299,14 +299,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Functions\Account.cs" />
+    <Compile Include="Functions\Config.cs" />
     <Compile Include="Functions\Index.cs" />
+    <Compile Include="Functions\Informations.cs" />
     <Compile Include="Functions\InternetChecker.cs" />
     <Compile Include="Functions\Json.cs" />
     <Compile Include="Functions\LogFile.cs" />
+    <Compile Include="Functions\Login.cs" />
+    <Compile Include="Functions\Menu.cs" />
+    <Compile Include="Functions\ReplaceVariables.cs" />
     <Compile Include="Functions\Settings.cs" />
     <Compile Include="Functions\Updater.cs" />
     <Compile Include="Functions\Validation.cs" />
+    <Compile Include="Functions\Versioning.cs" />
     <Compile Include="Functions\XML.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -397,7 +404,7 @@
     <Resource Include="Assets\information.png" />
     <Resource Include="Assets\login.png" />
     <Resource Include="Assets\logout.png" />
-    <Resource Include="Pages\Logo.png" />
+    <Resource Include="Assets\Logo.png" />
     <Resource Include="VersionHistory.xml" />
   </ItemGroup>
   <ItemGroup>

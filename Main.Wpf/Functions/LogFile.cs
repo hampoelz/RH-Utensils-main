@@ -5,9 +5,9 @@ using System.Xml.Linq;
 
 namespace Main.Wpf.Functions
 {
-    public class LogFile
+    public static class LogFile
     {
-        public static readonly string MBaseDir = App.ExtensionName != "" ? Path.Combine(App.ExtensionsDirectory, App.ExtensionName) : Path.GetFullPath(@".\");
+        public static readonly string MBaseDir = Config.ExtensionDirectoryName != "" ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName) : Path.GetFullPath(@".\");
 
         public static string GetFilenameYYYMMDD(string suffix, string extension)
         {

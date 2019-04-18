@@ -17,7 +17,7 @@
 
       d:DesignHeight="670" d:DesignWidth="1200" Loaded="Page_Loaded" x:ClassModifier="internal">
 
-    <Grid>
+    <Grid x:Name="MainGrid">
         <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
             <materialDesign:Card Padding="10" Width="450" Height="315" Panel.ZIndex="1"
                                  Background="{DynamicResource MaterialDesignPaper}" VerticalAlignment="Stretch">
@@ -31,7 +31,7 @@
 
                     <Image x:Name="Logo" HorizontalAlignment="Left" Height="75" Margin="10,60,0,0"
                            VerticalAlignment="Top"
-                           Width="75" Source="Logo.png" />
+                           Width="75" Source="../Assets/Logo.png" />
                     <TextBlock x:Name="Welcome" FontFamily="Segoe UI Black" FontSize="24" Margin="90,60,0,0"
                                VerticalAlignment="Top" Height="75" TextAlignment="Center"
                                TextWrapping="WrapWithOverflow"
@@ -45,7 +45,8 @@
 
                     <Grid Height="60" VerticalAlignment="Bottom">
                         <Button x:Name="BtnLogin" HorizontalAlignment="Left" Content="Anmelden" Width="110" Height="35"
-                                Foreground="White" Click="Login_Click" FontSize="15" Margin="10,0,0,0" />
+                                Foreground="White" Click="Login_Click" FontSize="15" Margin="10,0,0,0">
+                        </Button>
                         <Button x:Name="BtnSkip" HorizontalAlignment="Right" Content="Ohne Anmelden nutzen" Width="200"
                                 Height="35" Click="Skip_Click" Style="{DynamicResource MaterialDesignFlatButton}"
                                 FontSize="15" Margin="0,0,10,0" />

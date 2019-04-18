@@ -6,34 +6,101 @@ namespace Main.Wpf.Functions
 {
     public static class Account
     {
+        public static class Auth0
+        {
+            private static string domain = "hampoelz.eu.auth0.com";
+
+            public static string Domain
+            {
+                get
+                {
+                    return domain;
+                }
+                set
+                {
+                    if (domain == value || value?.Length == 0) return;
+
+                    domain = value;
+                }
+            }
+
+            private static string clientId = "GTgQvzJvhsSPT0w8sirtIj69cTwfS9AW";
+
+            public static string ClientId
+            {
+                get
+                {
+                    return clientId;
+                }
+                set
+                {
+                    if (clientId == value || value?.Length == 0) return;
+
+                    clientId = value;
+                }
+            }
+
+            private static string apiClientId = "_9ZvrbGJUX4MfWdzt6F7pW2e0Z0Zc0OA";
+
+            public static string ApiClientId
+            {
+                get
+                {
+                    return apiClientId;
+                }
+                set
+                {
+                    if (apiClientId == value || value?.Length == 0) return;
+
+                    apiClientId = value;
+                }
+            }
+
+            private static string apiClientSecret = "J4db362UcFbgrQBaXb0doKt4MNEjyPh4W2kueckfCpEppl2zHzB8xyLu3N7REknh";
+
+            public static string ApiClientSecret
+            {
+                get
+                {
+                    return apiClientSecret;
+                }
+                set
+                {
+                    if (apiClientSecret == value || value?.Length == 0) return;
+
+                    apiClientSecret = value;
+                }
+            }
+        }
+
         public static Auth0Client Client = new Auth0Client(new Auth0ClientOptions
         {
-            Domain = App.Auth0Domain,
-            ClientId = App.Auth0ClientId
+            Domain = Auth0.Domain,
+            ClientId = Auth0.ClientId
         });
 
         public static string UserId;
 
         public static string GetToken()
         {
-            LogFile.WriteLog("Received account token from " + App.Auth0Domain + " ...");
+            LogFile.WriteLog("Received account token from " + Auth0.Domain + " ...");
 
             try
             {
-                var client = new RestClient("https://" + App.Auth0Domain + "/oauth/token");
+                var client = new RestClient("https://" + Auth0.Domain + "/oauth/token");
                 var request = new RestRequest(Method.POST);
                 request.AddHeader("content-type", "application/json");
                 request.AddParameter("application/json",
-                    "{\"grant_type\":\"client_credentials\",\"client_id\": \"" + App.Auth0ApiClientId +
-                    "\",\"client_secret\": \"" + App.Auth0ApiClientSecret + "\",\"audience\": \"https://" +
-                    App.Auth0Domain + "/api/v2/\"}", ParameterType.RequestBody);
+                    "{\"grant_type\":\"client_credentials\",\"client_id\": \"" + Auth0.ApiClientId +
+                    "\",\"client_secret\": \"" + Auth0.ApiClientSecret + "\",\"audience\": \"https://" +
+                    Auth0.Domain + "/api/v2/\"}", ParameterType.RequestBody);
                 var response = client.Execute(request);
 
-                return Json.ConvertToString(response.Content, "access_token");
+                return Json.ReadString(response.Content, "access_token");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogFile.WriteLog(e);
+                LogFile.WriteLog(ex);
             }
 
             return "";
@@ -41,24 +108,24 @@ namespace Main.Wpf.Functions
 
         public static string GetTokenType()
         {
-            LogFile.WriteLog("Received account token type from " + App.Auth0Domain + " ...");
+            LogFile.WriteLog("Received account token type from " + Auth0.Domain + " ...");
 
             try
             {
-                var client = new RestClient("https://" + App.Auth0Domain + "/oauth/token");
+                var client = new RestClient("https://" + Auth0.Domain + "/oauth/token");
                 var request = new RestRequest(Method.POST);
                 request.AddHeader("content-type", "application/json");
                 request.AddParameter("application/json",
-                    "{\"grant_type\":\"client_credentials\",\"client_id\": \"" + App.Auth0ApiClientId +
-                    "\",\"client_secret\": \"" + App.Auth0ApiClientSecret + "\",\"audience\": \"https://" +
-                    App.Auth0Domain + "/api/v2/\"}", ParameterType.RequestBody);
+                    "{\"grant_type\":\"client_credentials\",\"client_id\": \"" + Auth0.ApiClientId +
+                    "\",\"client_secret\": \"" + Auth0.ApiClientSecret + "\",\"audience\": \"https://" +
+                    Auth0.Domain + "/api/v2/\"}", ParameterType.RequestBody);
                 var response = client.Execute(request);
 
-                return Json.ConvertToString(response.Content, "token_type");
+                return Json.ReadString(response.Content, "token_type");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogFile.WriteLog(e);
+                LogFile.WriteLog(ex);
             }
 
             return "";
@@ -66,29 +133,29 @@ namespace Main.Wpf.Functions
 
         public static string ReadMetadata()
         {
-            LogFile.WriteLog("Read app metadata from " + App.Auth0Domain + " ...");
+            LogFile.WriteLog("Read app metadata from " + Auth0.Domain + " ...");
 
             try
             {
-                var appName = App.Name.Replace(" ", "_");
+                var appName = Informations.Extension.Name.Replace(" ", "_");
 
-                var client = new RestClient("https://" + App.Auth0Domain + "/api/v2/users/" + UserId);
+                var client = new RestClient("https://" + Auth0.Domain + "/api/v2/users/" + UserId);
                 var request = new RestRequest(Method.GET);
                 request.AddHeader("authorization", GetTokenType() + " " + GetToken());
                 var response = client.Execute(request);
 
                 try
                 {
-                    return Json.ConvertToString(Json.ConvertToString(response.Content, "app_metadata"), appName);
+                    return Json.ReadString(Json.ReadString(response.Content, "app_metadata"), appName);
                 }
                 catch
                 {
-                    return Json.ConvertToString(response.Content, "app_metadata");
+                    return Json.ReadString(response.Content, "app_metadata");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogFile.WriteLog(e);
+                LogFile.WriteLog(ex);
             }
 
             return "";
@@ -96,15 +163,15 @@ namespace Main.Wpf.Functions
 
         public static void SetMetadata(string jsonData)
         {
-            LogFile.WriteLog("Set app metadata on " + App.Auth0Domain + " ...");
+            LogFile.WriteLog("Set app metadata on " + Auth0.Domain + " ...");
 
             if (!InternetChecker.Check()) return;
 
             try
             {
-                var appName = App.Name.Replace(" ", "_");
+                var appName = Informations.Extension.Name.Replace(" ", "_");
 
-                var client = new RestClient("https://" + App.Auth0Domain + "/api/v2/users/" + UserId);
+                var client = new RestClient("https://" + Auth0.Domain + "/api/v2/users/" + UserId);
                 var request = new RestRequest(Method.PATCH);
                 request.AddHeader("content-type", "application/json");
                 request.AddHeader("authorization", GetTokenType() + " " + GetToken());
@@ -112,9 +179,9 @@ namespace Main.Wpf.Functions
                     ParameterType.RequestBody);
                 client.Execute(request);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogFile.WriteLog(e);
+                LogFile.WriteLog(ex);
             }
         }
     }

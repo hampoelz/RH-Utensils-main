@@ -6,23 +6,13 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d"
       d:DesignHeight="670" d:DesignWidth="250"
-      Title="Menu">
+      Title="Menu" Loaded="Page_Loaded">
 
-    <Grid x:Name="GridMenu" Width="250" HorizontalAlignment="Left" Background="#FF222222">
-
+    <Grid x:Name="MainGrid" Width="250" HorizontalAlignment="Left" Background="#FF222222">
         <Grid Height="60" Width="60" Margin="10,10,0,0" HorizontalAlignment="Right" VerticalAlignment="Top">
             <ToggleButton x:Name="ToggleMenu" IsChecked="True" Height="25" Width="25"
                           Style="{StaticResource MaterialDesignHamburgerToggleButton}" Foreground="White"
                           Checked="ToggleMenu_Checked" Unchecked="ToggleMenu_Unchecked" />
         </Grid>
-
-        <materialDesign:TransitioningContent x:Name="TrainsitionigContentSlide"
-                                             OpeningEffect="{materialDesign:TransitionEffect SlideInFromLeft, Duration=0:0:0.2}">
-            <Grid x:Name="GridCursor" Margin="0 100 0 0" Background="{DynamicResource PrimaryHueMidBrush}" Width="10"
-                  HorizontalAlignment="Left" Height="60" VerticalAlignment="Top" />
-        </materialDesign:TransitioningContent>
-
-        <ListView x:Name="ListViewMenu" Margin="0 100" Foreground="LightGray" FontFamily="Champagne &amp; Limousines"
-                  FontSize="18" HorizontalAlignment="Left" Width="250" />
     </Grid>
 </Page>

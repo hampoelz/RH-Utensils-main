@@ -1,80 +1,79 @@
-﻿using System;
+﻿using Main.Wpf.Functions;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 namespace Main.Wpf.Pages
 {
     internal partial class About
     {
+        private bool _loaded;
+
         public About()
         {
             InitializeComponent();
 
-            Title = "Über " + App.Name;
-
-            try
-            {
-                if (App.Favicon != "")
-                    Image.Source = new BitmapImage(new Uri(App.Favicon));
-            }
-            catch (Exception ex)
-            {
-                Functions.LogFile.WriteLog(ex);
-            }
+            Title = "Über " + Informations.Extension.Name;
         }
-
-        public static DispatcherTimer _timer = new DispatcherTimer();
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            MainProgrammVersion.Text = App.ProgrammVersion.ToString();
-            MainProgrammNewestVersion.Text = App.ProgrammUpdateVersion;
-
-            if (App.ExtensionName != "") AddonInstalledVersion.Text = App.ExtensionMaxVersion.ToString();
-            if (App.ExtensionName != "") AddonVersion.Text = App.ExtensionVersion.ToString();
-            AddonNewestVersion.Text = App.ExtensionUpdateVersion;
-
-            if (App.ExtensionName != "")
+            try
             {
-                ExtensionUpdateChannel.SelectedValue = Functions.Json.ConvertToString(App.SettingsJson, "updateChannel");
+                if (Informations.Extension.Favicon != "")
+                    Image.Source = new BitmapImage(new Uri(Informations.Extension.Favicon));
             }
-            else
+            catch (Exception ex)
+            {
+                LogFile.WriteLog(ex);
+            }
+
+            foreach (var channel in Enum.GetValues(typeof(Updater.UpdateChannels)))
+            {
+                ExtensionUpdateChannel.Items.Add(channel);
+                MainProgrammUpdateChannel.Items.Add(channel);
+            }
+
+            Extension.Text = Informations.Extension.Name;
+            Extension1.Text = Informations.Extension.Name;
+            Extension2.Text = Informations.Extension.Name;
+            Extension3.Text = Informations.Extension.Name;
+            Developer.Text = Informations.Developer.Organisation;
+            Copyright.Text = Informations.Copyright.Organisation;
+
+            MainProgrammVersion.Text = Updater.Informations.Programm.Version.ToString();
+            MainProgrammNewestVersion.Text = Updater.Informations.Programm.NewestVersion;
+
+            if (Config.ExtensionDirectoryName?.Length == 0)
             {
                 ExtensionUpdateChannel.IsEnabled = false;
                 ExtensionUpdateChannel.Text = "-";
+                return;
             }
-            MainProgrammUpdateChannel.SelectedValue = Properties.Settings.Default.updateChannel;
 
-            _timer.Tick += Timer_Tick;
-            _timer.Interval = new TimeSpan(0, 0, 1);
-            _timer.Start();
+            AddonInstalledVersion.Text = Updater.Informations.Extension.Version.ToString();
+            AddonVersion.Text = Updater.Informations.Extension.RunningVersion.ToString();
+            AddonNewestVersion.Text = Updater.Informations.Extension.NewestVersion;
+
+            ExtensionUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(Updater.UpdateChannels), Json.ReadString(Settings.Json, "updateChannel").ToLower());
+
+            MainProgrammUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(Updater.UpdateChannels), Properties.Settings.Default.updateChannel.ToLower());
+
+            _loaded = true;
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
+        private void Extension_Website_Click(object sender, RoutedEventArgs e)
         {
-            if (App.ExtensionName != "" && Functions.Json.ConvertToString(App.SettingsJson, "updateChannel") != ExtensionUpdateChannel.Text)
-                Functions.Settings.Set(Functions.Json.ChangeValue(App.SettingsJson, "updateChannel", ExtensionUpdateChannel.Text));
-
-            if (Properties.Settings.Default.updateChannel != MainProgrammUpdateChannel.Text)
-            {
-                Properties.Settings.Default.updateChannel = MainProgrammUpdateChannel.Text;
-                Properties.Settings.Default.Save();
-            }
+            Process.Start(Informations.Extension.Website);
         }
 
-        private void Website_Click(object sender, RoutedEventArgs e)
+        private void Developer_Website_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(App.Website);
-        }
-
-        private void DeveloperWebsite_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start(App.DeveloperWebsite);
+            Process.Start(Informations.Developer.Website);
         }
 
         private void MainProgramm_Click(object sender, RoutedEventArgs e)
@@ -87,14 +86,14 @@ namespace Main.Wpf.Pages
             Process.Start("https://rh-utensils.hampoelz.net/");
         }
 
-        private void SourceCode_Click(object sender, RoutedEventArgs e)
+        private void Extension_SourceCode_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(App.SourceCode);
+            Process.Start(Informations.Extension.SourceCode);
         }
 
-        private void Copyright_Click(object sender, RoutedEventArgs e)
+        private void Extension_Copyright_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(App.CopyrightWebsite);
+            Process.Start(Informations.Copyright.Website);
         }
 
         private void HampisProjekte_Click(object sender, RoutedEventArgs e)
@@ -116,29 +115,50 @@ namespace Main.Wpf.Pages
             btn_icon.BeginAnimation(OpacityProperty, FadeOut);
             btn_load.BeginAnimation(OpacityProperty, FadeIn);
 
-            await Task.Run(() => Functions.Updater.Update(false));
-            if (App.ExtensionName != "") await Task.Run(() => Functions.Updater.Update(true));
+            await Task.Run(() => Updater.Update(false));
+            if (Config.ExtensionDirectoryName != "") await Task.Run(() => Updater.Update(true));
 
-            MainProgrammVersion.Text = App.ProgrammVersion.ToString();
-            MainProgrammNewestVersion.Text = App.ProgrammUpdateVersion;
+            MainProgrammVersion.Text = Updater.Informations.Programm.Version.ToString();
+            MainProgrammNewestVersion.Text = Updater.Informations.Programm.NewestVersion;
 
-            if (App.ExtensionName != "") AddonInstalledVersion.Text = App.ExtensionMaxVersion.ToString();
-            if (App.ExtensionName != "") AddonVersion.Text = App.ExtensionVersion.ToString();
-            AddonNewestVersion.Text = App.ExtensionUpdateVersion;
-
-            if (App.ExtensionName != "")
-                ExtensionUpdateChannel.SelectedValue = Functions.Json.ConvertToString(App.SettingsJson, "updateChannel");
-            else
+            if (Config.ExtensionDirectoryName?.Length == 0)
             {
                 ExtensionUpdateChannel.IsEnabled = false;
                 ExtensionUpdateChannel.Text = "-";
+                return;
             }
+
+            AddonInstalledVersion.Text = Updater.Informations.Extension.Version.ToString();
+            AddonVersion.Text = Updater.Informations.Extension.RunningVersion.ToString();
+            AddonNewestVersion.Text = Updater.Informations.Extension.NewestVersion;
+
+            ExtensionUpdateChannel.SelectedValue = Json.ReadString(Settings.Json, "updateChannel");
+
             MainProgrammUpdateChannel.SelectedValue = Properties.Settings.Default.updateChannel;
 
             btn_load.BeginAnimation(OpacityProperty, FadeOut);
             btn_icon.BeginAnimation(OpacityProperty, FadeIn);
 
             btn.Click += Button_Click;
+        }
+
+        private void MainProgrammUpdateChannel_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (!_loaded) return;
+
+            if (Properties.Settings.Default.updateChannel != MainProgrammUpdateChannel.SelectedItem.ToString())
+            {
+                Properties.Settings.Default.updateChannel = MainProgrammUpdateChannel.SelectedItem.ToString();
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void ExtensionUpdateChannel_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (!_loaded) return;
+
+            if (Json.ReadString(Settings.Json, "updateChannel") != ExtensionUpdateChannel.SelectedItem.ToString())
+                Settings.Json = Json.ChangeValue(Settings.Json, "updateChannel", ExtensionUpdateChannel.SelectedItem.ToString());
         }
     }
 }

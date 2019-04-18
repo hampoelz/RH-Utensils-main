@@ -1,108 +1,112 @@
-﻿using MahApps.Metro;
-using MaterialDesignColors;
-using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
 namespace Main.Wpf.Functions
 {
-    internal static class Settings
+    public static class Settings
     {
-        private static void Get()
+        private static string file = "";
+
+        public static string File
         {
-            if (App.ExtensionName == "") return;
-
-            LogFile.WriteLog("Update local settings file ...");
-
-            var json = "";
-
-            try
+            get
             {
-                using (var fs = File.Open(App.SettingsFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                using (var sr = new StreamReader(fs))
-                {
-                    while (!sr.EndOfStream)
-                        json = sr.ReadToEnd();
-                }
+                return file;
             }
-            catch (Exception e)
+            set
             {
-                LogFile.WriteLog(e);
-            }
+                if (value?.Length == 0) value = @"C:\Users\{username}\AppData\Local\HampisProjekte\RH Utensils\{appName}\Settings.json";
 
-            App.SettingsJson = json;
-        }
+                value = Path.GetFullPath(ReplaceVariables.Replace(value));
 
-        public static void Set(string newJson)
-        {
-            if (App.ExtensionName == "") return;
+                if (file == value) return;
 
-            LogFile.WriteLog("Change local settings file ...");
+                file = value;
 
-            try
-            {
-                using (var sw = new StreamWriter(App.SettingsFile))
-                {
-                    sw.Write(newJson);
-                }
-
-                App.SettingsJson = newJson;
-            }
-            catch (Exception e)
-            {
-                LogFile.WriteLog(e);
+                CreateFile();
             }
         }
 
-        public static void SyncTheme()
+        public static string Json
         {
-            LogFile.WriteLog("Update app theme ...");
-
-            try
+            get
             {
-                var Color = new SwatchesProvider().Swatches.FirstOrDefault(a => a.Name == App.Color.ToLower());
-                new PaletteHelper().ReplacePrimaryColor(Color);
-                new PaletteHelper().ReplaceAccentColor(Color);
+                var _Settings = "";
 
-                if (App.ExtensionName != "")
+                try
                 {
-                    if (Json.ConvertToString(App.SettingsJson, "theme") == "light")
+                    using (var fs = System.IO.File.Open(Settings.File, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (var sr = new StreamReader(fs))
                     {
-                        new PaletteHelper().SetLightDark(false);
-
-                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseLight"));
+                        while (!sr.EndOfStream)
+                            _Settings = sr.ReadToEnd();
                     }
-                    else
-                    {
-                        new PaletteHelper().SetLightDark(true);
 
-                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseDark"));
+                    return _Settings;
+                }
+                catch (Exception e)
+                {
+                    LogFile.WriteLog("Error getting Local Settings File!");
+                    LogFile.WriteLog(e);
+                }
+
+                return "";
+            }
+            set
+            {
+                LogFile.WriteLog("Change Local Settings File ...");
+
+                if (!Validation.IsJsonValid(value))
+                {
+                    LogFile.WriteLog("Settings File is not valid!");
+                    return;
+                }
+
+                try
+                {
+                    using (var sw = new StreamWriter(Settings.File))
+                    {
+                        sw.Write(value);
                     }
                 }
-                else
+                catch (Exception e)
                 {
-                    if (App.DefaultTheme.ToLower() == "light")
-                    {
-                        new PaletteHelper().SetLightDark(false);
-
-                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseLight"));
-                    }
-                    else
-                    {
-                        new PaletteHelper().SetLightDark(true);
-
-                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseDark"));
-                    }
+                    LogFile.WriteLog(e);
                 }
             }
-            catch (Exception e)
+        }
+
+        private static void CreateFile()
+        {
+            try
             {
-                LogFile.WriteLog(e);
+                var defaultSettingsFile = "{" +
+                                              "\"lastChange\": \"01.01.0001 00:00:00\"," +
+                                              "\"updateChannel\": \"release\"," +
+                                              "\"menuState\": \"expanded\"," +
+                                              "\"theme\": \"" + Xml.ReadString(Config.File, "defaultTheme") + "\"" +
+                                          "}";
+
+                if (!System.IO.File.Exists(File))
+                {
+                    LogFile.WriteLog("Create Local Settings File ...");
+                    Directory.CreateDirectory(Path.GetDirectoryName(File));
+                    Settings.Json = defaultSettingsFile;
+                }
+
+                if (Json?.Length == 0)
+                {
+                    LogFile.WriteLog("Local Settings File is empty - load defaults ...");
+                    Settings.Json = defaultSettingsFile;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogFile.WriteLog(ex);
             }
         }
 
@@ -110,25 +114,27 @@ namespace Main.Wpf.Functions
 
         public static void StartSync()
         {
+            if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
+
             LogFile.WriteLog("Enable account sync ...");
 
             _syncSettingsOnChange = true;
 
             var syncTimer = new DispatcherTimer();
             syncTimer.Tick += SyncTimer_Tick;
-            syncTimer.Interval = new TimeSpan(0, 5, 0);
+            syncTimer.Interval = new TimeSpan(0, 1, 0);
             syncTimer.Start();
         }
 
         private static async void SyncTimer_Tick(object sender, EventArgs e)
         {
-            Get();
-
-            await Task.Run(() => SyncWithServer());
+            await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
         }
 
         public static void CreateFileWatcher(string file)
         {
+            Informations.Extension.Theme = Functions.Json.ReadString(Settings.Json, "theme");
+
             var path = Path.GetDirectoryName(file);
             var filename = Path.GetFileName(file);
 
@@ -148,19 +154,17 @@ namespace Main.Wpf.Functions
         {
             if (_syncInUse) return;
 
-            LogFile.WriteLog("Settings file change detected");
+            LogFile.WriteLog("Settings File change detected");
 
             _syncInUse = true;
 
-            Get();
+            await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => Informations.Extension.Theme = Functions.Json.ReadString(Settings.Json, "theme")));
 
-            await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => SyncTheme()));
+            Settings.Json = Functions.Json.ChangeValue(Settings.Json, "lastChange", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
 
-            Set(Json.ChangeValue(App.SettingsJson, "lastChange", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)));
+            if (_syncSettingsOnChange) await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
 
-            if (_syncSettingsOnChange) await Task.Run(() => SyncWithServer());
-
-            await Task.Delay(500);
+            await Task.Delay(500).ConfigureAwait(false);
 
             _syncInUse = false;
         }
@@ -169,23 +173,23 @@ namespace Main.Wpf.Functions
         {
             LogFile.WriteLog("Synchronize settings with the server ...");
 
-            _syncInUse = true;
+            //_syncInUse = true;
 
             try
             {
             Sync:
                 if (!InternetChecker.Check())
-                    return;
+                    goto Finish;
 
                 var serverJson = Account.ReadMetadata();
-                var localJson = App.SettingsJson;
+                var localJson = Settings.Json;
 
                 DateTime lastServerSync;
                 DateTime lastLocalSync;
 
                 try
                 {
-                    lastServerSync = DateTime.Parse(Json.ConvertToString(serverJson, "lastChange"), CultureInfo.InvariantCulture);
+                    lastServerSync = DateTime.Parse(Functions.Json.ReadString(serverJson, "lastChange"), CultureInfo.InvariantCulture);
                 }
                 catch
                 {
@@ -194,35 +198,37 @@ namespace Main.Wpf.Functions
 
                 try
                 {
-                    lastLocalSync = DateTime.Parse(Json.ConvertToString(localJson, "lastChange"), CultureInfo.InvariantCulture);
+                    lastLocalSync = DateTime.Parse(Functions.Json.ReadString(localJson, "lastChange"), CultureInfo.InvariantCulture);
                 }
                 catch
                 {
                     lastLocalSync = DateTime.Parse("01.01.0001 00:00:00", CultureInfo.InvariantCulture);
                 }
 
-                if (lastServerSync == DateTime.Parse("01.01.0001 00:00:00", CultureInfo.InvariantCulture) || serverJson == "")
+                if (lastServerSync == DateTime.Parse("01.01.0001 00:00:00", CultureInfo.InvariantCulture) || serverJson?.Length == 0)
                 {
-                    Account.SetMetadata(Json.ChangeValue(localJson, "lastChange", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)));
+                    Account.SetMetadata(Functions.Json.ChangeValue(localJson, "lastChange", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)));
 
                     goto Sync;
                 }
 
-                if (lastLocalSync.ToString(CultureInfo.InvariantCulture) == "" || localJson == "") return;
+                if (lastLocalSync.ToString(CultureInfo.InvariantCulture)?.Length == 0 || localJson?.Length == 0) goto Finish;
 
                 if (lastServerSync == lastLocalSync)
-                    return;
+                    goto Finish;
                 if (lastServerSync < lastLocalSync)
                     Account.SetMetadata(localJson);
                 else if (lastServerSync > lastLocalSync)
-                    Set(serverJson);
+                    Settings.Json = serverJson;
             }
             catch (Exception e)
             {
                 LogFile.WriteLog(e);
             }
 
-            _syncInUse = true;
+        Finish:
+            return;
+            //_syncInUse = false;
         }
     }
 }

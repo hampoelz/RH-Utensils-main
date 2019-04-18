@@ -1,18 +1,35 @@
-﻿using Main.Wpf.Properties;
+﻿using Main.Wpf.Functions;
 using MaterialDesignThemes.Wpf;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace Main.Wpf.Pages
 {
     internal partial class Login
     {
+        private readonly Ellipse Wipe = new Ellipse();
+
         public Login()
         {
             InitializeComponent();
+
+            var palette = new PaletteHelper().QueryPalette();
+            var hue = palette.PrimarySwatch.PrimaryHues.ToArray()[palette.PrimaryDarkHueIndex];
+
+            Wipe.Fill = new SolidColorBrush(hue.Color);
+            Wipe.VerticalAlignment = VerticalAlignment.Center;
+            Wipe.HorizontalAlignment = HorizontalAlignment.Center;
+            Wipe.Visibility = Visibility.Collapsed;
+            System.Windows.Controls.Panel.SetZIndex(Wipe, 10);
+
+            MainGrid.Children.Add(Wipe);
         }
 
         private void ShowInfoBox(string type = "", string text = "", int height = 0)
@@ -72,27 +89,30 @@ namespace Main.Wpf.Pages
         {
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
 
-            mw.Title = Title + " - " + App.Name;
+            mw.Title = Title + " - " + Informations.Extension.Name;
 
-            Welcome.Text = "Willkommen bei " + Environment.NewLine + App.Name + "!";
+            Welcome.Text = "Willkommen bei " + Environment.NewLine + Informations.Extension.Name + "!";
 
             try
             {
-                if (App.Favicon != "")
-                    Logo.Source = new BitmapImage(new Uri(App.Favicon));
+                if (Informations.Extension.Favicon != "")
+                    Logo.Source = new BitmapImage(new Uri(Informations.Extension.Favicon));
             }
             catch (Exception ex)
             {
-                Functions.LogFile.WriteLog(ex);
+                LogFile.WriteLog(ex);
             }
 
-            if (!App.ShowLogin && (!Settings.Default.login || App.ShowFirstPage || App.SkipLogin)) return;
+            if (Properties.Settings.Default.firstRun)
+            {
+                return;
+            }
 
             ShowInfoBox("info", "Der Anmelde-Prozess läuft gerade ...");
 
             IsEnabled = false;
 
-            if (!Functions.InternetChecker.Check())
+            if (!InternetChecker.Check())
             {
                 ShowInfoBox();
 
@@ -104,9 +124,9 @@ namespace Main.Wpf.Pages
             {
                 try
                 {
-                    var loginResult = await Functions.Account.Client.LoginAsync();
+                    var loginResult = await Account.Client.LoginAsync();
 
-                    Functions.Account.UserId = loginResult.User.FindFirst(c => c.Type == "sub")?.Value;
+                    Account.UserId = loginResult.User.FindFirst(c => c.Type == "sub")?.Value;
 
                     if (loginResult.IsError)
                     {
@@ -115,8 +135,9 @@ namespace Main.Wpf.Pages
                         return;
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    LogFile.WriteLog(ex);
                     ShowInfoBox("error", "Beim Anmelden ist leider ein Fehler aufgetreten!");
                     IsEnabled = true;
                     return;
@@ -125,13 +146,15 @@ namespace Main.Wpf.Pages
                 IsEnabled = true;
                 ShowInfoBox();
 
-                Settings.Default.login = true;
-                Settings.Default.skipLogin = false;
-                Settings.Default.Save();
+                await RunWipeAnimation();
 
-                if (App.ExtensionName != "") Functions.Settings.StartSync();
+                Properties.Settings.Default.login = true;
+                Properties.Settings.Default.firstRun = false;
+                Properties.Settings.Default.Save();
 
-                await mw.LoadExtensionAsync();
+                Settings.StartSync();
+
+                await mw.LoadExtensionAsync(true);
 
                 IsEnabled = true;
             }
@@ -143,7 +166,7 @@ namespace Main.Wpf.Pages
 
             ShowInfoBox();
 
-            if (!Functions.InternetChecker.Check())
+            if (!InternetChecker.Check())
             {
                 ShowInfoBox("warning", "Bitte überprüfe deine Internet-Verbindung!");
                 return;
@@ -154,9 +177,9 @@ namespace Main.Wpf.Pages
 
             try
             {
-                var loginResult = await Functions.Account.Client.LoginAsync();
+                var loginResult = await Account.Client.LoginAsync();
 
-                Functions.Account.UserId = loginResult.User.FindFirst(c => c.Type == "sub")?.Value;
+                Account.UserId = loginResult.User.FindFirst(c => c.Type == "sub")?.Value;
 
                 if (loginResult.IsError)
                 {
@@ -165,8 +188,9 @@ namespace Main.Wpf.Pages
                     return;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                LogFile.WriteLog(ex);
                 ShowInfoBox("error", "Beim Anmelden ist leider ein Fehler aufgetreten!");
                 IsEnabled = true;
                 return;
@@ -176,13 +200,26 @@ namespace Main.Wpf.Pages
 
             ShowInfoBox();
 
-            Settings.Default.login = true;
-            Settings.Default.skipLogin = false;
-            Settings.Default.Save();
+            await RunWipeAnimation();
 
-            if (App.ExtensionName != "") Functions.Settings.StartSync();
+            Properties.Settings.Default.login = true;
+            Properties.Settings.Default.firstRun = false;
+            Properties.Settings.Default.Save();
 
-            await mw.LoadExtensionAsync();
+            List<(string Title, string Icon, string Path, string StartArguments)> sites = new List<(string Title, string Icon, string Path, string StartArguments)>();
+
+            for (var site = 0; site != Functions.Menu.Sites.Count - 1; ++site)
+            {
+                sites.Add((Functions.Menu.Sites[site].Title, Functions.Menu.Sites[site].Icon, Functions.Menu.Sites[site].Path, Functions.Menu.Sites[site].StartArguments));
+            }
+
+            sites.Add(("Abmelden", "", "account.exe", ""));
+
+            Functions.Menu.Sites = sites;
+
+            Settings.StartSync();
+
+            await mw.LoadExtensionAsync(true);
 
             IsEnabled = true;
         }
@@ -191,15 +228,63 @@ namespace Main.Wpf.Pages
         {
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
 
-            Settings.Default.login = false;
-            Settings.Default.skipLogin = true;
-            Settings.Default.Save();
+            await RunWipeAnimation();
+
+            Properties.Settings.Default.login = false;
+            Properties.Settings.Default.firstRun = false;
+            Properties.Settings.Default.Save();
 
             ShowInfoBox();
 
-            await mw.LoadExtensionAsync();
+            await mw.LoadExtensionAsync(true);
 
             IsEnabled = true;
+        }
+
+        private async Task RunWipeAnimation()
+        {
+            if (!(Application.Current.MainWindow is MainWindow mw)) return;
+
+            Wipe.Visibility = Visibility.Visible;
+
+            DoubleAnimation WipeHeight = new DoubleAnimation
+            {
+                From = 0,
+                Duration = TimeSpan.FromMilliseconds(250)
+            };
+            Storyboard.SetTargetProperty(WipeHeight, new PropertyPath(HeightProperty));
+
+            DoubleAnimation WipeWidth = new DoubleAnimation
+            {
+                From = 0,
+                Duration = TimeSpan.FromMilliseconds(250)
+            };
+            Storyboard.SetTargetProperty(WipeWidth, new PropertyPath(WidthProperty));
+
+            if (mw.ActualHeight > mw.ActualWidth)
+            {
+                WipeHeight.To = mw.ActualHeight * 2;
+                WipeWidth.To = mw.ActualHeight * 2;
+            }
+            else
+            {
+                WipeHeight.To = mw.ActualWidth * 2;
+                WipeWidth.To = mw.ActualWidth * 2;
+            }
+
+            Storyboard sb = new Storyboard();
+            Storyboard.SetTarget(sb, Wipe);
+
+            sb.Children.Add(WipeHeight);
+            sb.Children.Add(WipeWidth);
+
+            sb.Begin();
+
+            await Task.Delay(500);
+
+            sb.Stop();
+
+            Wipe.Visibility = Visibility.Collapsed;
         }
     }
 }

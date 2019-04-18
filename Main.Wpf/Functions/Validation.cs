@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Net.Mail;
@@ -11,8 +12,7 @@ namespace Main.Wpf.Functions
     {
         public static bool IsImageValid(string file)
         {
-            if (!File.Exists(file) || !file.EndsWith(".png"))
-                return false;
+            if (!File.Exists(file) || !file.EndsWith(".png")) return false;
 
             try
             {
@@ -20,22 +20,6 @@ namespace Main.Wpf.Functions
                 return true;
             }
             catch (OutOfMemoryException)
-            {
-                return false;
-            }
-        }
-
-        public static bool IsXmlValid(string file)
-        {
-            if (!File.Exists(file) || !file.EndsWith(".xml"))
-                return false;
-
-            try
-            {
-                XDocument.Load(file);
-                return true;
-            }
-            catch (XmlException)
             {
                 return false;
             }
@@ -52,6 +36,39 @@ namespace Main.Wpf.Functions
             {
                 return false;
             }
+        }
+
+        public static bool IsXmlValid(string file)
+        {
+            if (!File.Exists(file) || !file.EndsWith(".xml")) return false;
+
+            try
+            {
+                XDocument.Load(file);
+                return true;
+            }
+            catch (XmlException)
+            {
+                return false;
+            }
+        }
+
+        public static bool IsJsonValid(string json)
+        {
+            try
+            {
+                var obj = JObject.Parse(json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static bool IsStringValidBool(string value)
+        {
+            return bool.TryParse(value, out _);
         }
 
         public static bool IsStringValidInt(string value)

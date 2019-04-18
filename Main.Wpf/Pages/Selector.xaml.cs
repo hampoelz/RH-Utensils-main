@@ -1,4 +1,5 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using Main.Wpf.Functions;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -73,7 +74,7 @@ namespace Main.Wpf.Pages
 
         private void Extension_DropDownOpened(object sender, EventArgs e)
         {
-            var extensionsDirectory = App.ExtensionsDirectory;
+            var extensionsDirectory = Config.ExtensionsDirectory;
 
             if (!Directory.Exists(extensionsDirectory)) return;
 
@@ -116,7 +117,7 @@ namespace Main.Wpf.Pages
 
         private void Version_DropDownOpened(object sender, EventArgs e)
         {
-            var extensionsDirectory = App.ExtensionsDirectory;
+            var extensionsDirectory = Config.ExtensionsDirectory;
 
             if (!Directory.Exists(extensionsDirectory)) return;
 
@@ -177,7 +178,7 @@ namespace Main.Wpf.Pages
         {
             try
             {
-                var extensionsDirectory = Path.Combine(App.ExtensionsDirectory, Extension.Text, Version.Text);
+                var extensionsDirectory = Path.Combine(Config.ExtensionsDirectory, Extension.Text, Version.Text);
 
                 Directory.Delete(extensionsDirectory, true);
 
@@ -187,8 +188,9 @@ namespace Main.Wpf.Pages
                 Start.IsEnabled = false;
                 Uninstall.IsEnabled = false;
             }
-            catch
+            catch (Exception ex)
             {
+                LogFile.WriteLog(ex);
                 ShowInfoBox("error", "Beim Deinstallieren des Add-ons ist ein Fehler aufgetreten!");
                 ConfirmUninstall.Visibility = Visibility.Collapsed;
             }
@@ -206,8 +208,9 @@ namespace Main.Wpf.Pages
 
                 Application.Current.Shutdown();
             }
-            catch
+            catch (Exception ex)
             {
+                LogFile.WriteLog(ex);
                 ShowInfoBox("error", "Beim Starten des Add-ons ist ein Fehler aufgetreten!");
             }
         }

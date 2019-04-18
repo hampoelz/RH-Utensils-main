@@ -1,14 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace Main.Wpf.Functions
 {
     public static class Xml
     {
-        public static string ReadString(string path, string parameter)
+        private static bool IsFileLocked(string path)
         {
+            FileStream stream = null;
+
+            try
+            {
+                stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None);
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+            finally
+            {
+                stream?.Close();
+            }
+
+            return false;
+        }
+
+        public static async Task<string> ReadString(string path, string parameter)
+        {
+            while (IsFileLocked(path))
+            {
+                await Task.Delay(100).ConfigureAwait(false);
+            }
+
             var value = "";
 
             try
@@ -32,7 +58,6 @@ namespace Main.Wpf.Functions
             catch (Exception e)
             {
                 LogFile.WriteLog(e);
-                Index.SetError(e.ToString(), "Fehler beim Laden einer Konfigurationsdatei", path);
             }
 
             return value;
@@ -63,7 +88,6 @@ namespace Main.Wpf.Functions
             catch (Exception e)
             {
                 LogFile.WriteLog(e);
-                Index.SetError(e.ToString(), "Fehler beim Laden einer Konfigurationsdatei", path);
             }
 
             return value;
@@ -94,13 +118,12 @@ namespace Main.Wpf.Functions
             catch (Exception e)
             {
                 LogFile.WriteLog(e);
-                Index.SetError(e.ToString(), "Fehler beim Laden einer Konfigurationsdatei", path);
             }
 
             return values;
         }
 
-        public static bool[] ReadBoolList(string path, string parameter)
+        public static List<bool> ReadBoolList(string path, string parameter)
         {
             var values = new List<bool>();
 
@@ -125,10 +148,9 @@ namespace Main.Wpf.Functions
             catch (Exception e)
             {
                 LogFile.WriteLog(e);
-                Index.SetError(e.ToString(), "Fehler beim Laden einer Konfigurationsdatei", path);
             }
 
-            return values.Select(Convert.ToBoolean).ToArray();
+            return values;
         }
     }
 }

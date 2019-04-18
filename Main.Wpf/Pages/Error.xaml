@@ -21,10 +21,10 @@
                 <Grid>
                     <materialDesign:PackIcon VerticalAlignment="Top" Kind="ErrorOutline" Height="30" Width="30"
                                              Foreground="White" />
-                    <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="45,0,10,0" Foreground="White">Anscheinend ist im Programm ein Fehler aufgetreten! Du kannst uns per E-Mail darüber informieren. Drücke einfach auf den unten-stehenden Button. Wir wären dir sehr dankbar, wenn du in der E-Mail den Fehlerbericht mit deinen Werten ergänzt.</TextBlock>
+                    <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="45,0,10,0" Foreground="White">Anscheinend ist im Programm ein Fehler aufgetreten! Du kannst uns auf unserer Issue-Tracker Website darüber informieren. Drücke einfach auf den unten-stehenden Button um auf die Website zu gelangen.</TextBlock>
                     <Button VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="170" Height="30"
                             Background="Transparent" BorderBrush="White" Foreground="White"
-                            Content="Sende uns eine Email" Click="Button_Click" />
+                            Content="Zum Issue-Tracker" Click="Button_Click" />
                 </Grid>
             </materialDesign:Card>
         </Grid>

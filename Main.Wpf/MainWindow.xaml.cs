@@ -1,20 +1,27 @@
-﻿using Main.Wpf.Properties;
+﻿using MahApps.Metro.Controls;
+using Main.Wpf.Functions;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using Panel = System.Windows.Forms.Panel;
+using Path = System.IO.Path;
 
 namespace Main.Wpf
 {
-    public partial class MainWindow
+    public partial class MainWindow : MetroWindow
     {
         public static bool IsAbout;
         private readonly Panel _panel = new Panel();
@@ -25,53 +32,50 @@ namespace Main.Wpf
 
         public Frame Menu = new Frame();
 
+        private readonly Rectangle Wipe = new Rectangle();
+
         public MainWindow()
         {
             InitializeComponent();
+
+            var palette = new PaletteHelper().QueryPalette();
+            var hue = palette.PrimarySwatch.PrimaryHues.ToArray()[palette.PrimaryDarkHueIndex];
+
+            Wipe.Fill = new SolidColorBrush(hue.Color);
+            Wipe.Margin = new Thickness(0);
+            Wipe.Visibility = Visibility.Collapsed;
+            System.Windows.Controls.Panel.SetZIndex(Wipe, 10);
+
+            MainGrid.Children.Add(Wipe);
         }
 
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            Functions.Settings.SyncTheme();
-
             try
             {
-                if (App.Favicon != "")
+                if (Informations.Extension.Favicon != "")
                 {
-                    Uri iconUri = new Uri(App.Favicon, UriKind.RelativeOrAbsolute);
-                    Icon = BitmapFrame.Create(iconUri);
+                    Uri iconUri = new Uri(Informations.Extension.Favicon, UriKind.Relative);
+                    Icon = new BitmapImage(iconUri);
                 }
             }
             catch (Exception ex)
             {
-                Functions.LogFile.WriteLog(ex);
+                LogFile.WriteLog(ex);
             }
 
-            if (!App.HideMenu)
-            {
-                var margin = 100;
-
-                foreach (var t in App.SitesTitles)
-                    if (t == "")
-                        margin += 20;
-                    else
-                        margin += 60;
-
-                if (margin > 420) MinHeight = 640 + margin - 420;
-            }
-
-            Height = MinHeight;
-            Width = MinWidth;
+            if (Informations.Extension.WindowHeight > MinHeight) MinHeight = Informations.Extension.WindowHeight;
+            if (Informations.Extension.WindowWidth > MinWidth) MinWidth = Informations.Extension.WindowWidth;
 
             CenterWindowOnScreen();
 
-            if (File.Exists(Path.Combine(App.ExtensionsDirectory, App.ExtensionName, "updater.exe")))
+            if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Informations.Extension.Name, "updater.exe")))
             {
                 Index.Navigate(new Uri("Pages/Update.xaml", UriKind.Relative));
                 return;
             }
 
-            if (File.Exists(@".\updater.exe"))
+            if (File.Exists(Path.GetFullPath(@".\updater.exe")))
             {
                 Index.Navigate(new Uri("Pages/Update.xaml", UriKind.Relative));
                 return;
@@ -82,39 +86,60 @@ namespace Main.Wpf
 
         public async Task Login()
         {
-            if (App.SkipLogin || Settings.Default.skipLogin && !Settings.Default.login && !App.ShowLogin &&
-                !App.ShowFirstPage)
+            if (Functions.Login.SkipLogin)
+            {
                 await LoadExtensionAsync();
-            else
+            }
+            else if (Properties.Settings.Default.firstRun)
+            {
                 Index.Navigate(new Uri("Pages/Login.xaml", UriKind.Relative));
+            }
+            else if (Functions.Login.ShowLogin)
+            {
+                Index.Navigate(new Uri("Pages/Login.xaml", UriKind.Relative));
+            }
+            else if (Properties.Settings.Default.login)
+            {
+                Index.Navigate(new Uri("Pages/Login.xaml", UriKind.Relative));
+            }
+            else
+            {
+                await LoadExtensionAsync();
+            }
 
-            if (App.ExtensionName != "") Functions.Settings.CreateFileWatcher(App.SettingsFile);
+            if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
+
+            Settings.CreateFileWatcher(Functions.Settings.File);
         }
 
-        public async Task LoadExtensionAsync()
+        public async Task LoadExtensionAsync(bool wipeAnimation = false)
         {
-            if (App.HideMenu)
+            if (wipeAnimation) Wipe.Visibility = Visibility.Visible;
+
+            var timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 1), DispatcherPriority.Normal, delegate
+            {
+                if (_appWin != IntPtr.Zero) MoveWindow(_appWin, 0, 0, _panel.Width, _panel.Height, true);
+            }, Application.Current.Dispatcher);
+
+            timer.Start();
+
+            if (Functions.Menu.SingleSite.HideMenu)
             {
                 //IndexGrid
-                Grid.Children.Add(IndexGrid);
+                MainGrid.Children.Add(IndexGrid);
 
                 //Index
                 Index.Visibility = Visibility.Collapsed;
 
-                await Functions.Index.SetExeAsync(App.Exe, App.ExeArguments);
+                if (wipeAnimation) await RunWipeAnimation();
+
+                await SetExe(Functions.Menu.SingleSite.Path, Functions.Menu.SingleSite.StartArguments);
             }
             else
             {
                 //IndexGrid
                 IndexGrid.Margin = new Thickness(250, 0, 0, 0);
-                Grid.Children.Add(IndexGrid);
-
-                var timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 1), DispatcherPriority.Normal, delegate
-                {
-                    if (_appWin != IntPtr.Zero) MoveWindow(_appWin, 0, 0, _panel.Width, _panel.Height, true);
-                }, Application.Current.Dispatcher);
-
-                timer.Start();
+                MainGrid.Children.Add(IndexGrid);
 
                 //Index
                 Index.Margin = new Thickness(250, 0, 0, 0);
@@ -125,7 +150,9 @@ namespace Main.Wpf
                 Menu.NavigationUIVisibility = NavigationUIVisibility.Hidden;
                 Menu.Navigate(new Uri("Pages/Menu.xaml", UriKind.Relative));
                 Menu.Width = 250;
-                Grid.Children.Add(Menu);
+                MainGrid.Children.Add(Menu);
+
+                if (wipeAnimation) await RunWipeAnimation();
             }
         }
 
@@ -135,14 +162,31 @@ namespace Main.Wpf
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool MoveWindow(IntPtr hWnd, int x, int y, int cx, int cy, bool repaint);
 
+        private async Task WaitForExtension(Process p)
+        {
+            while (string.IsNullOrEmpty(p.MainWindowTitle))
+            {
+                await Task.Delay(100);
+                p.Refresh();
+            }
+
+            return;
+        }
+
+        public static bool _loadingEXE;
+
         public async Task SetExe(string exe, string argument)
         {
+            if (_loadingEXE) return;
+
+            _loadingEXE = true;
+
             var host = new WindowsFormsHost();
 
             Index.Visibility = Visibility.Collapsed;
             IndexGrid.Visibility = Visibility.Visible;
 
-            Pages.Menu.IsIndexLoading = true;
+            Pages.Menu.ListViewMenu.IsEnabled = false;
 
             try
             {
@@ -163,11 +207,7 @@ namespace Main.Wpf
 
                 _currentProcess = p;
 
-                while (string.IsNullOrEmpty(p.MainWindowTitle))
-                {
-                    await Task.Delay(100);
-                    p.Refresh();
-                }
+                await WaitForExtension(p);
 
                 Index.Visibility = Visibility.Collapsed;
                 IndexGrid.Visibility = Visibility.Visible;
@@ -186,18 +226,17 @@ namespace Main.Wpf
             }
             catch (Exception ex)
             {
+                LogFile.WriteLog(ex);
                 Index.Navigate(new Uri("Pages/Error.xaml", UriKind.Relative));
                 Index.Visibility = Visibility.Visible;
                 IndexGrid.Visibility = Visibility.Collapsed;
 
-                Pages.Error.ErrorMessage = ex.ToString();
-                Pages.Error.Title = "Fehler beim Laden einer Seite";
-                Pages.Error.File = exe;
-
                 _currentProcess = null;
             }
 
-            Pages.Menu.IsIndexLoading = false;
+            Pages.Menu.ListViewMenu.IsEnabled = true;
+
+            _loadingEXE = false;
         }
 
         public void CenterWindowOnScreen()
@@ -206,13 +245,39 @@ namespace Main.Wpf
             var screenHeight = SystemParameters.PrimaryScreenHeight;
             var windowWidth = Width;
             var windowHeight = Height;
-            Left = screenWidth / 2 - windowWidth / 2;
-            Top = screenHeight / 2 - windowHeight / 2;
+            Left = (screenWidth / 2) - (windowWidth / 2);
+            Top = (screenHeight / 2) - (windowHeight / 2);
         }
 
         private void MetroWindow_Closed(object sender, EventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private async Task RunWipeAnimation()
+        {
+            Wipe.Visibility = Visibility.Visible;
+
+            DoubleAnimation Opacity = new DoubleAnimation
+            {
+                From = 1,
+                To = 0,
+                Duration = TimeSpan.FromMilliseconds(300)
+            };
+            Storyboard.SetTargetProperty(Opacity, new PropertyPath(OpacityProperty));
+
+            Storyboard sb = new Storyboard();
+            Storyboard.SetTarget(sb, Wipe);
+
+            sb.Children.Add(Opacity);
+
+            sb.Begin();
+
+            await Task.Delay(300);
+
+            Wipe.Visibility = Visibility.Collapsed;
+
+            sb.Stop();
         }
     }
 }
