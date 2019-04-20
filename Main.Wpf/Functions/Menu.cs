@@ -292,6 +292,10 @@ namespace Main.Wpf.Functions
             var index = int.Parse(menuItem.Name.Replace("MenuItem_", ""));
 
             await SelectMenuItemAsync(index).ConfigureAwait(false);
+
+            Config._isChanging = true;
+            await Xml.SetString(Config.File, "config/selectionIndex", (index + 1).ToString());
+            Config._isChanging = false;
         }
 
         public static async Task SelectMenuItemAsync(int index)
