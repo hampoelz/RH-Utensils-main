@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Main.Wpf.Functions
 {
@@ -106,9 +107,9 @@ namespace Main.Wpf.Functions
 
                         if (!Validation.IsXmlValid(configFile)) continue;
 
-                        if (FileAssociation(Config.File).use)
+                        if (FileAssociation(configFile).use)
                         {
-                            File = FileAssociation(Config.File).file;
+                            File = FileAssociation(configFile).file;
 
                             Config.ExtensionDirectoryName = extensions[extension];
 
