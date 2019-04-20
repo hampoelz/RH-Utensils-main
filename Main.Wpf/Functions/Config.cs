@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -14,10 +13,7 @@ namespace Main.Wpf.Functions
 
         public static string File
         {
-            get
-            {
-                return file;
-            }
+            get => file;
             set
             {
                 value = Path.GetFullPath(ReplaceVariables.Replace(value));
@@ -38,10 +34,7 @@ namespace Main.Wpf.Functions
 
         public static string ExtensionsDirectory
         {
-            get
-            {
-                return extensionsDirectory;
-            }
+            get => extensionsDirectory;
             set
             {
                 value = Path.GetFullPath(value);
@@ -59,10 +52,7 @@ namespace Main.Wpf.Functions
 
         public static string ExtensionDirectoryName
         {
-            get
-            {
-                return extensionDirectoryName;
-            }
+            get => extensionDirectoryName;
             set
             {
                 if (extensionDirectoryName == value || value?.Length == 0) return;
@@ -100,7 +90,7 @@ namespace Main.Wpf.Functions
 
                 for (var site = 0; site != Titels.Count; ++site)
                 {
-                    sites.Add((Titels[site],Icons[site], Paths[site], StartArguments[site]));
+                    sites.Add((Titels[site], Icons[site], Paths[site], StartArguments[site]));
                 }
                 sites.Add(("", "", "", ""));
                 sites.Add(("Information", "", "info.exe", ""));

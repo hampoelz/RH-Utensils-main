@@ -13,10 +13,7 @@ namespace Main.Wpf.Functions
 
         public static string File
         {
-            get
-            {
-                return file;
-            }
+            get => file;
             set
             {
                 if (value?.Length == 0) value = @"C:\Users\{username}\AppData\Local\HampisProjekte\RH Utensils\{appName}\Settings.json";
@@ -96,13 +93,13 @@ namespace Main.Wpf.Functions
                 {
                     LogFile.WriteLog("Create Local Settings File ...");
                     Directory.CreateDirectory(Path.GetDirectoryName(File));
-                    Settings.Json = defaultSettingsFile;
+                    Json = defaultSettingsFile;
                 }
 
                 if (Json?.Length == 0)
                 {
                     LogFile.WriteLog("Local Settings File is empty - load defaults ...");
-                    Settings.Json = defaultSettingsFile;
+                    Json = defaultSettingsFile;
                 }
             }
             catch (Exception ex)

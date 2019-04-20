@@ -19,7 +19,7 @@ namespace Main.Wpf.Functions
 
             public static string Organisation
             {
-                get { return organisation; }
+                get => organisation;
                 set
                 {
                     if (organisation == value || value?.Length == 0) return;
@@ -32,7 +32,7 @@ namespace Main.Wpf.Functions
 
             public static string Website
             {
-                get { return website; }
+                get => website;
                 set
                 {
                     if (website == value || value?.Length == 0) return;
@@ -48,7 +48,7 @@ namespace Main.Wpf.Functions
 
             public static string Organisation
             {
-                get { return organisation; }
+                get => organisation;
                 set
                 {
                     if (organisation == value || value?.Length == 0) return;
@@ -61,7 +61,7 @@ namespace Main.Wpf.Functions
 
             public static string Website
             {
-                get { return website; }
+                get => website;
                 set
                 {
                     if (website == value || value?.Length == 0) return;
@@ -77,7 +77,7 @@ namespace Main.Wpf.Functions
 
             public static int WindowHeight
             {
-                get { return windowHeight; }
+                get => windowHeight;
                 set
                 {
                     if (windowHeight == value) return;
@@ -93,7 +93,7 @@ namespace Main.Wpf.Functions
 
             public static int WindowWidth
             {
-                get { return windowWidth; }
+                get => windowWidth;
                 set
                 {
                     if (windowWidth == value) return;
@@ -109,7 +109,7 @@ namespace Main.Wpf.Functions
 
             public static string Name
             {
-                get { return name; }
+                get => name;
                 set
                 {
                     if (name == value || value?.Length == 0) return;
@@ -136,7 +136,7 @@ namespace Main.Wpf.Functions
 
             public static string Color
             {
-                get { return color; }
+                get => color;
                 set
                 {
                     value = value.ToLower();
@@ -172,7 +172,7 @@ namespace Main.Wpf.Functions
 
             public static string Theme
             {
-                get { return theme; }
+                get => theme;
                 set
                 {
                     value = value.ToLower();
@@ -213,7 +213,7 @@ namespace Main.Wpf.Functions
 
             public static string Favicon
             {
-                get { return favicon; }
+                get => favicon;
                 set
                 {
                     value = Path.GetFullPath(ReplaceVariables.Replace(value));
@@ -247,7 +247,7 @@ namespace Main.Wpf.Functions
 
             public static string SourceCode
             {
-                get { return sourceCode; }
+                get => sourceCode;
                 set
                 {
                     if (sourceCode == value || value?.Length == 0) return;
@@ -260,8 +260,7 @@ namespace Main.Wpf.Functions
 
             public static string Website
             {
-                get { return website;
-                }
+                get => website;
                 set
                 {
                     if (website == value || value?.Length == 0) return;
@@ -274,7 +273,7 @@ namespace Main.Wpf.Functions
 
             public static string IssueTracker
             {
-                get { return issueTracker; }
+                get => issueTracker;
                 set
                 {
                     if (issueTracker == value || value?.Length == 0) return;

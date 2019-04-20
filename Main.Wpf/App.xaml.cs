@@ -16,7 +16,7 @@ namespace Main.Wpf
 
             await Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () => await Versioning.Start().ConfigureAwait(false)));
 
-            await Task.Run(() => Updater.BackgroundProgrammUpdate());
+            await Task.Run(Updater.BackgroundProgrammUpdate);
 
             Window window = new MainWindow();
             window.Show();

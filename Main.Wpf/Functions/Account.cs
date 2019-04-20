@@ -12,10 +12,7 @@ namespace Main.Wpf.Functions
 
             public static string Domain
             {
-                get
-                {
-                    return domain;
-                }
+                get => domain;
                 set
                 {
                     if (domain == value || value?.Length == 0) return;
@@ -28,10 +25,7 @@ namespace Main.Wpf.Functions
 
             public static string ClientId
             {
-                get
-                {
-                    return clientId;
-                }
+                get => clientId;
                 set
                 {
                     if (clientId == value || value?.Length == 0) return;
@@ -44,10 +38,7 @@ namespace Main.Wpf.Functions
 
             public static string ApiClientId
             {
-                get
-                {
-                    return apiClientId;
-                }
+                get => apiClientId;
                 set
                 {
                     if (apiClientId == value || value?.Length == 0) return;
@@ -60,10 +51,7 @@ namespace Main.Wpf.Functions
 
             public static string ApiClientSecret
             {
-                get
-                {
-                    return apiClientSecret;
-                }
+                get => apiClientSecret;
                 set
                 {
                     if (apiClientSecret == value || value?.Length == 0) return;

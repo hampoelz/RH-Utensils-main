@@ -11,16 +11,14 @@ namespace Main.Wpf.Functions
 
         public static string GetFilenameYYYMMDD(string suffix, string extension)
         {
-            return System.DateTime.Now.ToString("yyyy_MM_dd")
+            return DateTime.Now.ToString("yyyy_MM_dd")
                 + suffix
                 + extension;
         }
 
         public static void DeleteOldLogFiles()
         {
-            var files = Directory.GetFiles(MBaseDir, "*.log");
-
-            foreach (var file in files)
+            foreach (var file in Directory.GetFiles(MBaseDir, "*.log"))
             {
                 var fi = new FileInfo(file);
                 if (fi.LastAccessTime < DateTime.Now.AddDays(-7))
@@ -33,9 +31,9 @@ namespace Main.Wpf.Functions
             try
             {
                 var filename = Path.Combine(MBaseDir, GetFilenameYYYMMDD("_LOG", ".log"));
-                var sw = new System.IO.StreamWriter(filename, true);
+                var sw = new StreamWriter(filename, true);
                 var xmlEntry = new XElement("logEntry",
-                    new XElement("Date", System.DateTime.Now.ToString(CultureInfo.InvariantCulture)),
+                    new XElement("Date", DateTime.Now.ToString(CultureInfo.InvariantCulture)),
                     new XElement("Message", message));
                 sw.WriteLine(xmlEntry);
                 sw.Close();
@@ -51,9 +49,9 @@ namespace Main.Wpf.Functions
             try
             {
                 var filename = Path.Combine(MBaseDir, GetFilenameYYYMMDD("_LOG", ".log"));
-                var sw = new System.IO.StreamWriter(filename, true);
+                var sw = new StreamWriter(filename, true);
                 var xmlEntry = new XElement("logEntry",
-                    new XElement("Date", System.DateTime.Now.ToString(CultureInfo.InvariantCulture)),
+                    new XElement("Date", DateTime.Now.ToString(CultureInfo.InvariantCulture)),
                     new XElement("Exception",
                         new XElement("Source", ex.Source),
                         new XElement("Message", ex.Message),

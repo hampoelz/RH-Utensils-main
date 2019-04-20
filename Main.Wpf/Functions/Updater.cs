@@ -6,7 +6,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Main.Wpf.Functions
 {
@@ -16,14 +15,11 @@ namespace Main.Wpf.Functions
 
         public static class Informations
         {
-            private static bool useCustomVersion = false;
+            private static bool useCustomVersion;
 
             public static bool UseCustomVersion
             {
-                get
-                {
-                    return useCustomVersion;
-                }
+                get => useCustomVersion;
                 set
                 {
                     if (useCustomVersion == value) return;
@@ -46,10 +42,7 @@ namespace Main.Wpf.Functions
 
                 public static string NewestVersion
                 {
-                    get
-                    {
-                        return newestVersion;
-                    }
+                    get => newestVersion;
                     set
                     {
                         if (newestVersion == value) return;
@@ -70,14 +63,11 @@ namespace Main.Wpf.Functions
 
             public static class Extension
             {
-                private static Version version = null;
+                private static Version version;
 
                 public static Version Version
                 {
-                    get
-                    {
-                        return version;
-                    }
+                    get => version;
                     set
                     {
                         if (version == value) return;
@@ -90,10 +80,7 @@ namespace Main.Wpf.Functions
 
                 public static Version RunningVersion
                 {
-                    get
-                    {
-                        return runningVersion;
-                    }
+                    get => runningVersion;
                     set
                     {
                         if (runningVersion == value) return;
@@ -106,10 +93,7 @@ namespace Main.Wpf.Functions
 
                 public static string NewestVersion
                 {
-                    get
-                    {
-                        return newestVersion;
-                    }
+                    get => newestVersion;
                     set
                     {
                         if (newestVersion == value) return;
@@ -123,10 +107,7 @@ namespace Main.Wpf.Functions
 
                 public static string VersionsHistoryFile
                 {
-                    get
-                    {
-                        return versionsHistoryFile;
-                    }
+                    get => versionsHistoryFile;
                     set
                     {
                         if (versionsHistoryFile == value || value?.Length == 0) return;
