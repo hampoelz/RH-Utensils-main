@@ -40,7 +40,7 @@ namespace Main.Wpf.Functions
                 sw.WriteLine(xmlEntry);
                 sw.Close();
             }
-            catch (Exception)
+            catch
             {
                 // ignored
             }
@@ -74,7 +74,7 @@ namespace Main.Wpf.Functions
                 sw.WriteLine(xmlEntry);
                 sw.Close();
             }
-            catch (Exception)
+            catch
             {
                 // ignored
             }

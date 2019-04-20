@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml;
 
 namespace Main.Wpf.Functions
@@ -26,6 +28,43 @@ namespace Main.Wpf.Functions
             }
 
             return false;
+        }
+
+        public static async Task SetString(string path, string singleNode, string newValue)
+        {
+            while (IsFileLocked(path))
+            {
+                await Task.Delay(100).ConfigureAwait(false);
+            }
+
+            try
+            {
+                var xmlDoc = new XmlDocument();
+                xmlDoc.Load(path);
+
+                if (!(xmlDoc.SelectSingleNode(singleNode) is XmlElement node))
+                {
+                    var tokens = singleNode.Split('/');
+                    var nodes = tokens.Take(tokens.Length - 1).ToArray();
+                    var lastNode = tokens[tokens.Length - 1];
+
+                    var parentNode = xmlDoc.SelectSingleNode(string.Join("/", nodes)) as XmlElement;
+                    parentNode.AppendChild(xmlDoc.CreateElement(lastNode));
+                    xmlDoc.Save(path);
+
+                    xmlDoc.Load(path);
+
+                    node = xmlDoc.SelectSingleNode(singleNode) as XmlElement;
+                }
+
+                node.InnerText = newValue;
+
+                xmlDoc.Save(path);
+            }
+            catch (Exception ex)
+            {
+                LogFile.WriteLog(ex);
+            }
         }
 
         public static async Task<string> ReadString(string path, string parameter)
@@ -55,16 +94,21 @@ namespace Main.Wpf.Functions
 
                 reader.Close();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogFile.WriteLog(e);
+                LogFile.WriteLog(ex);
             }
 
             return value;
         }
 
-        public static bool ReadBool(string path, string parameter)
+        public static async Task<bool> ReadBool(string path, string parameter)
         {
+            while (IsFileLocked(path))
+            {
+                await Task.Delay(100).ConfigureAwait(false);
+            }
+
             var value = false;
 
             try
@@ -85,9 +129,9 @@ namespace Main.Wpf.Functions
 
                 reader.Close();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogFile.WriteLog(e);
+                LogFile.WriteLog(ex);
             }
 
             return value;
@@ -115,9 +159,9 @@ namespace Main.Wpf.Functions
 
                 reader.Close();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogFile.WriteLog(e);
+                LogFile.WriteLog(ex);
             }
 
             return values;
@@ -145,9 +189,9 @@ namespace Main.Wpf.Functions
 
                 reader.Close();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogFile.WriteLog(e);
+                LogFile.WriteLog(ex);
             }
 
             return values;

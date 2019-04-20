@@ -23,8 +23,6 @@ namespace Main.Wpf
 
             await Task.Run(() => Updater.Update(false));
             if (Config.ExtensionDirectoryName != "") await Task.Run(() => Updater.Update(true));
-
-            Config.CreateFileWatcher(Config.File);
         }
     }
 }

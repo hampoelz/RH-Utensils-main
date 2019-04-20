@@ -103,7 +103,7 @@ namespace Main.Wpf.Pages
                 LogFile.WriteLog(ex);
             }
 
-            if (Properties.Settings.Default.firstRun)
+            if (await Functions.Login.FirstRun.Get())
             {
                 return;
             }
@@ -148,9 +148,8 @@ namespace Main.Wpf.Pages
 
                 await RunWipeAnimation();
 
-                Properties.Settings.Default.login = true;
-                Properties.Settings.Default.firstRun = false;
-                Properties.Settings.Default.Save();
+                await Functions.Login.LoggedIn.Set(true);
+                await Functions.Login.FirstRun.Set(false);
 
                 Settings.StartSync();
 
@@ -202,9 +201,8 @@ namespace Main.Wpf.Pages
 
             await RunWipeAnimation();
 
-            Properties.Settings.Default.login = true;
-            Properties.Settings.Default.firstRun = false;
-            Properties.Settings.Default.Save();
+            await Functions.Login.LoggedIn.Set(true);
+            await Functions.Login.FirstRun.Set(false);
 
             List<(string Title, string Icon, string Path, string StartArguments)> sites = new List<(string Title, string Icon, string Path, string StartArguments)>();
 
@@ -230,9 +228,8 @@ namespace Main.Wpf.Pages
 
             await RunWipeAnimation();
 
-            Properties.Settings.Default.login = false;
-            Properties.Settings.Default.firstRun = false;
-            Properties.Settings.Default.Save();
+            await Functions.Login.LoggedIn.Set(false);
+            await Functions.Login.FirstRun.Set(false);
 
             ShowInfoBox();
 
@@ -250,14 +247,14 @@ namespace Main.Wpf.Pages
             DoubleAnimation WipeHeight = new DoubleAnimation
             {
                 From = 0,
-                Duration = TimeSpan.FromMilliseconds(250)
+                Duration = TimeSpan.FromMilliseconds(300)
             };
             Storyboard.SetTargetProperty(WipeHeight, new PropertyPath(HeightProperty));
 
             DoubleAnimation WipeWidth = new DoubleAnimation
             {
                 From = 0,
-                Duration = TimeSpan.FromMilliseconds(250)
+                Duration = TimeSpan.FromMilliseconds(300)
             };
             Storyboard.SetTargetProperty(WipeWidth, new PropertyPath(WidthProperty));
 

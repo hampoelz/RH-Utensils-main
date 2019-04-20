@@ -49,10 +49,6 @@ namespace Main.Wpf.Functions
                         case "-skipLogin":
                             Login.SkipLogin = true;
                             break;
-
-                        case "-login":
-                            Login.ShowLogin = true;
-                            break;
                     }
                 }
 
@@ -110,9 +106,9 @@ namespace Main.Wpf.Functions
 
                         if (!Validation.IsXmlValid(configFile)) continue;
 
-                        if (FileAssociation(configFile).use)
+                        if (FileAssociation(Config.File).use)
                         {
-                            File = FileAssociation(configFile).file;
+                            File = FileAssociation(Config.File).file;
 
                             Config.ExtensionDirectoryName = extensions[extension];
 
@@ -142,7 +138,7 @@ namespace Main.Wpf.Functions
                 {
                     if (FileAssociation(Config.File).use)
                     {
-                        var file = FileAssociation(Config.File).file;
+                        File = FileAssociation(Config.File).file;
 
                         Updater.Informations.Extension.RunningVersion = customVersion;
                     }
@@ -165,11 +161,13 @@ namespace Main.Wpf.Functions
 
         private static (bool use, string file) FileAssociation(string configFile)
         {
+            var fileAssociations = Xml.ReadStringList(configFile, "fileAssociation");
+
             for (var arg = 0; arg != App.Parameters.Length; ++arg)
             {
-                for (var fileAssociation = 0; fileAssociation != Xml.ReadStringList(configFile, "fileAssociation").Count; ++fileAssociation)
+                for (var fileAssociation = 0; fileAssociation != fileAssociations.Count; ++fileAssociation)
                 {
-                    if (App.Parameters[arg].EndsWith("." + Xml.ReadStringList(configFile, "fileAssociation")[fileAssociation]))
+                    if (App.Parameters[arg].EndsWith("." + fileAssociations[fileAssociation]))
                     {
                         return (true, App.Parameters[arg]);
                     }

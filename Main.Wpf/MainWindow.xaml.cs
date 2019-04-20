@@ -44,7 +44,7 @@ namespace Main.Wpf
             Wipe.Fill = new SolidColorBrush(hue.Color);
             Wipe.Margin = new Thickness(0);
             Wipe.Visibility = Visibility.Collapsed;
-            System.Windows.Controls.Panel.SetZIndex(Wipe, 10);
+            System.Windows.Controls.Panel.SetZIndex(Wipe, 100);
 
             MainGrid.Children.Add(Wipe);
         }
@@ -90,15 +90,11 @@ namespace Main.Wpf
             {
                 await LoadExtensionAsync();
             }
-            else if (Properties.Settings.Default.firstRun)
+            else if (await Functions.Login.FirstRun.Get())
             {
                 Index.Navigate(new Uri("Pages/Login.xaml", UriKind.Relative));
             }
-            else if (Functions.Login.ShowLogin)
-            {
-                Index.Navigate(new Uri("Pages/Login.xaml", UriKind.Relative));
-            }
-            else if (Properties.Settings.Default.login)
+            else if (await Functions.Login.LoggedIn.Get())
             {
                 Index.Navigate(new Uri("Pages/Login.xaml", UriKind.Relative));
             }
@@ -109,7 +105,7 @@ namespace Main.Wpf
 
             if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
 
-            Settings.CreateFileWatcher(Functions.Settings.File);
+            Settings.CreateSettingsWatcher();
         }
 
         public async Task LoadExtensionAsync(bool wipeAnimation = false)
@@ -131,7 +127,7 @@ namespace Main.Wpf
                 //Index
                 Index.Visibility = Visibility.Collapsed;
 
-                if (wipeAnimation) await RunWipeAnimation();
+                //if (wipeAnimation) await RunWipeAnimation();
 
                 await SetExe(Functions.Menu.SingleSite.Path, Functions.Menu.SingleSite.StartArguments);
             }
@@ -152,7 +148,7 @@ namespace Main.Wpf
                 Menu.Width = 250;
                 MainGrid.Children.Add(Menu);
 
-                if (wipeAnimation) await RunWipeAnimation();
+                //if (wipeAnimation) await RunWipeAnimation();
             }
         }
 
@@ -256,8 +252,6 @@ namespace Main.Wpf
 
         private async Task RunWipeAnimation()
         {
-            Wipe.Visibility = Visibility.Visible;
-
             DoubleAnimation Opacity = new DoubleAnimation
             {
                 From = 1,
@@ -275,7 +269,7 @@ namespace Main.Wpf
 
             await Task.Delay(300);
 
-            Wipe.Visibility = Visibility.Collapsed;
+            //Wipe.Visibility = Visibility.Collapsed;
 
             sb.Stop();
         }

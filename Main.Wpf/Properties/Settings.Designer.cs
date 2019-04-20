@@ -25,18 +25,6 @@ namespace Main.Wpf.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool login {
-            get {
-                return ((bool)(this["login"]));
-            }
-            set {
-                this["login"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("release")]
         public string updateChannel {
             get {
@@ -44,18 +32,6 @@ namespace Main.Wpf.Properties {
             }
             set {
                 this["updateChannel"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool firstRun {
-            get {
-                return ((bool)(this["firstRun"]));
-            }
-            set {
-                this["firstRun"] = value;
             }
         }
     }

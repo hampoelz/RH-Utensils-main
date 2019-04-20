@@ -28,6 +28,7 @@ namespace Main.Wpf.Functions
                 file = value;
 
                 CreateFile();
+                CreateSettingsWatcher();
             }
         }
 
@@ -48,10 +49,10 @@ namespace Main.Wpf.Functions
 
                     return _Settings;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
                     LogFile.WriteLog("Error getting Local Settings File!");
-                    LogFile.WriteLog(e);
+                    LogFile.WriteLog(ex);
                 }
 
                 return "";
@@ -73,9 +74,9 @@ namespace Main.Wpf.Functions
                         sw.Write(value);
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    LogFile.WriteLog(e);
+                    LogFile.WriteLog(ex);
                 }
             }
         }
@@ -88,7 +89,7 @@ namespace Main.Wpf.Functions
                                               "\"lastChange\": \"01.01.0001 00:00:00\"," +
                                               "\"updateChannel\": \"release\"," +
                                               "\"menuState\": \"expanded\"," +
-                                              "\"theme\": \"" + Xml.ReadString(Config.File, "defaultTheme") + "\"" +
+                                              "\"theme\": \"" + Xml.ReadString(Config.File, "defaultTheme").Result + "\"" +
                                           "}";
 
                 if (!System.IO.File.Exists(File))
@@ -131,21 +132,32 @@ namespace Main.Wpf.Functions
             await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
         }
 
-        public static void CreateFileWatcher(string file)
+        private static FileSystemWatcher SettingsWatcher;
+
+        public static void CreateSettingsWatcher()
         {
-            Informations.Extension.Theme = Functions.Json.ReadString(Settings.Json, "theme");
+            if (SettingsWatcher == null)
+            {
+                var path = Path.GetDirectoryName(File);
+                var filename = Path.GetFileName(File);
 
-            var path = Path.GetDirectoryName(file);
-            var filename = Path.GetFileName(file);
+                SettingsWatcher = new FileSystemWatcher();
 
-            var watcher = new FileSystemWatcher();
+                SettingsWatcher.Changed += OnChanged;
 
-            watcher.Changed += OnChanged;
+                SettingsWatcher.Path = path;
+                SettingsWatcher.Filter = filename;
 
-            watcher.Path = path;
-            watcher.Filter = filename;
+                SettingsWatcher.EnableRaisingEvents = true;
+            }
+            else
+            {
+                var path = Path.GetDirectoryName(File);
+                var filename = Path.GetFileName(File);
 
-            watcher.EnableRaisingEvents = true;
+                SettingsWatcher.Path = path;
+                SettingsWatcher.Filter = filename;
+            }
         }
 
         private static bool _syncInUse;
@@ -173,16 +185,13 @@ namespace Main.Wpf.Functions
         {
             LogFile.WriteLog("Synchronize settings with the server ...");
 
-            //_syncInUse = true;
-
             try
             {
             Sync:
-                if (!InternetChecker.Check())
-                    goto Finish;
+                if (!InternetChecker.Check()) return;
 
                 var serverJson = Account.ReadMetadata();
-                var localJson = Settings.Json;
+                var localJson = Json;
 
                 DateTime lastServerSync;
                 DateTime lastLocalSync;
@@ -212,23 +221,18 @@ namespace Main.Wpf.Functions
                     goto Sync;
                 }
 
-                if (lastLocalSync.ToString(CultureInfo.InvariantCulture)?.Length == 0 || localJson?.Length == 0) goto Finish;
+                if (lastLocalSync.ToString(CultureInfo.InvariantCulture)?.Length == 0 || localJson?.Length == 0) return;
 
-                if (lastServerSync == lastLocalSync)
-                    goto Finish;
+                if (lastServerSync == lastLocalSync) return;
                 if (lastServerSync < lastLocalSync)
                     Account.SetMetadata(localJson);
                 else if (lastServerSync > lastLocalSync)
-                    Settings.Json = serverJson;
+                    Json = serverJson;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogFile.WriteLog(e);
+                LogFile.WriteLog(ex);
             }
-
-        Finish:
-            return;
-            //_syncInUse = false;
         }
     }
 }

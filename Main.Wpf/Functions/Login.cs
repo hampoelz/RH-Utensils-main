@@ -1,4 +1,6 @@
-﻿namespace Main.Wpf.Functions
+﻿using System.Threading.Tasks;
+
+namespace Main.Wpf.Functions
 {
     public static class Login
     {
@@ -18,19 +20,41 @@
             }
         }
 
-        private static bool showLogin;
-
-        public static bool ShowLogin
+        public static class LoggedIn
         {
-            get
+            public static async Task Set(bool value)
             {
-                return showLogin;
-            }
-            set
-            {
-                if (showLogin == value) return;
+                if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
 
-                showLogin = value;
+                Config._isChanging = true;
+                await Xml.SetString(Config.File, "config/loggedIn", value.ToString()).ConfigureAwait(false);
+                Config._isChanging = false;
+            }
+
+            public static async Task<bool> Get()
+            {
+                if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return false;
+
+                return await Xml.ReadBool(Config.File, "loggedIn").ConfigureAwait(false);
+            }
+        }
+
+        public static class FirstRun
+        {
+            public static async Task Set(bool value)
+            {
+                if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
+
+                Config._isChanging = true;
+                await Xml.SetString(Config.File, "config/firstRun", value.ToString()).ConfigureAwait(false);
+                Config._isChanging = false;
+            }
+
+            public static async Task<bool> Get()
+            {
+                if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return false;
+
+                return await Xml.ReadBool(Config.File, "firstRun").ConfigureAwait(false);
             }
         }
     }

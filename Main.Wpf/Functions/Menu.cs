@@ -93,9 +93,9 @@ namespace Main.Wpf.Functions
 
                 var margin = 100;
 
-                foreach (var t in sites)
+                foreach (var (Title, Icon, Path, StartArguments) in sites)
                 {
-                    if (t.Title?.Length == 0)
+                    if (Title?.Length == 0)
                     {
                         margin += 20;
                     }
@@ -216,7 +216,7 @@ namespace Main.Wpf.Functions
 
                 if (menuItemText == null) return;
 
-                if (sites[index].Title?.Length == 0)
+                if (sites[index].Title?.Length == 0 || string.Equals(sites[index].Title, "null", StringComparison.OrdinalIgnoreCase) || sites[index].Title == null)
                 {
                     if (index == 0) return;
 
@@ -247,7 +247,7 @@ namespace Main.Wpf.Functions
 
                     switch (sites[index].Path)
                     {
-                        case "account.exe" when Properties.Settings.Default.login:
+                        case "account.exe" when Login.LoggedIn.Get().Result:
                             menuItemIcon.Source = new BitmapImage(new Uri("/Assets/logout.png", UriKind.Relative));
                             menuItemText.Text = "Abmelden";
                             break;
@@ -321,13 +321,12 @@ namespace Main.Wpf.Functions
 
                 if (sites[index].Path == "account.exe")
                 {
-                    if (Properties.Settings.Default.login)
+                    if (await Login.LoggedIn.Get())
                     {
                         await Account.Client.LogoutAsync();
 
-                        Properties.Settings.Default.firstRun = true;
-                        Properties.Settings.Default.login = false;
-                        Properties.Settings.Default.Save();
+                        await Login.LoggedIn.Set(false);
+                        await Login.FirstRun.Set(true);
 
                         var ps = new ProcessStartInfo(Assembly.GetEntryAssembly().Location)
                         {
@@ -339,9 +338,11 @@ namespace Main.Wpf.Functions
                     }
                     else
                     {
+                        await Login.LoggedIn.Set(true);
+
                         var ps = new ProcessStartInfo(Assembly.GetEntryAssembly().Location)
                         {
-                            Arguments = "-login " + string.Join(" ", App.Parameters)
+                            Arguments = string.Join(" ", App.Parameters)
                         };
                         Process.Start(ps);
 
@@ -395,7 +396,7 @@ namespace Main.Wpf.Functions
 
             for (var i = 0; i < index; ++i)
             {
-                if (sites[i].Title?.Length == 0)
+                if (sites[i].Title?.Length == 0 || string.Equals(sites[i].Title, "null", StringComparison.OrdinalIgnoreCase) || sites[i].Title == null)
                 {
                     margin += 20;
                 }

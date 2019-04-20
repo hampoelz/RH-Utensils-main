@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -26,6 +27,8 @@ namespace Main.Wpf.Functions
                 if (!Validation.IsXmlValid(value)) return;
 
                 file = value;
+
+                CreateConfigWatcher();
 
                 LogFile.WriteLog("Change Config File path ...");
             }
@@ -87,23 +90,27 @@ namespace Main.Wpf.Functions
                 Informations.Extension.Theme = Json.ReadString(Settings.Json, "theme");
                 Informations.Extension.Favicon = await Xml.ReadString(file, "favicon").ConfigureAwait(false);
 
-                Menu.SingleSite = (Xml.ReadBool(file, "hideMenu"), await Xml.ReadString(file, "singleSite_Path").ConfigureAwait(false), await Xml.ReadString(file, "singleSite_StartArguments").ConfigureAwait(false));
+                Menu.SingleSite = (await Xml.ReadBool(file, "hideMenu").ConfigureAwait(false), await Xml.ReadString(file, "singleSite_Path").ConfigureAwait(false), await Xml.ReadString(file, "singleSite_StartArguments").ConfigureAwait(false));
 
                 List<(string Title, string Icon, string Path, string StartArguments)> sites = new List<(string Title, string Icon, string Path, string StartArguments)>();
-                for (var site = 0; site != Xml.ReadStringList(file, "site_Title").Count; ++site)
+                var Titels = Xml.ReadStringList(file, "site_Title");
+                var Icons = Xml.ReadStringList(file, "site_Icon");
+                var Paths = Xml.ReadStringList(file, "site_Path");
+                var StartArguments = Xml.ReadStringList(file, "site_StartArguments");
+
+                for (var site = 0; site != Titels.Count; ++site)
                 {
-                    sites.Add((Xml.ReadStringList(file, "site_Title")[site],
-                        Xml.ReadStringList(file, "site_Icon")[site], Xml.ReadStringList(file, "site_Path")[site],
-                        Xml.ReadStringList(file, "site_StartArguments")[site]));
+                    sites.Add((Titels[site],Icons[site], Paths[site], StartArguments[site]));
                 }
                 sites.Add(("", "", "", ""));
                 sites.Add(("Information", "", "info.exe", ""));
                 if (!Login.SkipLogin) sites.Add(("Anmelden", "", "account.exe", ""));
+
                 Menu.Sites = sites;
 
                 Menu.DefaultMenuState = Menu.StringToMenuState(await Xml.ReadString(file, "defaultMenuState").ConfigureAwait(false));
 
-                Login.SkipLogin = Xml.ReadBool(file, "skipLogin");
+                Login.SkipLogin = await Xml.ReadBool(file, "skipLogin").ConfigureAwait(false);
 
                 Updater.Informations.Extension.VersionsHistoryFile = await Xml.ReadString(file, "versionsHistoryFile").ConfigureAwait(false);
 
@@ -132,22 +139,42 @@ namespace Main.Wpf.Functions
 
         public static bool _isChanging;
 
-        public static void CreateFileWatcher(string file)
+        private static FileSystemWatcher ConfigWatcher;
+
+        public static void CreateConfigWatcher()
         {
-            var path = Path.GetDirectoryName(file);
-            var filename = Path.GetFileName(file);
+            try
+            {
+                if (ConfigWatcher == null)
+                {
+                    var path = Path.GetDirectoryName(File);
+                    var filename = Path.GetFileName(File);
 
-            var watcher = new FileSystemWatcher();
+                    ConfigWatcher = new FileSystemWatcher();
 
-            watcher.Changed += OnChanged;
+                    ConfigWatcher.Changed += OnConfigChange;
 
-            watcher.Path = path;
-            watcher.Filter = filename;
+                    ConfigWatcher.Path = path;
+                    ConfigWatcher.Filter = filename;
 
-            watcher.EnableRaisingEvents = true;
+                    ConfigWatcher.EnableRaisingEvents = true;
+                }
+                else
+                {
+                    var path = Path.GetDirectoryName(File);
+                    var filename = Path.GetFileName(File);
+
+                    ConfigWatcher.Path = path;
+                    ConfigWatcher.Filter = filename;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogFile.WriteLog(ex);
+            }
         }
 
-        private static async void OnChanged(object sender, FileSystemEventArgs e)
+        private static async void OnConfigChange(object sender, FileSystemEventArgs e)
         {
             if (_isChanging) return;
 
