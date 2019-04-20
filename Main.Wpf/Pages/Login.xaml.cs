@@ -278,10 +278,6 @@ namespace Main.Wpf.Pages
             sb.Begin();
 
             await Task.Delay(500);
-
-            sb.Stop();
-
-            Wipe.Visibility = Visibility.Collapsed;
         }
     }
 }

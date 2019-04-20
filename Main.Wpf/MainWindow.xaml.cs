@@ -127,7 +127,7 @@ namespace Main.Wpf
                 //Index
                 Index.Visibility = Visibility.Collapsed;
 
-                //if (wipeAnimation) await RunWipeAnimation();
+                if (wipeAnimation) await RunWipeAnimation();
 
                 await SetExe(Functions.Menu.SingleSite.Path, Functions.Menu.SingleSite.StartArguments);
             }
@@ -148,7 +148,7 @@ namespace Main.Wpf
                 Menu.Width = 250;
                 MainGrid.Children.Add(Menu);
 
-                //if (wipeAnimation) await RunWipeAnimation();
+                if (wipeAnimation) await RunWipeAnimation();
             }
         }
 
@@ -269,7 +269,7 @@ namespace Main.Wpf
 
             await Task.Delay(300);
 
-            //Wipe.Visibility = Visibility.Collapsed;
+            Wipe.Visibility = Visibility.Collapsed;
 
             sb.Stop();
         }
