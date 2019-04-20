@@ -1,0 +1,29 @@
+﻿<metro:MetroWindow x:Class="Main.Wpf.ExampleExtension.MainWindow"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                   mc:Ignorable="d"
+                   TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+                   TextElement.FontWeight="Regular"
+                   TextElement.FontSize="13"
+                   TextOptions.TextFormattingMode="Ideal"
+                   TextOptions.TextRenderingMode="Auto"
+                   Background="{DynamicResource MaterialDesignPaper}"
+                   FontFamily="{DynamicResource MaterialDesignFont}"
+
+                   BorderThickness="0"
+                   ShowIconOnTitleBar="False"
+                   ShowTitleBar="False"
+                   ShowCloseButton="False"
+                   ShowMaxRestoreButton="False"
+                   ShowMinButton="False"
+                   ResizeMode="NoResize"
+
+                   Title="ExampleExtension" Height="670" Width="950" WindowStartupLocation="CenterScreen" Loaded="MetroWindow_Loaded">
+    <Grid x:Name="Grid">
+        <Frame x:Name="Index" />
+    </Grid>
+</metro:MetroWindow>
