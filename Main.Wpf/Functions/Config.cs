@@ -122,6 +122,7 @@ namespace Main.Wpf.Functions
             }
             catch (Exception ex)
             {
+                MessageBox.Show(ex.ToString());
                 LogFile.WriteLog(ex);
             }
         }
