@@ -27,7 +27,7 @@ DisableProgramGroupPage  = yes
 PrivilegesRequired       = admin
 OutputBaseFilename       = {#ExtensionName} Setup - Global
 WizardStyle              = modern
-SetupIconFile            = Example Extension Logo.ico
+SetupIconFile            = {#ExtensionName} Logo.ico
 MinVersion               = 6.1
 ChangesAssociations      = yes
 

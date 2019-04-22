@@ -27,7 +27,7 @@ DisableProgramGroupPage  = yes
 PrivilegesRequired       = lowest
 OutputBaseFilename       = {#ExtensionName} Setup - Local
 WizardStyle              = modern
-SetupIconFile            = Example Extension Logo.ico
+SetupIconFile            = {#ExtensionName} Logo.ico
 MinVersion               = 6.1
 
 #include <idp.iss>
