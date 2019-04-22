@@ -4,6 +4,6 @@
     <updateChannel>beta</updateChannel>
     <version>0.1</version>
     <setup>False</setup>
-    <file>xxx</file>
+    <file>https://github.com/rh-utensils/main/releases/download/0.1/ExampleExtension.zip</file>
   </v1.0>
 </versionHistory>
