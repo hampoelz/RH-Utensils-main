@@ -17,6 +17,8 @@ namespace Main.Wpf.Functions
             {
                 Version customVersion = null;
 
+                
+
                 for (var arg = 0; arg != App.Parameters.Length; ++arg)
                 {
                     switch (App.Parameters[arg])
@@ -63,7 +65,7 @@ namespace Main.Wpf.Functions
                         }
                         catch
                         {
-                            Config.ExtensionsDirectory = Path.GetFullPath(@"..\Extensions");
+                            Config.ExtensionsDirectory = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)), "Extensions");
                             Directory.CreateDirectory(Config.ExtensionsDirectory);
                         }
                     }

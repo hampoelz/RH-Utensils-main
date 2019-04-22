@@ -30,7 +30,7 @@ namespace Main.Wpf.Functions
             }
         }
 
-        private static string extensionsDirectory = Path.GetFullPath(@"..\Extensions");
+        private static string extensionsDirectory = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)), "Extensions");
 
         public static string ExtensionsDirectory
         {
