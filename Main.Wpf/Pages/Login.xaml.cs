@@ -130,6 +130,7 @@ namespace Main.Wpf.Pages
 
                     if (loginResult.IsError)
                     {
+                        LogFile.WriteLog(loginResult.Error);
                         ShowInfoBox("error", "Beim Anmelden ist leider ein Fehler aufgetreten!");
                         IsEnabled = true;
                         return;
@@ -182,6 +183,7 @@ namespace Main.Wpf.Pages
 
                 if (loginResult.IsError)
                 {
+                    LogFile.WriteLog(loginResult.Error);
                     ShowInfoBox("error", "Beim Anmelden ist leider ein Fehler aufgetreten!");
                     IsEnabled = true;
                     return;

@@ -293,6 +293,8 @@ namespace Main.Wpf.Functions
 
             await SelectMenuItemAsync(index).ConfigureAwait(false);
 
+            if (index + 1 == sites.Count) return;
+
             Config._isChanging = true;
             await Xml.SetString(Config.File, "config/selectionIndex", (index + 1).ToString());
             Config._isChanging = false;

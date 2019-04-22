@@ -21,7 +21,7 @@ namespace Main.Wpf.Functions
                 }
             }
 
-            private static string clientId = "GTgQvzJvhsSPT0w8sirtIj69cTwfS9AW";
+            private static string clientId = "_9ZvrbGJUX4MfWdzt6F7pW2e0Z0Zc0OA";
 
             public static string ClientId
             {
@@ -34,7 +34,7 @@ namespace Main.Wpf.Functions
                 }
             }
 
-            private static string apiClientId = "_9ZvrbGJUX4MfWdzt6F7pW2e0Z0Zc0OA";
+            private static string apiClientId = "GTgQvzJvhsSPT0w8sirtIj69cTwfS9AW";
 
             public static string ApiClientId
             {
