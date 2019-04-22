@@ -1,5 +1,5 @@
 #define ProgrammVersion  "0.1"
-#define ZipFileLink      "https://github.com/rh-utensils/main/releases/download/0.1/Main.zip"
+#define ZipFileLink      "https://github.com/rh-utensils/main/releases/download/v" + ProgrammVersion + "/Main.zip"
 
 [Setup]
 AppId                    = RH Utensils_Main_Global

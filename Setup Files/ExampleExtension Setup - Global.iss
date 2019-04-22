@@ -4,7 +4,7 @@
 #define ExtensionPublisherURL   "https://rh-utensils.hampoelz.net/"
 #define ExtensionSupportURL     "https://github.com/rh-utensils/main/issues/"
 #define ExtensionUpdatesURL     "https://github.com/rh-utensils/main/releases/"
-#define ZipFileLink             "https://github.com/rh-utensils/main/releases/download/" + ExtensionVersion + "/ExampleExtension.zip"
+#define ZipFileLink             "https://github.com/rh-utensils/main/releases/download/v" + ExtensionVersion + "/ExampleExtension.zip"
 
 [Setup]
 AppId                    = {#ExtensionPublisher}_{#ExtensionName}_Global
