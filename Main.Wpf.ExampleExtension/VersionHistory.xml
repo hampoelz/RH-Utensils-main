@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <versionHistory>
-  <v1.0>
+  <v0.1>
     <updateChannel>beta</updateChannel>
     <version>0.1</version>
     <setup>False</setup>
     <file>https://github.com/rh-utensils/main/releases/download/0.1/ExampleExtension.zip</file>
-  </v1.0>
+  </v0.1>
 </versionHistory>
