@@ -22,6 +22,7 @@ namespace Main.Wpf.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+
             try
             {
                 if (Informations.Extension.Favicon != "")
@@ -48,18 +49,19 @@ namespace Main.Wpf.Pages
             MainProgrammVersion.Text = Updater.Informations.Programm.Version.ToString();
             MainProgrammNewestVersion.Text = Updater.Informations.Programm.NewestVersion;
 
-            if (Config.ExtensionDirectoryName?.Length == 0)
+            if (Config.ExtensionDirectoryName != "")
+            {
+                AddonInstalledVersion.Text = Updater.Informations.Extension.Version.ToString();
+                AddonVersion.Text = Updater.Informations.Extension.RunningVersion.ToString();
+                AddonNewestVersion.Text = Updater.Informations.Extension.NewestVersion;
+
+                ExtensionUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(Updater.UpdateChannels), Json.ReadString(Settings.Json, "updateChannel").ToLower());
+            }
+            else
             {
                 ExtensionUpdateChannel.IsEnabled = false;
                 ExtensionUpdateChannel.Text = "-";
-                return;
             }
-
-            AddonInstalledVersion.Text = Updater.Informations.Extension.Version.ToString();
-            AddonVersion.Text = Updater.Informations.Extension.RunningVersion.ToString();
-            AddonNewestVersion.Text = Updater.Informations.Extension.NewestVersion;
-
-            ExtensionUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(Updater.UpdateChannels), Json.ReadString(Settings.Json, "updateChannel").ToLower());
 
             MainProgrammUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(Updater.UpdateChannels), Properties.Settings.Default.updateChannel.ToLower());
 
@@ -116,25 +118,27 @@ namespace Main.Wpf.Pages
             btn_load.BeginAnimation(OpacityProperty, FadeIn);
 
             await Task.Run(() => Updater.Update(false));
-            if (Config.ExtensionDirectoryName != "") await Task.Run(() => Updater.Update(true));
 
             MainProgrammVersion.Text = Updater.Informations.Programm.Version.ToString();
             MainProgrammNewestVersion.Text = Updater.Informations.Programm.NewestVersion;
 
-            if (Config.ExtensionDirectoryName?.Length == 0)
+            if (Config.ExtensionDirectoryName != "")
+            {
+                await Task.Run(() => Updater.Update(true));
+
+                AddonInstalledVersion.Text = Updater.Informations.Extension.Version.ToString();
+                AddonVersion.Text = Updater.Informations.Extension.RunningVersion.ToString();
+                AddonNewestVersion.Text = Updater.Informations.Extension.NewestVersion;
+
+                ExtensionUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(Updater.UpdateChannels), Json.ReadString(Settings.Json, "updateChannel").ToLower());
+            }
+            else
             {
                 ExtensionUpdateChannel.IsEnabled = false;
                 ExtensionUpdateChannel.Text = "-";
-                return;
             }
 
-            AddonInstalledVersion.Text = Updater.Informations.Extension.Version.ToString();
-            AddonVersion.Text = Updater.Informations.Extension.RunningVersion.ToString();
-            AddonNewestVersion.Text = Updater.Informations.Extension.NewestVersion;
-
-            ExtensionUpdateChannel.SelectedValue = Json.ReadString(Settings.Json, "updateChannel");
-
-            MainProgrammUpdateChannel.SelectedValue = Properties.Settings.Default.updateChannel;
+            MainProgrammUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(Updater.UpdateChannels), Properties.Settings.Default.updateChannel.ToLower());
 
             btn_load.BeginAnimation(OpacityProperty, FadeOut);
             btn_icon.BeginAnimation(OpacityProperty, FadeIn);

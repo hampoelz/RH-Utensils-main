@@ -295,6 +295,8 @@ namespace Main.Wpf.Functions
 
             if (index + 1 == sites.Count) return;
 
+            if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
+
             Config._isChanging = true;
             await Xml.SetString(Config.File, "config/selectionIndex", (index + 1).ToString());
             Config._isChanging = false;
