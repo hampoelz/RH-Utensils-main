@@ -152,8 +152,6 @@ namespace Main.Wpf.Pages
                 await Functions.Login.LoggedIn.Set(true);
                 await Functions.Login.FirstRun.Set(false);
 
-                Settings.StartSync();
-
                 await mw.LoadExtensionAsync(true);
 
                 IsEnabled = true;
@@ -216,8 +214,6 @@ namespace Main.Wpf.Pages
             sites.Add(("Abmelden", "", "account.exe", ""));
 
             Functions.Menu.Sites = sites;
-
-            Settings.StartSync();
 
             await mw.LoadExtensionAsync(true);
 

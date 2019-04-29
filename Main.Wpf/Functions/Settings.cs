@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -18,14 +19,13 @@ namespace Main.Wpf.Functions
             {
                 if (value?.Length == 0) value = @"C:\Users\{username}\AppData\Local\HampisProjekte\RH Utensils\{appName}\Settings.json";
 
+                if (file != "") return;
+
                 value = Path.GetFullPath(ReplaceVariables.Replace(value));
 
                 if (file == value) return;
 
                 file = value;
-
-                CreateFile();
-                CreateSettingsWatcher();
             }
         }
 
@@ -78,6 +78,31 @@ namespace Main.Wpf.Functions
             }
         }
 
+        public static void StartSync()
+        {
+            if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
+
+            LogFile.WriteLog("Enable account sync ...");
+
+            CreateFile();
+
+            SyncWithServer();
+
+            while (_SyncWithServer)
+            {
+                Thread.Sleep(25);
+            }
+
+            CreateSettingsWatcher();
+
+            var syncTimer = new DispatcherTimer();
+            syncTimer.Tick += SyncTimer_Tick;
+            syncTimer.Interval = new TimeSpan(0, 1, 0);
+            syncTimer.Start();
+
+            _syncSettingsOnChange = true;
+        }
+
         private static void CreateFile()
         {
             try
@@ -108,22 +133,6 @@ namespace Main.Wpf.Functions
             }
         }
 
-        private static bool _syncSettingsOnChange;
-
-        public static void StartSync()
-        {
-            if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
-
-            LogFile.WriteLog("Enable account sync ...");
-
-            _syncSettingsOnChange = true;
-
-            var syncTimer = new DispatcherTimer();
-            syncTimer.Tick += SyncTimer_Tick;
-            syncTimer.Interval = new TimeSpan(0, 1, 0);
-            syncTimer.Start();
-        }
-
         private static async void SyncTimer_Tick(object sender, EventArgs e)
         {
             await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
@@ -131,7 +140,7 @@ namespace Main.Wpf.Functions
 
         private static FileSystemWatcher SettingsWatcher;
 
-        public static void CreateSettingsWatcher()
+        private static void CreateSettingsWatcher()
         {
             if (SettingsWatcher == null)
             {
@@ -159,6 +168,8 @@ namespace Main.Wpf.Functions
 
         private static bool _syncInUse;
 
+        private static bool _syncSettingsOnChange;
+
         private static async void OnChanged(object sender, FileSystemEventArgs e)
         {
             if (_syncInUse) return;
@@ -178,9 +189,13 @@ namespace Main.Wpf.Functions
             _syncInUse = false;
         }
 
+        private static bool _SyncWithServer;
+
         private static void SyncWithServer()
         {
             LogFile.WriteLog("Synchronize settings with the server ...");
+
+            _SyncWithServer = true;
 
             try
             {
@@ -230,6 +245,8 @@ namespace Main.Wpf.Functions
             {
                 LogFile.WriteLog(ex);
             }
+
+            _SyncWithServer = false;
         }
     }
 }

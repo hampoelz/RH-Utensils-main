@@ -75,7 +75,6 @@ namespace Main.Wpf.Functions
 
                 Settings.File = await Xml.ReadString(file, "settingsFile").ConfigureAwait(false);
 
-                Settings.File = await Xml.ReadString(file, "settingsFile").ConfigureAwait(false);
                 Informations.Extension.Color = await Xml.ReadString(file, "color").ConfigureAwait(false);
                 Informations.Extension.Theme = Json.ReadString(Settings.Json, "theme");
                 Informations.Extension.Favicon = await Xml.ReadString(file, "favicon").ConfigureAwait(false);

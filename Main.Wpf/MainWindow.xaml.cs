@@ -102,15 +102,13 @@ namespace Main.Wpf
             {
                 await LoadExtensionAsync();
             }
-
-            if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
-
-            Settings.CreateSettingsWatcher();
         }
 
         public async Task LoadExtensionAsync(bool wipeAnimation = false)
         {
             if (wipeAnimation) Wipe.Visibility = Visibility.Visible;
+
+            Settings.StartSync();
 
             var timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 1), DispatcherPriority.Normal, delegate
             {
