@@ -108,7 +108,7 @@ namespace Main.Wpf
         {
             if (wipeAnimation) Wipe.Visibility = Visibility.Visible;
 
-            Settings.StartSync();
+            await Settings.StartSync();
 
             var timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 1), DispatcherPriority.Normal, delegate
             {

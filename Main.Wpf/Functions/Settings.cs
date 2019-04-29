@@ -78,7 +78,17 @@ namespace Main.Wpf.Functions
             }
         }
 
-        public static void StartSync()
+        private static async Task WaitforSync()
+        {
+            while (_SyncWithServer)
+            {
+                await Task.Delay(100);
+            }
+
+            return;
+        }
+
+        public static async Task StartSync()
         {
             if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
 
@@ -86,12 +96,9 @@ namespace Main.Wpf.Functions
 
             CreateFile();
 
-            SyncWithServer();
+            await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
 
-            while (_SyncWithServer)
-            {
-                Thread.Sleep(25);
-            }
+            await WaitforSync();
 
             CreateSettingsWatcher();
 
@@ -200,7 +207,7 @@ namespace Main.Wpf.Functions
             try
             {
             Sync:
-                if (!InternetChecker.Check()) return;
+                if (!InternetChecker.Check()) goto Finish;
 
                 var serverJson = Account.ReadMetadata();
                 var localJson = Json;
@@ -233,9 +240,9 @@ namespace Main.Wpf.Functions
                     goto Sync;
                 }
 
-                if (lastLocalSync.ToString(CultureInfo.InvariantCulture)?.Length == 0 || localJson?.Length == 0) return;
+                if (lastLocalSync.ToString(CultureInfo.InvariantCulture)?.Length == 0 || localJson?.Length == 0) goto Finish;
 
-                if (lastServerSync == lastLocalSync) return;
+                if (lastServerSync == lastLocalSync) goto Finish;
                 if (lastServerSync < lastLocalSync)
                     Account.SetMetadata(localJson);
                 else if (lastServerSync > lastLocalSync)
@@ -246,6 +253,7 @@ namespace Main.Wpf.Functions
                 LogFile.WriteLog(ex);
             }
 
+            Finish:
             _SyncWithServer = false;
         }
     }
