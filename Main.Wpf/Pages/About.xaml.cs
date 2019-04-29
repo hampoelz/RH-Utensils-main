@@ -51,6 +51,7 @@ namespace Main.Wpf.Pages
 
             if (Config.ExtensionDirectoryName != "")
             {
+                AddOn.Text = Informations.Extension.Name;
                 AddonInstalledVersion.Text = Updater.Informations.Extension.Version.ToString();
                 AddonVersion.Text = Updater.Informations.Extension.RunningVersion.ToString();
                 AddonNewestVersion.Text = Updater.Informations.Extension.NewestVersion;

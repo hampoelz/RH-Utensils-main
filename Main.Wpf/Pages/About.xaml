@@ -114,7 +114,7 @@
                                Foreground="White" Text="-" HorizontalAlignment="Left" Width="140" materialDesign:HintAssist.Hint="Update-Channel auswählen" SelectedIndex="0" SelectionChanged="MainProgrammUpdateChannel_SelectionChanged">
                         </ComboBox>
 
-                        <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="360,60,0,0" FontSize="18"
+                        <TextBlock x:Name="AddOn" VerticalAlignment="Top" TextWrapping="Wrap" Margin="360,60,0,0" FontSize="18"
                                Foreground="White" Text="Add-on" FontWeight="Bold" HorizontalAlignment="Left" Width="200" />
 
                         <TextBlock VerticalAlignment="Top" TextWrapping="Wrap" Margin="370,90,0,0" FontSize="14"
