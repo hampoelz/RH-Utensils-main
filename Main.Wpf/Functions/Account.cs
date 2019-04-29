@@ -71,7 +71,7 @@ namespace Main.Wpf.Functions
 
         public static string GetToken()
         {
-            LogFile.WriteLog("Received account token from " + Auth0.Domain + " ...");
+            LogFile.WriteLog("Receive account token from " + Auth0.Domain + " ...");
 
             try
             {
@@ -96,7 +96,7 @@ namespace Main.Wpf.Functions
 
         public static string GetTokenType()
         {
-            LogFile.WriteLog("Received account token type from " + Auth0.Domain + " ...");
+            LogFile.WriteLog("Receive account token type from " + Auth0.Domain + " ...");
 
             try
             {
