@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace Main.Wpf.Functions
 {
@@ -312,14 +313,19 @@ namespace Main.Wpf.Functions
 
                 ListViewItem menuItem = null;
 
-                foreach (var item in items)
+                await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () =>
                 {
-                    if (!(item is ListViewItem tempMenuItem)) continue;
-                    if (tempMenuItem.Name != "MenuItem_" + index.ToString()) continue;
+                    foreach (var item in items)
+                    {
+                        if (!(item is ListViewItem tempMenuItem)) continue;
+                        if (tempMenuItem.Name != "MenuItem_" + index.ToString()) continue;
 
-                    menuItem = tempMenuItem;
-                    break;
-                }
+                        menuItem = tempMenuItem;
+                        break;
+                    }
+                }));
+
+                
 
                 if (menuItem == null)
                 {
