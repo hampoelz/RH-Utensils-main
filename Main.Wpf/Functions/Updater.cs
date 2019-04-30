@@ -119,6 +119,8 @@ namespace Main.Wpf.Functions
             }
         }
 
+        public static bool isDownloading;
+
         public static void Update(bool updateExtension)
         {
             if ((updateExtension && Informations.Extension.VersionsHistoryFile?.Length == 0) || (updateExtension && Config.ExtensionDirectoryName?.Length == 0)) return;
@@ -199,6 +201,8 @@ namespace Main.Wpf.Functions
 
                 LogFile.WriteLog("New " + (updateExtension ? "extension" : "program") + " update found: Latest version: " + latestVersion + " / Installed version: " + currentVersion);
 
+                isDownloading = true;
+
                 try
                 {
                     if (!useSetup)
@@ -242,6 +246,8 @@ namespace Main.Wpf.Functions
             {
                 LogFile.WriteLog(ex);
             }
+
+            isDownloading = false;
         }
 
         public static void BackgroundProgrammUpdate()
