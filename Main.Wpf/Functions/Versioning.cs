@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace Main.Wpf.Functions
 {
@@ -16,8 +15,6 @@ namespace Main.Wpf.Functions
             try
             {
                 Version customVersion = null;
-
-                
 
                 for (var arg = 0; arg != App.Parameters.Length; ++arg)
                 {

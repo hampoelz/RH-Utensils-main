@@ -21,13 +21,13 @@
         <materialDesign:Card  Margin="50" Background="{DynamicResource MaterialDesignPaper}">
             <Grid VerticalAlignment="Top">
                 <materialDesign:Card Height="200" Background="{DynamicResource PrimaryHueMidBrush}">
-                    <Button x:Name="GoToSettings" Foreground="White" Background="Transparent" BorderBrush="White" Content="Go to the settings" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Right" Click="GoToSettings_Click"/>
+                    <Button x:Name="GoToSettings" Foreground="White" Background="Transparent" BorderBrush="White" Content="Go to the settings" Margin="20" VerticalAlignment="Top" HorizontalAlignment="Right" Click="GoToSettings_Click" />
                 </materialDesign:Card>
                 <materialDesign:Card Margin="55,100,55,50" Height="200">
                     <Grid>
                         <TextBlock FontSize="25" Text="Geöffnete Datei" VerticalAlignment="Top" Margin="20,20,20,20" FontWeight="Bold" />
-                        <TextBlock FontSize="15" Text="Unterstütze Dateiformate: mp3, wav, mp4, mov" VerticalAlignment="Top" Margin="220,28.5,20,150"/>
-                        <TextBlock x:Name="File" FontSize="20" Text="Nicht gefunden!" TextAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow"/>
+                        <TextBlock FontSize="15" Text="Unterstütze Dateiformate: mp3, wav, mp4, mov" VerticalAlignment="Top" Margin="220,28.5,20,150" />
+                        <TextBlock x:Name="File" FontSize="20" Text="Nicht gefunden!" TextAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" />
                     </Grid>
                 </materialDesign:Card>
             </Grid>

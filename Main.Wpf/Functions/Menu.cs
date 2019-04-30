@@ -14,7 +14,7 @@ namespace Main.Wpf.Functions
 
     public static class Menu
     {
-        private static MenuState defaultMenuState = MenuState.expanded;
+        private static MenuState defaultMenuState;
 
         public static MenuState DefaultMenuState
         {
@@ -313,7 +313,7 @@ namespace Main.Wpf.Functions
 
                 ListViewItem menuItem = null;
 
-                await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () =>
+                await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
                 {
                     foreach (var item in items)
                     {
@@ -324,8 +324,6 @@ namespace Main.Wpf.Functions
                         break;
                     }
                 }));
-
-                
 
                 if (menuItem == null)
                 {

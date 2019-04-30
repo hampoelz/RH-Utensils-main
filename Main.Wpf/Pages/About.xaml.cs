@@ -22,7 +22,6 @@ namespace Main.Wpf.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-
             try
             {
                 if (Informations.Extension.Favicon != "")
