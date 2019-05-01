@@ -91,22 +91,25 @@ namespace Main.Wpf.Functions
         {
             if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
 
-            LogFile.WriteLog("Enable account sync ...");
+            if (!await Login.LoggedIn.Get()) return;
+            {
+                LogFile.WriteLog("Enable account sync ...");
 
-            CreateFile();
+                CreateFile();
 
-            await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
+                await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
 
-            await WaitforSync();
+                await WaitforSync();
+
+                var syncTimer = new DispatcherTimer();
+                syncTimer.Tick += SyncTimer_Tick;
+                syncTimer.Interval = new TimeSpan(0, 1, 0);
+                syncTimer.Start();
+
+                _syncSettingsOnChange = true;
+            }
 
             CreateSettingsWatcher();
-
-            var syncTimer = new DispatcherTimer();
-            syncTimer.Tick += SyncTimer_Tick;
-            syncTimer.Interval = new TimeSpan(0, 1, 0);
-            syncTimer.Start();
-
-            _syncSettingsOnChange = true;
         }
 
         private static void CreateFile()
