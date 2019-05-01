@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace Main.Wpf.Pages
 {
@@ -65,6 +66,8 @@ namespace Main.Wpf.Pages
 
             MainProgrammUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(Updater.UpdateChannels), Properties.Settings.Default.updateChannel.ToLower());
 
+            isDownloading();
+
             _loaded = true;
         }
 
@@ -108,12 +111,51 @@ namespace Main.Wpf.Pages
             MainWindow.IsAbout = false;
         }
 
+        private async void isDownloading()
+        {
+            if (!Updater.isDownloading) return;
+
+            btn.IsEnabled = false;
+
+            var Expand = new ThicknessAnimation(new Thickness(10, 0, 10, 5), TimeSpan.FromMilliseconds(250));
+            var Collapse = new ThicknessAnimation(new Thickness(10, 0, 310, 5), TimeSpan.FromMilliseconds(250));
+            var FadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(400));
+            var FadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(400));
+
+            InstallUpdateInfo.BeginAnimation(OpacityProperty, FadeOut);
+            DownloadUpdateInfo.BeginAnimation(OpacityProperty, FadeIn);
+
+            await Task.Delay(350);
+
+            InfoCard.BeginAnimation(MarginProperty, Expand);
+
+            while (Updater.isDownloading)
+            {
+                await Task.Delay(1000);
+            }
+
+            InfoCard.BeginAnimation(MarginProperty, Collapse);
+
+            await Task.Delay(200);
+
+            InstallUpdateInfo.BeginAnimation(OpacityProperty, FadeIn);
+            DownloadUpdateInfo.BeginAnimation(OpacityProperty, FadeOut);
+
+            btn.IsEnabled = true;
+        }
+
+
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             btn.Click -= Button_Click;
 
-            var FadeOut = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.4));
-            var FadeIn = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.4));
+            var timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 100), DispatcherPriority.Normal, delegate
+            {
+                isDownloading();
+            }, Application.Current.Dispatcher);
+
+            var FadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(400));
+            var FadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(400));
             btn_icon.BeginAnimation(OpacityProperty, FadeOut);
             btn_load.BeginAnimation(OpacityProperty, FadeIn);
 
@@ -142,6 +184,8 @@ namespace Main.Wpf.Pages
 
             btn_load.BeginAnimation(OpacityProperty, FadeOut);
             btn_icon.BeginAnimation(OpacityProperty, FadeIn);
+
+            timer.Stop();
 
             btn.Click += Button_Click;
         }
