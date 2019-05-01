@@ -111,9 +111,15 @@ namespace Main.Wpf.Pages
             MainWindow.IsAbout = false;
         }
 
+        private bool _isDownloading;
+
         private async void isDownloading()
         {
+            if (_isDownloading) return;
+
             if (!Updater.isDownloading) return;
+
+            _isDownloading = true;
 
             btn.IsEnabled = false;
 
@@ -140,6 +146,8 @@ namespace Main.Wpf.Pages
 
             InstallUpdateInfo.BeginAnimation(OpacityProperty, FadeIn);
             DownloadUpdateInfo.BeginAnimation(OpacityProperty, FadeOut);
+
+            _isDownloading = false;
 
             btn.IsEnabled = true;
         }
