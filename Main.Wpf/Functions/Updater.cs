@@ -123,7 +123,7 @@ namespace Main.Wpf.Functions
 
         public static void Update(bool updateExtension)
         {
-            if ((updateExtension && Informations.Extension.VersionsHistoryFile?.Length == 0) || (updateExtension && Config.ExtensionDirectoryName?.Length == 0)) return;
+            if (updateExtension && Config.ExtensionDirectoryName?.Length == 0) return;
 
             LogFile.WriteLog("Check for new " + (updateExtension ? "extension" : "program") + " updates ...");
 

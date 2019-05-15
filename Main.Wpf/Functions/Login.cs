@@ -24,7 +24,7 @@ namespace Main.Wpf.Functions
         {
             public static async Task Set(bool value)
             {
-                if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
+                if (Informations.Extension.Name == "RH Utensils") return;
 
                 Config._isChanging = true;
                 await Xml.SetString(Config.File, "config/loggedIn", value.ToString()).ConfigureAwait(false);
@@ -33,7 +33,7 @@ namespace Main.Wpf.Functions
 
             public static async Task<bool> Get()
             {
-                if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return false;
+                if ( Informations.Extension.Name == "RH Utensils") return false;
 
                 return await Xml.ReadBool(Config.File, "loggedIn").ConfigureAwait(false);
             }
@@ -43,7 +43,7 @@ namespace Main.Wpf.Functions
         {
             public static async Task Set(bool value)
             {
-                if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
+                if (Informations.Extension.Name == "RH Utensils") return;
 
                 Config._isChanging = true;
                 await Xml.SetString(Config.File, "config/firstRun", value.ToString()).ConfigureAwait(false);
@@ -52,7 +52,7 @@ namespace Main.Wpf.Functions
 
             public static async Task<bool> Get()
             {
-                if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return false;
+                if (Informations.Extension.Name == "RH Utensils") return false;
 
                 return await Xml.ReadBool(Config.File, "firstRun").ConfigureAwait(false);
             }

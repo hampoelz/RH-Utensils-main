@@ -89,7 +89,7 @@ namespace Main.Wpf.Functions
 
         public static async Task StartSync()
         {
-            if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
+            if (Informations.Extension.Name == "RH Utensils") return;
 
             if (!await Login.LoggedIn.Get()) return;
             {

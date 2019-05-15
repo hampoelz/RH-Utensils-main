@@ -78,7 +78,6 @@ namespace Main.Wpf.Functions
 
                     v.Icon = ReplaceVariables.Replace(v.Icon);
                     v.Path = ReplaceVariables.Replace(v.Path);
-                    v.StartArguments = v.StartArguments.Replace("{fileAssociation}", Versioning.File);
 
                     if (site > currentIndex)
                     {
@@ -120,7 +119,6 @@ namespace Main.Wpf.Functions
                 if (singleSite == value) return;
 
                 value.Path = ReplaceVariables.Replace(value.Path);
-                value.StartArguments = value.StartArguments.Replace("{fileAssociation}", Versioning.File);
 
                 singleSite = value;
             }
@@ -296,7 +294,7 @@ namespace Main.Wpf.Functions
 
             if (index + 1 == sites.Count) return;
 
-            if (Informations.Extension.Name?.Length == 0 || Informations.Extension.Name == "RH Utensils") return;
+            if (Informations.Extension.Name == "RH Utensils") return;
 
             Config._isChanging = true;
             await Xml.SetString(Config.File, "config/selectionIndex", (index + 1).ToString());
@@ -388,7 +386,7 @@ namespace Main.Wpf.Functions
                         break;
 
                     default:
-                        await mw.SetExe(sites[index].Path, sites[index].StartArguments);
+                        await mw.SetExe(sites[index].Path, sites[index].StartArguments.Replace("{fileAssociation}", Versioning.File), index);
                         break;
                 }
 

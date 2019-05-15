@@ -149,7 +149,7 @@ namespace Main.Wpf.Functions
                     ("Add-ons", "", "selector.exe", ""),
                     ("Information", "", "info.exe", "")
                 };
-                if (!Login.SkipLogin) sites.Add(("Anmelden", "", "account.exe", ""));
+                if (!Login.SkipLogin && Informations.Extension.Name != "RH Utensils") sites.Add(("Anmelden", "", "account.exe", ""));
 
                 Menu.Sites = sites;
             }

@@ -2,6 +2,7 @@
 using Main.Wpf.Functions;
 using MaterialDesignThemes.Wpf;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -127,7 +128,7 @@ namespace Main.Wpf
 
                 if (wipeAnimation) await RunWipeAnimation();
 
-                await SetExe(Functions.Menu.SingleSite.Path, Functions.Menu.SingleSite.StartArguments);
+                await SetExe(Functions.Menu.SingleSite.Path, Functions.Menu.SingleSite.StartArguments.Replace("{fileAssociation}", Versioning.File));
             }
             else
             {
@@ -156,6 +157,12 @@ namespace Main.Wpf
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool MoveWindow(IntPtr hWnd, int x, int y, int cx, int cy, bool repaint);
 
+        public const int SW_HIDE = 0;
+        public const int SW_SHOWNORMAL = 1;
+
+        [DllImport("User32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
         private async Task WaitForExtension(Process p)
         {
             while (string.IsNullOrEmpty(p.MainWindowTitle))
@@ -169,7 +176,9 @@ namespace Main.Wpf
 
         public static bool _loadingEXE;
 
-        public async Task SetExe(string exe, string argument)
+        private List<(Process proc, int id)> backgroundProcesses = new List<(Process proc, int id)>();
+
+        public async Task SetExe(string exe, string argument, int id = -1)
         {
             if (_loadingEXE) return;
 
@@ -195,18 +204,57 @@ namespace Main.Wpf
                     WindowStyle = ProcessWindowStyle.Minimized
                 };
 
-                _currentProcess?.Kill();
+                bool hideExe = false;
+
+                for (int i = 0; i < backgroundProcesses.Count; ++i)
+                {
+                    var proc = backgroundProcesses[i].proc;
+                    var procID = backgroundProcesses[i].id;
+
+                    if (proc == _currentProcess)
+                    {
+                        ShowWindow(proc.MainWindowHandle, SW_HIDE);
+                        hideExe = true;
+                        break;
+                    }
+                }
+
+                if (!hideExe)
+                {
+                    _currentProcess?.Kill();
+                }
 
                 var p = Process.Start(ps);
 
-                _currentProcess = p;
+                bool exeIsHidden = false;
 
-                await WaitForExtension(p);
+                for (int i = 0; i < backgroundProcesses.Count; ++i)
+                {
+                    var proc = backgroundProcesses[i].proc;
+                    var procID = backgroundProcesses[i].id;
+
+                    if (procID == id)
+                    {
+                        ShowWindow(proc.MainWindowHandle, SW_SHOWNORMAL);
+                        _appWin = proc.MainWindowHandle;
+                        p?.Kill();
+                        exeIsHidden = true;
+                        break;
+                    }
+                }
+
+                if (!exeIsHidden)
+                {
+                    _currentProcess = p;
+                    backgroundProcesses.Add((p, id));
+
+                    await WaitForExtension(p);
+
+                    if (p != null) _appWin = p.MainWindowHandle;
+                }
 
                 Index.Visibility = Visibility.Collapsed;
                 IndexGrid.Visibility = Visibility.Visible;
-
-                if (p != null) _appWin = p.MainWindowHandle;
 
                 SetParent(_appWin, _panel.Handle);
 
