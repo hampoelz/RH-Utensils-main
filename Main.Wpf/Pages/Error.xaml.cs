@@ -1,4 +1,4 @@
-﻿using Main.Wpf.Functions;
+﻿using Main.Wpf.Utilities;
 using System.Diagnostics;
 using System.Windows;
 
@@ -13,7 +13,7 @@ namespace Main.Wpf.Pages
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Informations.Extension.IssueTracker);
+            Process.Start(Config.Informations.Extension.IssueTracker);
         }
     }
 }

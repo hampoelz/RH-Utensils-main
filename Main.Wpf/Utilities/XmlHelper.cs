@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Main.Wpf.Functions
+namespace Main.Wpf.Utilities
 {
-    public static class Xml
+    public static class XmlHelper
     {
         private static bool IsFileLocked(string path)
         {

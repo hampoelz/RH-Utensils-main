@@ -2,9 +2,9 @@
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace Main.Wpf.Functions
+namespace Main.Wpf.Utilities
 {
-    public static class Json
+    public static class JsonHelper
     {
         public static string ReadString(string json, string parameter)
         {

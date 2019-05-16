@@ -1,4 +1,4 @@
-﻿using Main.Wpf.Functions;
+﻿using Main.Wpf.Utilities;
 using MaterialDesignThemes.Wpf;
 using System;
 using System.Diagnostics;

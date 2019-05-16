@@ -1,4 +1,4 @@
-﻿using Main.Wpf.Functions;
+﻿using Main.Wpf.Utilities;
 using MaterialDesignThemes.Wpf;
 using MaterialDesignThemes.Wpf.Transitions;
 using System;
@@ -59,7 +59,7 @@ namespace Main.Wpf.Pages
             mw.Index.BeginAnimation(MarginProperty, ta);
             mw.IndexGrid.BeginAnimation(MarginProperty, ta);
 
-            Settings.Json = Json.ChangeValue(Settings.Json, "menuState", "expanded");
+            Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "menuState", "expanded");
         }
 
         private void ToggleMenu_Unchecked(object sender, RoutedEventArgs e)
@@ -77,14 +77,14 @@ namespace Main.Wpf.Pages
             mw.Index.BeginAnimation(MarginProperty, ta);
             mw.IndexGrid.BeginAnimation(MarginProperty, ta);
 
-            Settings.Json = Json.ChangeValue(Settings.Json, "menuState", "collapsed");
+            Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "menuState", "collapsed");
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (Informations.Extension.Name != "" && Informations.Extension.Name != "RH Utensils")
+            if (Config.Informations.Extension.Name != "" && Config.Informations.Extension.Name != "RH Utensils")
             {
-                if (Functions.Menu.DefaultMenuState == MenuState.collapsed || string.Equals(Json.ReadString(Settings.Json, "menuState"), "collapsed", StringComparison.OrdinalIgnoreCase))
+                if (Config.Menu.DefaultMenuState == MenuState.collapsed || string.Equals(JsonHelper.ReadString(Config.Settings.Json, "menuState"), "collapsed", StringComparison.OrdinalIgnoreCase))
                 {
                     ToggleMenu.IsChecked = false;
 
@@ -99,12 +99,12 @@ namespace Main.Wpf.Pages
                 }
             }
 
-            if (Informations.Extension.Name != "" && Informations.Extension.Name != "RH Utensils" && int.TryParse(await Xml.ReadString(Config.File, "selectionIndex").ConfigureAwait(false), out var index) && index - 1 >= 0)
+            if (Config.Informations.Extension.Name != "" && Config.Informations.Extension.Name != "RH Utensils" && int.TryParse(await XmlHelper.ReadString(Config.File, "selectionIndex").ConfigureAwait(false), out var index) && index - 1 >= 0)
             {
-                await Functions.Menu.SelectMenuItemAsync(index - 1).ConfigureAwait(false);
+                await MenuHelper.SelectMenuItemAsync(index - 1).ConfigureAwait(false);
             }
 
-            await Functions.Menu.SelectMenuItemAsync(0).ConfigureAwait(false);
+            await MenuHelper.SelectMenuItemAsync(0).ConfigureAwait(false);
 
             _loaded = true;
         }

@@ -1,4 +1,4 @@
-﻿using Main.Wpf.Functions;
+﻿using Main.Wpf.Utilities;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -24,10 +24,10 @@ namespace Main.Wpf.Pages
         {
             try
             {
-                if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Informations.Extension.Name, "updater.exe")))
+                if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name, "updater.exe")))
                 {
-                    var ps = new ProcessStartInfo(Path.Combine(Config.ExtensionsDirectory, Informations.Extension.Name, "updater.exe"));
-                    LogFile.WriteLog("Setup wird gestartet.");
+                    var ps = new ProcessStartInfo(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name, "updater.exe"));
+                    LogFile.WriteLog("Start setup ...");
                     Process.Start(ps);
 
                     Application.Current.Shutdown();
@@ -36,13 +36,13 @@ namespace Main.Wpf.Pages
                 if (File.Exists(@".\updater.exe"))
                 {
                     var ps = new ProcessStartInfo(@".\updater.exe");
-                    LogFile.WriteLog("Setup wird gestartet.");
+                    LogFile.WriteLog("Start setup ...");
                     Process.Start(ps);
 
                     Application.Current.Shutdown();
                 }
 
-                LogFile.WriteLog("Kein Setup gefunden ...");
+                LogFile.WriteLog("No setup found ...");
 
                 if (!(Application.Current.MainWindow is MainWindow mw)) return;
 

@@ -1,4 +1,4 @@
-﻿using Main.Wpf.Functions;
+﻿using Main.Wpf.Utilities;
 using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
@@ -89,21 +89,21 @@ namespace Main.Wpf.Pages
         {
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
 
-            mw.Title = Title + " - " + Informations.Extension.Name;
+            mw.Title = Title + " - " + Config.Informations.Extension.Name;
 
-            Welcome.Text = "Willkommen bei " + Environment.NewLine + Informations.Extension.Name + "!";
+            Welcome.Text = "Willkommen bei " + Environment.NewLine + Config.Informations.Extension.Name + "!";
 
             try
             {
-                if (Informations.Extension.Favicon != "")
-                    Logo.Source = new BitmapImage(new Uri(Informations.Extension.Favicon));
+                if (Config.Informations.Extension.Favicon != "")
+                    Logo.Source = new BitmapImage(new Uri(Config.Informations.Extension.Favicon));
             }
             catch (Exception ex)
             {
                 LogFile.WriteLog(ex);
             }
 
-            if (await Functions.Login.FirstRun.Get())
+            if (await Config.Login.FirstRun.Get())
             {
                 return;
             }
@@ -112,7 +112,7 @@ namespace Main.Wpf.Pages
 
             IsEnabled = false;
 
-            if (!InternetChecker.Check())
+            if (!InternetHelper.CheckConnection())
             {
                 ShowInfoBox();
 
@@ -124,9 +124,9 @@ namespace Main.Wpf.Pages
             {
                 try
                 {
-                    var loginResult = await Account.Client.LoginAsync();
+                    var loginResult = await AccountHelper.Client.LoginAsync();
 
-                    Account.UserId = loginResult.User.FindFirst(c => c.Type == "sub")?.Value;
+                    AccountHelper.UserId = loginResult.User.FindFirst(c => c.Type == "sub")?.Value;
 
                     if (loginResult.IsError)
                     {
@@ -149,8 +149,8 @@ namespace Main.Wpf.Pages
 
                 await RunWipeAnimation();
 
-                await Functions.Login.LoggedIn.Set(true);
-                await Functions.Login.FirstRun.Set(false);
+                await Config.Login.LoggedIn.Set(true);
+                await Config.Login.FirstRun.Set(false);
 
                 await mw.LoadExtensionAsync(true);
 
@@ -164,7 +164,7 @@ namespace Main.Wpf.Pages
 
             ShowInfoBox();
 
-            if (!InternetChecker.Check())
+            if (!InternetHelper.CheckConnection())
             {
                 ShowInfoBox("warning", "Bitte überprüfe deine Internet-Verbindung!");
                 return;
@@ -175,9 +175,9 @@ namespace Main.Wpf.Pages
 
             try
             {
-                var loginResult = await Account.Client.LoginAsync();
+                var loginResult = await AccountHelper.Client.LoginAsync();
 
-                Account.UserId = loginResult.User.FindFirst(c => c.Type == "sub")?.Value;
+                AccountHelper.UserId = loginResult.User.FindFirst(c => c.Type == "sub")?.Value;
 
                 if (loginResult.IsError)
                 {
@@ -201,19 +201,19 @@ namespace Main.Wpf.Pages
 
             await RunWipeAnimation();
 
-            await Functions.Login.LoggedIn.Set(true);
-            await Functions.Login.FirstRun.Set(false);
+            await Config.Login.LoggedIn.Set(true);
+            await Config.Login.FirstRun.Set(false);
 
             List<(string Title, string Icon, string Path, string StartArguments)> sites = new List<(string Title, string Icon, string Path, string StartArguments)>();
 
-            for (var site = 0; site != Functions.Menu.Sites.Count - 1; ++site)
+            for (var site = 0; site != Config.Menu.Sites.Count - 1; ++site)
             {
-                sites.Add((Functions.Menu.Sites[site].Title, Functions.Menu.Sites[site].Icon, Functions.Menu.Sites[site].Path, Functions.Menu.Sites[site].StartArguments));
+                sites.Add((Config.Menu.Sites[site].Title, Config.Menu.Sites[site].Icon, Config.Menu.Sites[site].Path, Config.Menu.Sites[site].StartArguments));
             }
 
             sites.Add(("Abmelden", "", "account.exe", ""));
 
-            Functions.Menu.Sites = sites;
+            Config.Menu.Sites = sites;
 
             await mw.LoadExtensionAsync(true);
 
@@ -226,8 +226,8 @@ namespace Main.Wpf.Pages
 
             await RunWipeAnimation();
 
-            await Functions.Login.LoggedIn.Set(false);
-            await Functions.Login.FirstRun.Set(false);
+            await Config.Login.LoggedIn.Set(false);
+            await Config.Login.FirstRun.Set(false);
 
             ShowInfoBox();
 

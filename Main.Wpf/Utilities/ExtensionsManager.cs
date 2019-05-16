@@ -4,13 +4,27 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Main.Wpf.Functions
+namespace Main.Wpf.Utilities
 {
-    public static class Versioning
+    public static class ExtensionsManager
     {
-        public static string File;
+        private static string fileToOpen = "";
 
-        public static async Task Start()
+        public static string FileToOpen
+        {
+            get => fileToOpen;
+            set
+            {
+                value = Path.GetFullPath(value);
+
+                if (fileToOpen == value || string.IsNullOrEmpty(value)) return;
+                if (!File.Exists(value)) return;
+
+                fileToOpen = value;
+            }
+        }
+
+        public static async Task LoadExtension()
         {
             try
             {
@@ -28,17 +42,17 @@ namespace Main.Wpf.Functions
                             try
                             {
                                 customVersion = new Version(App.Parameters[arg + 1]);
-                                Updater.Informations.UseCustomVersion = true;
+                                Config.Updater.UseCustomVersion = true;
                             }
                             catch
                             {
-                                Updater.Informations.UseCustomVersion = false;
+                                Config.Updater.UseCustomVersion = false;
                             }
                             break;
 
                         case "-config":
                             Config.File = App.Parameters[arg + 1];
-                            await Config.Read().ConfigureAwait(false);
+                            await ConfigHelper.Read().ConfigureAwait(false);
                             break;
 
                         case "-programmUpdateChannel":
@@ -47,7 +61,7 @@ namespace Main.Wpf.Functions
                             break;
 
                         case "-skipLogin":
-                            Login.SkipLogin = true;
+                            Config.Login.SkipLogin = true;
                             break;
                     }
                 }
@@ -93,7 +107,7 @@ namespace Main.Wpf.Functions
 
                         Version runningVersion = null;
 
-                        if (!Updater.Informations.UseCustomVersion)
+                        if (!Config.Updater.UseCustomVersion)
                             runningVersion = installedVersions.Max(s => new Version(s));
                         else
                             runningVersion = customVersion;
@@ -104,19 +118,19 @@ namespace Main.Wpf.Functions
 
                         var configFile = Path.Combine(extensionDirectory, "config.xml");
 
-                        if (!Validation.IsXmlValid(configFile)) continue;
+                        if (!ValidationHelper.IsXmlValid(configFile)) continue;
 
                         if (FileAssociation(configFile).use)
                         {
-                            File = FileAssociation(configFile).file;
+                            FileToOpen = FileAssociation(configFile).file;
 
                             Config.ExtensionDirectoryName = extensions[extension];
 
-                            Updater.Informations.Extension.RunningVersion = runningVersion;
-                            Updater.Informations.Extension.Version = installedVersions.Max(s => new Version(s));
+                            Config.Updater.Extension.RunningVersion = runningVersion;
+                            Config.Updater.Extension.Version = installedVersions.Max(s => new Version(s));
 
                             Config.File = configFile;
-                            await Config.Read().ConfigureAwait(false);
+                            await ConfigHelper.Read().ConfigureAwait(false);
 
                             return;
                         }
@@ -124,11 +138,11 @@ namespace Main.Wpf.Functions
                         {
                             Config.ExtensionDirectoryName = extensions[extension];
 
-                            Updater.Informations.Extension.RunningVersion = runningVersion;
-                            Updater.Informations.Extension.Version = installedVersions.Max(s => new Version(s));
+                            Config.Updater.Extension.RunningVersion = runningVersion;
+                            Config.Updater.Extension.Version = installedVersions.Max(s => new Version(s));
 
                             Config.File = configFile;
-                            await Config.Read().ConfigureAwait(false);
+                            await ConfigHelper.Read().ConfigureAwait(false);
 
                             return;
                         }
@@ -138,9 +152,9 @@ namespace Main.Wpf.Functions
                 {
                     if (FileAssociation(Config.File).use)
                     {
-                        File = FileAssociation(Config.File).file;
+                        FileToOpen = FileAssociation(Config.File).file;
 
-                        Updater.Informations.Extension.RunningVersion = customVersion;
+                        Config.Updater.Extension.RunningVersion = customVersion;
                     }
                 }
 
@@ -149,9 +163,9 @@ namespace Main.Wpf.Functions
                     ("Add-ons", "", "selector.exe", ""),
                     ("Information", "", "info.exe", "")
                 };
-                if (!Login.SkipLogin && Informations.Extension.Name != "RH Utensils") sites.Add(("Anmelden", "", "account.exe", ""));
+                if (!Config.Login.SkipLogin && Config.Informations.Extension.Name != "RH Utensils") sites.Add(("Anmelden", "", "account.exe", ""));
 
-                Menu.Sites = sites;
+                Config.Menu.Sites = sites;
             }
             catch (Exception ex)
             {
@@ -161,7 +175,7 @@ namespace Main.Wpf.Functions
 
         private static (bool use, string file) FileAssociation(string configFile)
         {
-            var fileAssociations = Xml.ReadStringList(configFile, "fileAssociation");
+            var fileAssociations = XmlHelper.ReadStringList(configFile, "fileAssociation");
 
             for (var arg = 0; arg != App.Parameters.Length; ++arg)
             {

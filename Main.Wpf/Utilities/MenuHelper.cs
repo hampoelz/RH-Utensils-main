@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -8,25 +7,12 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
-namespace Main.Wpf.Functions
+namespace Main.Wpf.Utilities
 {
     public enum MenuState { expanded, collapsed };
 
-    public static class Menu
+    public static class MenuHelper
     {
-        private static MenuState defaultMenuState;
-
-        public static MenuState DefaultMenuState
-        {
-            get { return defaultMenuState; }
-            set
-            {
-                if (defaultMenuState == value) return;
-
-                defaultMenuState = value;
-            }
-        }
-
         public static MenuState StringToMenuState(string state)
         {
             if (!Enum.IsDefined(typeof(MenuState), state.ToLower())) return MenuState.expanded;
@@ -34,97 +20,7 @@ namespace Main.Wpf.Functions
             return (MenuState)Enum.Parse(typeof(MenuState), state.ToLower());
         }
 
-        private static bool isIndexLoading;
-
-        public static bool IsIndexLoading
-        {
-            get { return isIndexLoading; }
-            set
-            {
-                if (isIndexLoading == value) return;
-
-                isIndexLoading = value;
-
-                if (value)
-                    Pages.Menu.ListViewMenu.IsEnabled = false;
-                else if (!value)
-                    Pages.Menu.ListViewMenu.IsEnabled = true;
-            }
-        }
-
-        private static readonly List<(string Title, string Icon, string Path, string StartArguments)> sites = new List<(string Title, string Icon, string Path, string StartArguments)>();
-
-        public static List<(string Title, string Icon, string Path, string StartArguments)> Sites
-        {
-            get { return sites; }
-            set
-            {
-                if (sites == value) return;
-                if (singleSite.HideMenu) return;
-
-                int newIndex = value.Count;
-                int currentIndex = sites.Count;
-
-                if (newIndex < currentIndex)
-                {
-                    sites.Clear();
-                    currentIndex = 0;
-                    Pages.Menu.ListViewMenu.Items.Clear();
-                }
-
-                for (var site = 1; site != newIndex + 1; ++site)
-                {
-                    var v = value[site - 1];
-
-                    v.Icon = ReplaceVariables.Replace(v.Icon);
-                    v.Path = ReplaceVariables.Replace(v.Path);
-
-                    if (site > currentIndex)
-                    {
-                        sites.Add(v);
-                        AddSite(site - 1);
-                    }
-                    else if (v != sites[site - 1])
-                    {
-                        sites[site - 1] = v;
-                        ReloadSite(site - 1);
-                    }
-                }
-
-                var margin = 100;
-
-                foreach (var (Title, Icon, Path, StartArguments) in sites)
-                {
-                    if (Title?.Length == 0)
-                    {
-                        margin += 20;
-                    }
-                    else
-                    {
-                        margin += 60;
-                    }
-                }
-
-                if (margin > 420) Informations.Extension.WindowHeight = 640 + margin - 420;
-            }
-        }
-
-        private static (bool HideMenu, string Path, string StartArguments) singleSite = (false, "", "");
-
-        public static (bool HideMenu, string Path, string StartArguments) SingleSite
-        {
-            get { return singleSite; }
-            set
-            {
-                if (singleSite == value) return;
-
-                value.Path = ReplaceVariables.Replace(value.Path);
-
-                singleSite = value;
-            }
-        }
-
-        private static void AddSite(int index)
+        public static void AddSite(int index)
         {
             LogFile.WriteLog("Add page ...");
 
@@ -166,12 +62,14 @@ namespace Main.Wpf.Functions
             }
         }
 
-        private static void ReloadSite(int index)
+        public static void ReloadSite(int index)
         {
             LogFile.WriteLog("Update page ...");
 
             try
             {
+                var sites = Config.Menu.Sites;
+
                 if (sites.Count < index) return;
 
                 var items = Pages.Menu.ListViewMenu.Items;
@@ -246,7 +144,7 @@ namespace Main.Wpf.Functions
 
                     switch (sites[index].Path)
                     {
-                        case "account.exe" when Login.LoggedIn.Get().Result:
+                        case "account.exe" when Config.Login.LoggedIn.Get().Result:
                             menuItemIcon.Source = new BitmapImage(new Uri("/Assets/logout.png", UriKind.Relative));
                             menuItemText.Text = "Abmelden";
                             break;
@@ -271,7 +169,7 @@ namespace Main.Wpf.Functions
                 if (index == Pages.Menu.ListViewMenu.SelectedIndex)
                 {
                     if (!(Application.Current.MainWindow is MainWindow mw)) return;
-                    mw.Title = sites[index].Title + " - " + Informations.Extension.Name;
+                    mw.Title = sites[index].Title + " - " + Config.Informations.Extension.Name;
                 }
             }
             catch (Exception ex)
@@ -280,7 +178,7 @@ namespace Main.Wpf.Functions
             }
         }
 
-        private static ListViewItem _lastSelected;
+        private static ListViewItem _lastSelectedItem;
 
         private static async void Menu_Selected(object sender, RoutedEventArgs e)
         {
@@ -292,13 +190,13 @@ namespace Main.Wpf.Functions
 
             await SelectMenuItemAsync(index).ConfigureAwait(false);
 
-            if (index + 1 == sites.Count) return;
+            if (index + 1 == Config.Menu.Sites.Count) return;
 
-            if (Informations.Extension.Name == "RH Utensils") return;
+            if (Config.Informations.Extension.Name == "RH Utensils") return;
 
-            Config._isChanging = true;
-            await Xml.SetString(Config.File, "config/selectionIndex", (index + 1).ToString());
-            Config._isChanging = false;
+            ConfigHelper._configIsChanging = true;
+            await XmlHelper.SetString(Config.File, "config/selectionIndex", (index + 1).ToString());
+            ConfigHelper._configIsChanging = false;
         }
 
         public static async Task SelectMenuItemAsync(int index)
@@ -329,14 +227,16 @@ namespace Main.Wpf.Functions
                     goto start;
                 }
 
+                var sites = Config.Menu.Sites;
+
                 if (sites[index].Path == "account.exe")
                 {
-                    if (await Login.LoggedIn.Get())
+                    if (await Config.Login.LoggedIn.Get())
                     {
-                        await Account.Client.LogoutAsync();
+                        await AccountHelper.Client.LogoutAsync();
 
-                        await Login.LoggedIn.Set(false);
-                        await Login.FirstRun.Set(true);
+                        await Config.Login.LoggedIn.Set(false);
+                        await Config.Login.FirstRun.Set(true);
 
                         var ps = new ProcessStartInfo(Assembly.GetEntryAssembly().Location)
                         {
@@ -348,7 +248,7 @@ namespace Main.Wpf.Functions
                     }
                     else
                     {
-                        await Login.LoggedIn.Set(true);
+                        await Config.Login.LoggedIn.Set(true);
 
                         var ps = new ProcessStartInfo(Assembly.GetEntryAssembly().Location)
                         {
@@ -361,12 +261,12 @@ namespace Main.Wpf.Functions
 
                     menuItem.IsSelected = false;
 
-                    _lastSelected.IsSelected = true;
+                    _lastSelectedItem.IsSelected = true;
 
                     return;
                 }
 
-                if (menuItem == _lastSelected) return;
+                if (menuItem == _lastSelectedItem) return;
 
                 MoveCursorMenu(index);
                 Pages.Menu.ListViewMenu.SelectedItems.Clear();
@@ -378,21 +278,21 @@ namespace Main.Wpf.Functions
                 switch (sites[index].Path)
                 {
                     case "selector.exe":
-                        Index.Set("Selector");
+                        IndexHelper.SetIndex("Selector");
                         break;
 
                     case "info.exe":
-                        Index.Set("About");
+                        IndexHelper.SetIndex("About");
                         break;
 
                     default:
-                        await mw.SetExe(sites[index].Path, sites[index].StartArguments.Replace("{fileAssociation}", Versioning.File), index);
+                        await mw.SetExe(sites[index].Path, sites[index].StartArguments, index);
                         break;
                 }
 
-                mw.Title = sites[index].Title + " - " + Informations.Extension.Name;
+                mw.Title = sites[index].Title + " - " + Config.Informations.Extension.Name;
 
-                _lastSelected = menuItem;
+                _lastSelectedItem = menuItem;
             }
             catch (Exception ex)
             {
@@ -403,6 +303,8 @@ namespace Main.Wpf.Functions
         private static void MoveCursorMenu(int index)
         {
             var margin = 100;
+
+            var sites = Config.Menu.Sites;
 
             for (var i = 0; i < index; ++i)
             {

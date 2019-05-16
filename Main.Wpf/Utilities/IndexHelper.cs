@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows;
 
-namespace Main.Wpf.Functions
+namespace Main.Wpf.Utilities
 {
-    public static class Index
+    public static class IndexHelper
     {
-        public static void Set(string page)
+        public static void SetIndex(string page)
         {
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
 

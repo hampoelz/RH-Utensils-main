@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net;
 
-namespace Main.Wpf.Functions
+namespace Main.Wpf.Utilities
 {
-    public static class InternetChecker
+    public static class InternetHelper
     {
-        public static bool Check(string url = "https://google.com/")
+        public static bool CheckConnection(string url = "https://google.com/")
         {
             var urlCheck = new Uri(url);
             try

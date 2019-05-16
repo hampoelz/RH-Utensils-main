@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Main.Wpf.Functions
+namespace Main.Wpf.Utilities
 {
     public static class ReplaceVariables
     {
@@ -10,8 +10,8 @@ namespace Main.Wpf.Functions
 
             return value.Replace("{extensionsDirectory}", Config.ExtensionsDirectory)
                 .Replace("{extensionName}", Config.ExtensionDirectoryName)
-                .Replace("{extensionVersion}", Updater.Informations.Extension.RunningVersion.ToString())
-                .Replace("{appName}", Informations.Extension.Name)
+                .Replace("{extensionVersion}", Config.Updater.Extension.RunningVersion.ToString())
+                .Replace("{appName}", Config.Informations.Extension.Name)
                 .Replace("{username}", Environment.UserName);
         }
     }

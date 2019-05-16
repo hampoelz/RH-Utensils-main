@@ -301,21 +301,21 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Functions\Account.cs" />
-    <Compile Include="Functions\Config.cs" />
-    <Compile Include="Functions\Index.cs" />
-    <Compile Include="Functions\Informations.cs" />
-    <Compile Include="Functions\InternetChecker.cs" />
-    <Compile Include="Functions\Json.cs" />
-    <Compile Include="Functions\LogFile.cs" />
-    <Compile Include="Functions\Login.cs" />
-    <Compile Include="Functions\Menu.cs" />
-    <Compile Include="Functions\ReplaceVariables.cs" />
-    <Compile Include="Functions\Settings.cs" />
-    <Compile Include="Functions\Updater.cs" />
-    <Compile Include="Functions\Validation.cs" />
-    <Compile Include="Functions\Versioning.cs" />
-    <Compile Include="Functions\XML.cs" />
+    <Compile Include="Utilities\AccountHelper.cs" />
+    <Compile Include="Utilities\Config.cs" />
+    <Compile Include="Utilities\ConfigHelper.cs" />
+    <Compile Include="Utilities\IndexHelper.cs" />
+    <Compile Include="Utilities\InstanceHelper.cs" />
+    <Compile Include="Utilities\InternetHelper.cs" />
+    <Compile Include="Utilities\JsonHelper.cs" />
+    <Compile Include="Utilities\LogFile.cs" />
+    <Compile Include="Utilities\MenuHelper.cs" />
+    <Compile Include="Utilities\ReplaceVariables.cs" />
+    <Compile Include="Utilities\SettingsHelper.cs" />
+    <Compile Include="Utilities\UpdateHelper.cs" />
+    <Compile Include="Utilities\ValidationHelper.cs" />
+    <Compile Include="Utilities\ExtensionsManager.cs" />
+    <Compile Include="Utilities\XmlHelper.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

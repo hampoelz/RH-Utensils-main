@@ -1,5 +1,5 @@
 ﻿using MahApps.Metro.Controls;
-using Main.Wpf.Functions;
+using Main.Wpf.Utilities;
 using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
@@ -54,9 +54,9 @@ namespace Main.Wpf
         {
             try
             {
-                if (Informations.Extension.Favicon != "")
+                if (Config.Informations.Extension.Favicon != "")
                 {
-                    Uri iconUri = new Uri(Informations.Extension.Favicon, UriKind.Relative);
+                    Uri iconUri = new Uri(Config.Informations.Extension.Favicon, UriKind.Relative);
                     Icon = new BitmapImage(iconUri);
                 }
             }
@@ -65,12 +65,12 @@ namespace Main.Wpf
                 LogFile.WriteLog(ex);
             }
 
-            if (Informations.Extension.WindowHeight > MinHeight) MinHeight = Informations.Extension.WindowHeight;
-            if (Informations.Extension.WindowWidth > MinWidth) MinWidth = Informations.Extension.WindowWidth;
+            if (Config.Informations.Extension.WindowHeight > MinHeight) MinHeight = Config.Informations.Extension.WindowHeight;
+            if (Config.Informations.Extension.WindowWidth > MinWidth) MinWidth = Config.Informations.Extension.WindowWidth;
 
             CenterWindowOnScreen();
 
-            if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Informations.Extension.Name, "updater.exe")))
+            if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name, "updater.exe")))
             {
                 Index.Navigate(new Uri("Pages/Update.xaml", UriKind.Relative));
                 return;
@@ -87,15 +87,15 @@ namespace Main.Wpf
 
         public async Task Login()
         {
-            if (Functions.Login.SkipLogin)
+            if (Config.Login.SkipLogin)
             {
                 await LoadExtensionAsync();
             }
-            else if (await Functions.Login.FirstRun.Get())
+            else if (await Config.Login.FirstRun.Get())
             {
                 Index.Navigate(new Uri("Pages/Login.xaml", UriKind.Relative));
             }
-            else if (await Functions.Login.LoggedIn.Get())
+            else if (await Config.Login.LoggedIn.Get())
             {
                 Index.Navigate(new Uri("Pages/Login.xaml", UriKind.Relative));
             }
@@ -109,7 +109,7 @@ namespace Main.Wpf
         {
             if (wipeAnimation) Wipe.Visibility = Visibility.Visible;
 
-            await Settings.StartSync();
+            await SettingsHelper.StartSync();
 
             var timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 1), DispatcherPriority.Normal, delegate
             {
@@ -118,29 +118,24 @@ namespace Main.Wpf
 
             timer.Start();
 
-            if (Functions.Menu.SingleSite.HideMenu)
+            if (Config.Menu.SingleSite.HideMenu)
             {
-                //IndexGrid
                 MainGrid.Children.Add(IndexGrid);
 
-                //Index
                 Index.Visibility = Visibility.Collapsed;
 
                 if (wipeAnimation) await RunWipeAnimation();
 
-                await SetExe(Functions.Menu.SingleSite.Path, Functions.Menu.SingleSite.StartArguments.Replace("{fileAssociation}", Versioning.File));
+                await SetExe(Config.Menu.SingleSite.Path, Config.Menu.SingleSite.StartArguments);
             }
             else
             {
-                //IndexGrid
                 IndexGrid.Margin = new Thickness(250, 0, 0, 0);
                 MainGrid.Children.Add(IndexGrid);
 
-                //Index
                 Index.Margin = new Thickness(250, 0, 0, 0);
                 Index.Visibility = Visibility.Collapsed;
 
-                //Menu
                 Menu.HorizontalAlignment = HorizontalAlignment.Left;
                 Menu.NavigationUIVisibility = NavigationUIVisibility.Hidden;
                 Menu.Navigate(new Uri("Pages/Menu.xaml", UriKind.Relative));

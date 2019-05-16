@@ -1,4 +1,4 @@
-﻿using Main.Wpf.Functions;
+﻿using Main.Wpf.Utilities;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -18,45 +18,45 @@ namespace Main.Wpf.Pages
         {
             InitializeComponent();
 
-            Title = "Über " + Informations.Extension.Name;
+            Title = "Über " + Config.Informations.Extension.Name;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (Informations.Extension.Favicon != "")
-                    Image.Source = new BitmapImage(new Uri(Informations.Extension.Favicon));
+                if (Config.Informations.Extension.Favicon != "")
+                    Image.Source = new BitmapImage(new Uri(Config.Informations.Extension.Favicon));
             }
             catch (Exception ex)
             {
                 LogFile.WriteLog(ex);
             }
 
-            foreach (var channel in Enum.GetValues(typeof(Updater.UpdateChannels)))
+            foreach (var channel in Enum.GetValues(typeof(UpdateHelper.UpdateChannels)))
             {
                 ExtensionUpdateChannel.Items.Add(channel);
                 MainProgrammUpdateChannel.Items.Add(channel);
             }
 
-            Extension.Text = Informations.Extension.Name;
-            Extension1.Text = Informations.Extension.Name;
-            Extension2.Text = Informations.Extension.Name;
-            Extension3.Text = Informations.Extension.Name;
-            Developer.Text = Informations.Developer.Organisation;
-            Copyright.Text = Informations.Copyright.Organisation;
+            Extension.Text = Config.Informations.Extension.Name;
+            Extension1.Text = Config.Informations.Extension.Name;
+            Extension2.Text = Config.Informations.Extension.Name;
+            Extension3.Text = Config.Informations.Extension.Name;
+            Developer.Text = Config.Informations.Developer.Organisation;
+            Copyright.Text = Config.Informations.Copyright.Organisation;
 
-            MainProgrammVersion.Text = Updater.Informations.Programm.Version.ToString();
-            MainProgrammNewestVersion.Text = Updater.Informations.Programm.NewestVersion;
+            MainProgrammVersion.Text = Config.Updater.Programm.Version.ToString();
+            MainProgrammNewestVersion.Text = Config.Updater.Programm.NewestVersion;
 
             if (Config.ExtensionDirectoryName != "")
             {
-                AddOn.Text = Informations.Extension.Name;
-                AddonInstalledVersion.Text = Updater.Informations.Extension.Version.ToString();
-                AddonVersion.Text = Updater.Informations.Extension.RunningVersion.ToString();
-                AddonNewestVersion.Text = Updater.Informations.Extension.NewestVersion;
+                AddOn.Text = Config.Informations.Extension.Name;
+                AddonInstalledVersion.Text = Config.Updater.Extension.Version.ToString();
+                AddonVersion.Text = Config.Updater.Extension.RunningVersion.ToString();
+                AddonNewestVersion.Text = Config.Updater.Extension.NewestVersion;
 
-                ExtensionUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(Updater.UpdateChannels), Json.ReadString(Settings.Json, "updateChannel").ToLower());
+                ExtensionUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(UpdateHelper.UpdateChannels), JsonHelper.ReadString(Config.Settings.Json, "updateChannel").ToLower());
             }
             else
             {
@@ -64,7 +64,7 @@ namespace Main.Wpf.Pages
                 ExtensionUpdateChannel.Text = "-";
             }
 
-            MainProgrammUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(Updater.UpdateChannels), Properties.Settings.Default.updateChannel.ToLower());
+            MainProgrammUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(UpdateHelper.UpdateChannels), Properties.Settings.Default.updateChannel.ToLower());
 
             isDownloading();
 
@@ -73,12 +73,12 @@ namespace Main.Wpf.Pages
 
         private void Extension_Website_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Informations.Extension.Website);
+            Process.Start(Config.Informations.Extension.Website);
         }
 
         private void Developer_Website_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Informations.Developer.Website);
+            Process.Start(Config.Informations.Developer.Website);
         }
 
         private void MainProgramm_Click(object sender, RoutedEventArgs e)
@@ -93,12 +93,12 @@ namespace Main.Wpf.Pages
 
         private void Extension_SourceCode_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Informations.Extension.SourceCode);
+            Process.Start(Config.Informations.Extension.SourceCode);
         }
 
         private void Extension_Copyright_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Informations.Copyright.Website);
+            Process.Start(Config.Informations.Copyright.Website);
         }
 
         private void HampisProjekte_Click(object sender, RoutedEventArgs e)
@@ -117,7 +117,7 @@ namespace Main.Wpf.Pages
         {
             if (_isDownloading) return;
 
-            if (!Updater.isDownloading) return;
+            if (!UpdateHelper.isDownloading) return;
 
             _isDownloading = true;
 
@@ -135,7 +135,7 @@ namespace Main.Wpf.Pages
 
             InfoCard.BeginAnimation(MarginProperty, Expand);
 
-            while (Updater.isDownloading)
+            while (UpdateHelper.isDownloading)
             {
                 await Task.Delay(1000);
             }
@@ -152,7 +152,6 @@ namespace Main.Wpf.Pages
             btn.IsEnabled = true;
         }
 
-
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             btn.Click -= Button_Click;
@@ -167,20 +166,20 @@ namespace Main.Wpf.Pages
             btn_icon.BeginAnimation(OpacityProperty, FadeOut);
             btn_load.BeginAnimation(OpacityProperty, FadeIn);
 
-            await Task.Run(() => Updater.Update(false));
+            await Task.Run(() => UpdateHelper.Update(false));
 
-            MainProgrammVersion.Text = Updater.Informations.Programm.Version.ToString();
-            MainProgrammNewestVersion.Text = Updater.Informations.Programm.NewestVersion;
+            MainProgrammVersion.Text = Config.Updater.Programm.Version.ToString();
+            MainProgrammNewestVersion.Text = Config.Updater.Programm.NewestVersion;
 
             if (Config.ExtensionDirectoryName != "")
             {
-                await Task.Run(() => Updater.Update(true));
+                await Task.Run(() => UpdateHelper.Update(true));
 
-                AddonInstalledVersion.Text = Updater.Informations.Extension.Version.ToString();
-                AddonVersion.Text = Updater.Informations.Extension.RunningVersion.ToString();
-                AddonNewestVersion.Text = Updater.Informations.Extension.NewestVersion;
+                AddonInstalledVersion.Text = Config.Updater.Extension.Version.ToString();
+                AddonVersion.Text = Config.Updater.Extension.RunningVersion.ToString();
+                AddonNewestVersion.Text = Config.Updater.Extension.NewestVersion;
 
-                ExtensionUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(Updater.UpdateChannels), Json.ReadString(Settings.Json, "updateChannel").ToLower());
+                ExtensionUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(UpdateHelper.UpdateChannels), JsonHelper.ReadString(Config.Settings.Json, "updateChannel").ToLower());
             }
             else
             {
@@ -188,7 +187,7 @@ namespace Main.Wpf.Pages
                 ExtensionUpdateChannel.Text = "-";
             }
 
-            MainProgrammUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(Updater.UpdateChannels), Properties.Settings.Default.updateChannel.ToLower());
+            MainProgrammUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(UpdateHelper.UpdateChannels), Properties.Settings.Default.updateChannel.ToLower());
 
             btn_load.BeginAnimation(OpacityProperty, FadeOut);
             btn_icon.BeginAnimation(OpacityProperty, FadeIn);
@@ -213,8 +212,8 @@ namespace Main.Wpf.Pages
         {
             if (!_loaded) return;
 
-            if (Json.ReadString(Settings.Json, "updateChannel") != ExtensionUpdateChannel.SelectedItem.ToString())
-                Settings.Json = Json.ChangeValue(Settings.Json, "updateChannel", ExtensionUpdateChannel.SelectedItem.ToString());
+            if (JsonHelper.ReadString(Config.Settings.Json, "updateChannel") != ExtensionUpdateChannel.SelectedItem.ToString())
+                Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "updateChannel", ExtensionUpdateChannel.SelectedItem.ToString());
         }
     }
 }

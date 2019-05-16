@@ -6,9 +6,9 @@ using System.Net.Mail;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Main.Wpf.Functions
+namespace Main.Wpf.Utilities
 {
-    public static class Validation
+    public static class ValidationHelper
     {
         public static bool IsImageValid(string file)
         {

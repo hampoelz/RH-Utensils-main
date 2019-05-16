@@ -5,119 +5,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 
-namespace Main.Wpf.Functions
+namespace Main.Wpf.Utilities
 {
-    public static class Updater
+    public static class UpdateHelper
     {
         public enum UpdateChannels { weekly, developer, beta, release };
-
-        public static class Informations
-        {
-            private static bool useCustomVersion;
-
-            public static bool UseCustomVersion
-            {
-                get => useCustomVersion;
-                set
-                {
-                    if (useCustomVersion == value) return;
-
-                    useCustomVersion = value;
-                }
-            }
-
-            public static class Programm
-            {
-                public static Version Version
-                {
-                    get
-                    {
-                        return Assembly.GetExecutingAssembly().GetName().Version;
-                    }
-                }
-
-                private static string newestVersion = "-";
-
-                public static string NewestVersion
-                {
-                    get => newestVersion;
-                    set
-                    {
-                        if (newestVersion == value) return;
-
-                        if (value?.Length == 0 || value == null) newestVersion = "-";
-                        else newestVersion = value;
-                    }
-                }
-
-                public static string VersionsHistoryFile
-                {
-                    get
-                    {
-                        return "https://raw.githubusercontent.com/rh-utensils/main/master/Main.Wpf/VersionHistory.xml";
-                    }
-                }
-            }
-
-            public static class Extension
-            {
-                private static Version version;
-
-                public static Version Version
-                {
-                    get => version;
-                    set
-                    {
-                        if (version == value) return;
-
-                        version = value;
-                    }
-                }
-
-                private static Version runningVersion = null;
-
-                public static Version RunningVersion
-                {
-                    get => runningVersion;
-                    set
-                    {
-                        if (runningVersion == value) return;
-
-                        runningVersion = value;
-                    }
-                }
-
-                private static string newestVersion = "-";
-
-                public static string NewestVersion
-                {
-                    get => newestVersion;
-                    set
-                    {
-                        if (newestVersion == value) return;
-
-                        if (value?.Length == 0 || value == null) newestVersion = "-";
-                        else newestVersion = value;
-                    }
-                }
-
-                private static string versionsHistoryFile = "";
-
-                public static string VersionsHistoryFile
-                {
-                    get => versionsHistoryFile;
-                    set
-                    {
-                        if (versionsHistoryFile == value || value?.Length == 0) return;
-
-                        if (Uri.TryCreate(value, UriKind.Absolute, out Uri uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
-                            versionsHistoryFile = uriResult.ToString();
-                    }
-                }
-            }
-        }
 
         public static bool isDownloading;
 
@@ -127,20 +20,20 @@ namespace Main.Wpf.Functions
 
             LogFile.WriteLog("Check for new " + (updateExtension ? "extension" : "program") + " updates ...");
 
-            if (updateExtension) Informations.Extension.NewestVersion = null;
-            if (!updateExtension) Informations.Programm.NewestVersion = null;
+            if (updateExtension) Config.Updater.Extension.NewestVersion = null;
+            if (!updateExtension) Config.Updater.Programm.NewestVersion = null;
 
             try
             {
-                if (!InternetChecker.Check()) return;
+                if (!InternetHelper.CheckConnection()) return;
 
-                var file = updateExtension ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, Informations.Extension.RunningVersion.ToString(), "VersionHistory.xml") : Path.GetFullPath(@".\VersionHistory.xml");
+                var file = updateExtension ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, Config.Updater.Extension.RunningVersion.ToString(), "VersionHistory.xml") : Path.GetFullPath(@".\VersionHistory.xml");
 
                 try
                 {
                     using (var client = new WebClient())
                     {
-                        client.DownloadFile(updateExtension ? Informations.Extension.VersionsHistoryFile : Informations.Programm.VersionsHistoryFile, file);
+                        client.DownloadFile(updateExtension ? Config.Updater.Extension.VersionsHistoryFile : Config.Updater.Programm.VersionsHistoryFile, file);
                     }
                 }
                 catch
@@ -148,14 +41,14 @@ namespace Main.Wpf.Functions
                     return;
                 }
 
-                var userUpdateChannel = updateExtension ? (int)Enum.Parse(typeof(UpdateChannels), Json.ReadString(Settings.Json, "updateChannel").ToLower()) : (int)Enum.Parse(typeof(UpdateChannels), Properties.Settings.Default.updateChannel);
+                var userUpdateChannel = updateExtension ? (int)Enum.Parse(typeof(UpdateChannels), JsonHelper.ReadString(Config.Settings.Json, "updateChannel").ToLower()) : (int)Enum.Parse(typeof(UpdateChannels), Properties.Settings.Default.updateChannel);
 
-                var updateChannels = Xml.ReadStringList(file, "updateChannel");
+                var updateChannels = XmlHelper.ReadStringList(file, "updateChannel");
 
                 var versions = new List<Version>();
 
                 for (var i = 0; i != updateChannels.Count; ++i)
-                    versions.Add(new Version(Xml.ReadStringList(file, "version")[i]));
+                    versions.Add(new Version(XmlHelper.ReadStringList(file, "version")[i]));
 
                 var latestVersion = versions.Max();
 
@@ -172,8 +65,8 @@ namespace Main.Wpf.Functions
                     if (!Enum.IsDefined(typeof(UpdateChannels), (int)Enum.Parse(typeof(UpdateChannels), updateChannels[i].ToLower()))) continue;
 
                     updateChannel = (int)Enum.Parse(typeof(UpdateChannels), updateChannels[i].ToLower());
-                    serverUpdateFile = Xml.ReadStringList(file, "file")[i];
-                    useSetup = Xml.ReadBoolList(file, "setup")[i];
+                    serverUpdateFile = XmlHelper.ReadStringList(file, "file")[i];
+                    useSetup = XmlHelper.ReadBoolList(file, "setup")[i];
                 }
 
                 if (updateChannel < userUpdateChannel)
@@ -184,16 +77,16 @@ namespace Main.Wpf.Functions
                     goto checkUpdateChannel;
                 }
 
-                var currentVersion = updateExtension ? Informations.Extension.Version : Informations.Programm.Version;
+                var currentVersion = updateExtension ? Config.Updater.Extension.Version : Config.Updater.Programm.Version;
 
                 switch (updateExtension)
                 {
                     case true:
-                        Informations.Extension.NewestVersion = latestVersion.ToString();
+                        Config.Updater.Extension.NewestVersion = latestVersion.ToString();
                         break;
 
                     case false:
-                        Informations.Programm.NewestVersion = latestVersion.ToString();
+                        Config.Updater.Programm.NewestVersion = latestVersion.ToString();
                         break;
                 }
 
