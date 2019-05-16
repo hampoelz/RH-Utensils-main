@@ -1,4 +1,4 @@
-﻿using Main.Wpf.Functions;
+﻿using Main.Wpf.Utilities;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,15 +14,21 @@ namespace Main.Wpf
         {
             Parameters = e.Args;
 
-            await Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () => await Versioning.Start().ConfigureAwait(false)));
+            await Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () => await ExtensionsManager.LoadExtension().ConfigureAwait(false)));
 
-            await Task.Run(Updater.BackgroundProgrammUpdate);
+            if (InstanceHelper.CheckInstances())
+            {
+                MessageHelper.SendDataMessage(InstanceHelper.GetAlreadyRunningInstance(), "It Works!!!");
+                Application.Current.Shutdown();
+            }
+
+            await Task.Run(UpdateHelper.BackgroundProgrammUpdate);
 
             Window window = new MainWindow();
             window.Show();
 
-            await Task.Run(() => Updater.Update(false));
-            if (Config.ExtensionDirectoryName != "") await Task.Run(() => Updater.Update(true));
+            await Task.Run(() => UpdateHelper.Update(false));
+            if (Config.ExtensionDirectoryName != "") await Task.Run(() => UpdateHelper.Update(true));
         }
     }
 }

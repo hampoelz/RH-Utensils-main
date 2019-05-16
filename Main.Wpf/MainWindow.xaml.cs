@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
@@ -52,6 +53,10 @@ namespace Main.Wpf
 
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
+
+            var hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+            hwndSource.AddHook(new HwndSourceHook(WndProc));
+
             try
             {
                 if (Config.Informations.Extension.Favicon != "")
@@ -83,6 +88,20 @@ namespace Main.Wpf
             }
 
             await Login();
+        }
+
+        private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == MessageHelper.WM_COPYDATA)
+            {
+                COPYDATASTRUCT _dataStruct = Marshal.PtrToStructure<COPYDATASTRUCT>(lParam);
+
+                string _msg = Marshal.PtrToStringUni(_dataStruct.lpData, _dataStruct.cbData / 2);
+
+                MessageHelper.Handle(_msg);
+            }
+
+            return IntPtr.Zero;
         }
 
         public async Task Login()

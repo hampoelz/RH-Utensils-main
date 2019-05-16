@@ -304,6 +304,7 @@
     <Compile Include="Utilities\AccountHelper.cs" />
     <Compile Include="Utilities\Config.cs" />
     <Compile Include="Utilities\ConfigHelper.cs" />
+    <Compile Include="Utilities\MessageHelper.cs" />
     <Compile Include="Utilities\IndexHelper.cs" />
     <Compile Include="Utilities\InstanceHelper.cs" />
     <Compile Include="Utilities\InternetHelper.cs" />
