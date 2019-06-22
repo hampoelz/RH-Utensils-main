@@ -95,7 +95,7 @@ namespace Main.Wpf.Pages
 
             try
             {
-                if (Config.Informations.Extension.Favicon != "")
+                if (!string.IsNullOrEmpty(Config.Informations.Extension.Favicon))
                     Logo.Source = new BitmapImage(new Uri(Config.Informations.Extension.Favicon));
             }
             catch (Exception ex)

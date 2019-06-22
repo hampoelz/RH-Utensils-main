@@ -18,7 +18,7 @@ namespace Main.Wpf
 
             if (InstanceHelper.CheckInstances())
             {
-                MessageHelper.SendDataMessage(InstanceHelper.GetAlreadyRunningInstance(), "It Works!!!");
+                MessageHelper.SendDataMessage(InstanceHelper.GetAlreadyRunningInstance(), "open File \"" + ExtensionsManager.FileToOpen + "\"");
                 Application.Current.Shutdown();
             }
 
@@ -28,7 +28,9 @@ namespace Main.Wpf
             window.Show();
 
             await Task.Run(() => UpdateHelper.Update(false));
-            if (Config.ExtensionDirectoryName != "") await Task.Run(() => UpdateHelper.Update(true));
+            if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName)) await Task.Run(() => UpdateHelper.Update(true));
+
+            if (Config.Informations.Extension.Name != "RH Utensils")  SettingsHelper.CreateSettingsWatcher();
         }
     }
 }

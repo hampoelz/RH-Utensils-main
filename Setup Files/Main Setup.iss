@@ -2,9 +2,9 @@
 #define ZipFileLink      "https://github.com/rh-utensils/main/releases/download/v" + ProgrammVersion + "/Main.zip"
 
 [Setup]
-AppId                    = RH Utensils_Main_Local
+AppId                    = RH Utensils_Main
 AppName                  = RH Utensils Main
-UninstallDisplayName     = RH Utensils Main Local
+UninstallDisplayName     = RH Utensils Main
 AppVersion               = {#ProgrammVersion}
 
 AppPublisher             = RH Utensils
@@ -20,7 +20,7 @@ DisableDirPage           = true
 DisableProgramGroupPage  = yes
 
 PrivilegesRequired       = lowest
-OutputBaseFilename       = Main Setup - Local
+OutputBaseFilename       = Main Setup
 WizardStyle              = modern
 SetupIconFile            = Main Logo.ico
 MinVersion               = 6.1
@@ -39,7 +39,7 @@ Name: "{userpf}\RH Utensils"
 Name: "{userpf}\RH Utensils\Main"
 
 [Icons]
-Name: "{userprograms}\RH Utensils (für {username})\Main"; Filename: "{app}\RH Utensils.exe"; Tasks: programsicon
+Name: "{userprograms}\RH Utensils\Main"; Filename: "{app}\RH Utensils.exe"; Tasks: programsicon
 Name: "{userdesktop}\RH Utensils Main"; Filename: "{app}\RH Utensils.exe"; Tasks: desktopicon
 
 [UninstallDelete]

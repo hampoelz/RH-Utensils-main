@@ -7,7 +7,7 @@ namespace Main.Wpf.Utilities
 {
     public static class LogFile
     {
-        public static readonly string MBaseDir = Config.ExtensionDirectoryName != "" ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, "Logs") : Path.Combine(Path.GetFullPath(@".\"), "Logs");
+        public static readonly string MBaseDir = !string.IsNullOrEmpty(Config.ExtensionDirectoryName) ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, "Logs") : Path.Combine(Path.GetFullPath(@".\"), "Logs");
 
         public static string GetFilenameYYYMMDD(string suffix, string extension)
         {

@@ -170,7 +170,15 @@ namespace Main.Wpf.Pages
 
         private void Uninstall_OnClick(object sender, RoutedEventArgs e)
         {
-            ShowInfoBox("warning", "Willst du diese Add-on Version wirklich Deinstallieren?");
+            if (Version.Items.Count > 1)
+            {
+                ShowInfoBox("warning", "Willst du diese Add-on Version wirklich deinstallieren?");
+            }
+            else
+            {
+                ShowInfoBox("warning", "Willst du dieses Add-on wirklich deinstallieren?");
+            }
+
             ConfirmUninstall.Visibility = Visibility.Visible;
         }
 
@@ -178,11 +186,39 @@ namespace Main.Wpf.Pages
         {
             try
             {
-                var extensionsDirectory = Path.Combine(Config.ExtensionsDirectory, Extension.Text, Version.Text);
+                if (Version.Items.Count > 1)
+                {
+                    var ExtensionDirectory = Path.Combine(Config.ExtensionsDirectory, Extension.Text, Version.Text);
 
-                Directory.Delete(extensionsDirectory, true);
+                    Directory.Delete(ExtensionDirectory, true);
 
-                ShowInfoBox("success", "Das Add-on wurde erfolgreich deinstalliert.");
+                    ShowInfoBox("success", "Die Add-on Version " + Version.Text + " wurde erfolgreich deinstalliert.");
+                }
+                else
+                {
+                    string[] setupPaths = Directory.GetFiles(Path.Combine(Config.ExtensionsDirectory, Extension.Text), "unins*.exe");
+                    if (setupPaths.Count() > 0)
+                    {
+                        var ps = new ProcessStartInfo(setupPaths[0])
+                        {
+                            Arguments = "/VERYSILENT"
+                        };
+
+                        var p = Process.Start(ps);
+
+                        ShowInfoBox("success", "Das Add-on wird im Hintergrund deinstalliert.");
+                    }
+                    else
+                    {
+                        var ExtensionDirectory = Path.Combine(Config.ExtensionsDirectory, Extension.Text);
+
+                        Directory.Delete(ExtensionDirectory, true);
+
+                        ShowInfoBox("success", "Das Add-on wurde erfolgreich deinstalliert.");
+                    }
+                }
+
+                
                 ConfirmUninstall.Visibility = Visibility.Collapsed;
                 Version.ItemsSource = "";
                 Start.IsEnabled = false;

@@ -7,9 +7,9 @@
 #define ZipFileLink             "https://github.com/rh-utensils/main/releases/download/v" + ExtensionVersion + "/ExampleExtension.zip"
 
 [Setup]
-AppId                    = {#ExtensionPublisher}_{#ExtensionName}_Local
+AppId                    = {#ExtensionPublisher}_{#ExtensionName}
 AppName                  = {#ExtensionName}
-UninstallDisplayName     = {#ExtensionName} Local
+UninstallDisplayName     = {#ExtensionName}
 AppVersion               = {#ExtensionVersion}
 
 AppPublisher             = {#ExtensionPublisher}
@@ -25,7 +25,7 @@ DisableDirPage           = true
 DisableProgramGroupPage  = yes
 
 PrivilegesRequired       = lowest
-OutputBaseFilename       = {#ExtensionName} Setup - Local
+OutputBaseFilename       = {#ExtensionName} Setup
 WizardStyle              = modern
 SetupIconFile            = {#ExtensionName} Logo.ico
 MinVersion               = 6.1
@@ -44,7 +44,7 @@ Name: "{app}"
 Name: "{app}\{#ExtensionVersion}"
 
 [Icons]
-IconFilename: "{app}\{#ExtensionVersion}\Icons\logo.ico"; Name: "{userprograms}\{#ExtensionPublisher} (für {username})\{#ExtensionName}"; Filename: "{userpf}\RH Utensils\Main\RH Utensils.exe"; Parameters: "-""{#ExtensionName}"""; Tasks: programsicon
+IconFilename: "{app}\{#ExtensionVersion}\Icons\logo.ico"; Name: "{userprograms}\{#ExtensionPublisher}\{#ExtensionName}"; Filename: "{userpf}\RH Utensils\Main\RH Utensils.exe"; Parameters: "-""{#ExtensionName}"""; Tasks: programsicon
 IconFilename: "{app}\{#ExtensionVersion}\Icons\logo.ico"; Name: "{userdesktop}\{#ExtensionName}"; Filename: "{userpf}\RH Utensils\Main\RH Utensils.exe"; Parameters: "-""{#ExtensionName}"""; Tasks: desktopicon 
 
 [UninstallDelete]
@@ -58,9 +58,9 @@ Filename: "{userpf}\RH Utensils\Main\RH Utensils.exe"; Parameters: "-""{#Extensi
 [Code]
 procedure InitializeWizard();
 begin
-  if not RegKeyExists(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\RH Utensils_Main_Local_is1') then
+  if not RegKeyExists(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\RH Utensils_Main_is1') then
   begin
-    idpAddFile('https://raw.githubusercontent.com/rh-utensils/main/master/Setup Files/Output/Main Setup - Local.exe', ExpandConstant('{tmp}\MainSetup.exe'));  
+    idpAddFile('https://raw.githubusercontent.com/rh-utensils/main/master/Setup Files/Output/Main Setup.exe', ExpandConstant('{tmp}\MainSetup.exe'));  
   end;
 
   idpAddFile('https://raw.githubusercontent.com/rh-utensils/main/master/Setup Files/7za.exe', ExpandConstant('{tmp}\unzip.exe'));

@@ -15,8 +15,12 @@ namespace Main.Wpf.Utilities
 {
     public static class Config
     {
-        private static string file = "";
+        public static bool HasProperty(this Type obj, string propertyName)
+        {
+            return obj.GetProperty(propertyName) != null;
+        }
 
+        private static string file = "";
         public static string File
         {
             get => file;
@@ -24,26 +28,34 @@ namespace Main.Wpf.Utilities
             {
                 value = Path.GetFullPath(ReplaceVariables.Replace(value));
 
+                if (!string.IsNullOrEmpty(file)) return;
+
                 if (file == value || string.IsNullOrEmpty(value)) return;
                 if (!System.IO.File.Exists(value)) return;
                 if (!ValidationHelper.IsXmlValid(value)) return;
 
                 file = value;
-
-                ConfigHelper.CreateConfigWatcher();
-
-                LogFile.WriteLog("Change Config File path ...");
             }
         }
 
-        private static string extensionsDirectory = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)), "Extensions");
-
+        private static string extensionsDirectory;
         public static string ExtensionsDirectory
         {
-            get => extensionsDirectory;
+            get
+            {
+                if (string.IsNullOrEmpty(extensionsDirectory))
+                {
+                    return Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)), "Extensions");
+                }
+                    
+
+                return extensionsDirectory;
+            }
             set
             {
                 value = Path.GetFullPath(value);
+
+                if (!string.IsNullOrEmpty(extensionsDirectory)) return;
 
                 if (extensionsDirectory == value || string.IsNullOrEmpty(value)) return;
                 if (!Directory.Exists(value)) return;
@@ -55,29 +67,35 @@ namespace Main.Wpf.Utilities
         }
 
         private static string extensionDirectoryName = "";
-
         public static string ExtensionDirectoryName
         {
             get => extensionDirectoryName;
             set
             {
+                if (!string.IsNullOrEmpty(extensionDirectoryName)) return;
+
                 if (extensionDirectoryName == value || string.IsNullOrEmpty(value)) return;
 
                 extensionDirectoryName = value;
-
-                //LogFile.WriteLog("Set Extension Directory Name ...");
             }
         }
 
         public static class Auth0
         {
-            private static string domain = "hampoelz.eu.auth0.com";
-
+            private static string domain;
             public static string Domain
             {
-                get => domain;
+                get
+                {
+                    if (string.IsNullOrEmpty(domain))
+                        return "hampoelz.eu.auth0.com";
+
+                    return domain;
+                }
                 set
                 {
+                    if (!string.IsNullOrEmpty(domain)) return;
+
                     if (domain == value || string.IsNullOrEmpty(value)) return;
 
                     domain = value;
@@ -86,13 +104,20 @@ namespace Main.Wpf.Utilities
                 }
             }
 
-            private static string clientId = "_9ZvrbGJUX4MfWdzt6F7pW2e0Z0Zc0OA";
-
+            private static string clientId;
             public static string ClientId
             {
-                get => clientId;
+                get
+                {
+                    if (string.IsNullOrEmpty(clientId))
+                        return "_9ZvrbGJUX4MfWdzt6F7pW2e0Z0Zc0OA";
+
+                    return clientId;
+                }
                 set
                 {
+                    if (!string.IsNullOrEmpty(clientId)) return;
+
                     if (clientId == value || string.IsNullOrEmpty(value)) return;
 
                     clientId = value;
@@ -101,13 +126,20 @@ namespace Main.Wpf.Utilities
                 }
             }
 
-            private static string apiClientId = "GTgQvzJvhsSPT0w8sirtIj69cTwfS9AW";
-
+            private static string apiClientId;
             public static string ApiClientId
             {
-                get => apiClientId;
+                get
+                {
+                    if (string.IsNullOrEmpty(apiClientId))
+                        return "GTgQvzJvhsSPT0w8sirtIj69cTwfS9AW";
+
+                    return apiClientId;
+                }
                 set
                 {
+                    if (!string.IsNullOrEmpty(apiClientId)) return;
+
                     if (apiClientId == value || string.IsNullOrEmpty(value)) return;
 
                     apiClientId = value;
@@ -116,13 +148,20 @@ namespace Main.Wpf.Utilities
                 }
             }
 
-            private static string apiClientSecret = "J4db362UcFbgrQBaXb0doKt4MNEjyPh4W2kueckfCpEppl2zHzB8xyLu3N7REknh";
-
+            private static string apiClientSecret;
             public static string ApiClientSecret
             {
-                get => apiClientSecret;
+                get
+                {
+                    if (string.IsNullOrEmpty(apiClientSecret))
+                        return "J4db362UcFbgrQBaXb0doKt4MNEjyPh4W2kueckfCpEppl2zHzB8xyLu3N7REknh";
+
+                    return apiClientSecret;
+                }
                 set
                 {
+                    if (!string.IsNullOrEmpty(apiClientSecret)) return;
+
                     if (apiClientSecret == value || string.IsNullOrEmpty(value)) return;
 
                     apiClientSecret = value;
@@ -136,26 +175,40 @@ namespace Main.Wpf.Utilities
         {
             public static class Copyright
             {
-                private static string organisation = "Hampis Projekte";
-
+                private static string organisation;
                 public static string Organisation
                 {
-                    get => organisation;
+                    get
+                    {
+                        if (string.IsNullOrEmpty(organisation))
+                            return "Hampis Projekte";
+
+                        return organisation;
+                    }
                     set
                     {
+                        if (!string.IsNullOrEmpty(organisation)) return;
+
                         if (organisation == value || string.IsNullOrEmpty(value)) return;
 
                         organisation = value;
                     }
                 }
 
-                private static string website = "https://hampoelz.net/";
-
+                private static string website;
                 public static string Website
                 {
-                    get => website;
+                    get
+                    {
+                        if (string.IsNullOrEmpty(website))
+                            return "https://hampoelz.net/";
+
+                        return website;
+                    }
                     set
                     {
+                        if (!string.IsNullOrEmpty(website)) return;
+
                         if (website == value || string.IsNullOrEmpty(value)) return;
 
                         if (Uri.TryCreate(value, UriKind.Absolute, out Uri uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)) website = uriResult.ToString();
@@ -165,26 +218,40 @@ namespace Main.Wpf.Utilities
 
             public static class Developer
             {
-                private static string organisation = "RH Utensils";
-
+                private static string organisation;
                 public static string Organisation
                 {
-                    get => organisation;
+                    get
+                    {
+                        if (string.IsNullOrEmpty(organisation))
+                            return "RH Utensils";
+
+                        return organisation;
+                    }
                     set
                     {
+                        if (!string.IsNullOrEmpty(organisation)) return;
+
                         if (organisation == value || string.IsNullOrEmpty(value)) return;
 
                         organisation = value;
                     }
                 }
 
-                private static string website = "https://rh-utensils.hampoelz.net/";
-
+                private static string website;
                 public static string Website
                 {
-                    get => website;
+                    get
+                    {
+                        if (string.IsNullOrEmpty(website))
+                            return "https://rh-utensils.hampoelz.net/";
+
+                        return website;
+                    }
                     set
                     {
+                        if (!string.IsNullOrEmpty(website)) return;
+
                         if (website == value || string.IsNullOrEmpty(value)) return;
 
                         if (Uri.TryCreate(value, UriKind.Absolute, out Uri uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)) website = uriResult.ToString();
@@ -195,66 +262,60 @@ namespace Main.Wpf.Utilities
             public static class Extension
             {
                 private static int windowHeight = 700;
-
                 public static int WindowHeight
                 {
                     get => windowHeight;
                     set
                     {
-                        if (windowHeight == value) return;
+                        if (windowHeight == value || value < 700) return;
 
                         windowHeight = value;
 
                         if (!(Application.Current.MainWindow is MainWindow mw)) return;
                         mw.MinHeight = value;
+
+                        mw.CenterWindowOnScreen();
                     }
                 }
 
                 private static int windowWidth = 1200;
-
                 public static int WindowWidth
                 {
                     get => windowWidth;
                     set
                     {
-                        if (windowWidth == value) return;
+                        if (windowWidth == value || value < 1200) return;
 
                         windowWidth = value;
 
                         if (!(Application.Current.MainWindow is MainWindow mw)) return;
                         mw.MinWidth = value;
+
+                        mw.CenterWindowOnScreen();
                     }
                 }
 
-                private static string name = "RH Utensils";
-
+                private static string name;
                 public static string Name
                 {
-                    get => name;
+                    get
+                    {
+                        if (string.IsNullOrEmpty(name))
+                            return "RH Utensils";
+
+                        return name;
+                    }
                     set
                     {
+                        if (!string.IsNullOrEmpty(name)) return;
+
                         if (name == value || string.IsNullOrEmpty(value)) return;
 
-                        if (name != "RH Utensils") return;
-
                         name = value;
-
-                        if (!(Application.Current.MainWindow is MainWindow mw)) return;
-
-                        LogFile.WriteLog("Update app name ...");
-
-                        var oldTitle = mw.Title;
-
-                        string[] Title = oldTitle.Split(new[] { " - " }, StringSplitOptions.None);
-
-                        var newTitle = Title[0] + " - " + value;
-
-                        mw.Title = newTitle;
                     }
                 }
 
                 private static string color = "blue";
-
                 public static string Color
                 {
                     get => color;
@@ -270,8 +331,6 @@ namespace Main.Wpf.Utilities
 
                         color = value;
 
-                        LogFile.WriteLog("Update app color ...");
-
                         try
                         {
                             var Color = new SwatchesProvider().Swatches.FirstOrDefault(a => a.Name == value);
@@ -281,6 +340,8 @@ namespace Main.Wpf.Utilities
                             var palette = new PaletteHelper().QueryPalette();
                             var hue = palette.PrimarySwatch.PrimaryHues.ToArray()[palette.PrimaryDarkHueIndex];
                             Pages.Menu.GridCursor.Background = new SolidColorBrush(hue.Color);
+
+                            MessageHelper.SendDataBroadcastMessage("set Color \"" + value + "\"");
                         }
                         catch (Exception ex)
                         {
@@ -290,7 +351,6 @@ namespace Main.Wpf.Utilities
                 }
 
                 private static string theme = "dark";
-
                 public static string Theme
                 {
                     get => theme;
@@ -322,6 +382,8 @@ namespace Main.Wpf.Utilities
 
                                 ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("blue"), ThemeManager.GetAppTheme("BaseDark"));
                             }
+
+                            MessageHelper.SendDataBroadcastMessage("set Theme \"" + value + "\"");
                         }
                         catch (Exception ex)
                         {
@@ -331,7 +393,6 @@ namespace Main.Wpf.Utilities
                 }
 
                 private static string favicon = "";
-
                 public static string Favicon
                 {
                     get => favicon;
@@ -353,10 +414,12 @@ namespace Main.Wpf.Utilities
 
                         try
                         {
-                            if (favicon != "")
+                            if (!string.IsNullOrEmpty(favicon))
                             {
                                 Uri iconUri = new Uri(favicon, UriKind.Relative);
                                 mw.Icon = new BitmapImage(iconUri);
+
+                                //MessageHelper.SendDataBroadcastMessage("set Favicon \"" + value + "\"");
                             }
                         }
                         catch (Exception ex)
@@ -366,39 +429,60 @@ namespace Main.Wpf.Utilities
                     }
                 }
 
-                private static string sourceCode = "https://github.com/rh-utensils/main";
-
+                private static string sourceCode;
                 public static string SourceCode
                 {
-                    get => sourceCode;
+                    get
+                    {
+                        if (string.IsNullOrEmpty(sourceCode))
+                            return "https://github.com/rh-utensils/main";
+
+                        return sourceCode;
+                    }
                     set
                     {
+                        if (!string.IsNullOrEmpty(sourceCode)) return;
+
                         if (sourceCode == value || string.IsNullOrEmpty(value)) return;
 
                         if (Uri.TryCreate(value, UriKind.Absolute, out Uri uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)) sourceCode = uriResult.ToString();
                     }
                 }
 
-                private static string website = "https://github.com/rh-utensils/main";
-
+                private static string website;
                 public static string Website
                 {
-                    get => website;
+                    get
+                    {
+                        if (string.IsNullOrEmpty(website))
+                            return "https://github.com/rh-utensils/main";
+
+                        return website;
+                    }
                     set
                     {
+                        if (!string.IsNullOrEmpty(website)) return;
+
                         if (website == value || string.IsNullOrEmpty(value)) return;
 
                         if (Uri.TryCreate(value, UriKind.Absolute, out Uri uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)) website = uriResult.ToString();
                     }
                 }
 
-                private static string issueTracker = "https://github.com/rh-utensils/main/issues/new?assignees=&labels=bug&template=fehlerbericht.md&title=";
-
+                private static string issueTracker;
                 public static string IssueTracker
                 {
-                    get => issueTracker;
+                    get
+                    {
+                        if (string.IsNullOrEmpty(issueTracker))
+                            return "https://github.com/rh-utensils/main/issues/new?assignees=&labels=bug&template=fehlerbericht.md&title=";
+
+                        return issueTracker;
+                    }
                     set
                     {
+                        if (!string.IsNullOrEmpty(issueTracker)) return;
+
                         if (issueTracker == value || string.IsNullOrEmpty(value)) return;
 
                         if (!Uri.TryCreate(value, UriKind.Absolute, out Uri uriResult) || (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
@@ -412,13 +496,9 @@ namespace Main.Wpf.Utilities
         public static class Login
         {
             private static bool skipLogin;
-
             public static bool SkipLogin
             {
-                get
-                {
-                    return skipLogin;
-                }
+                get => skipLogin;
                 set
                 {
                     if (skipLogin == value) return;
@@ -433,11 +513,8 @@ namespace Main.Wpf.Utilities
                 {
                     if (Informations.Extension.Name == "RH Utensils") return;
 
-                    ConfigHelper._configIsChanging = true;
                     await XmlHelper.SetString(Config.File, "config/loggedIn", value.ToString()).ConfigureAwait(false);
-                    ConfigHelper._configIsChanging = false;
                 }
-
                 public static async Task<bool> Get()
                 {
                     if (Informations.Extension.Name == "RH Utensils") return false;
@@ -452,11 +529,8 @@ namespace Main.Wpf.Utilities
                 {
                     if (Informations.Extension.Name == "RH Utensils") return;
 
-                    ConfigHelper._configIsChanging = true;
                     await XmlHelper.SetString(Config.File, "config/firstRun", value.ToString()).ConfigureAwait(false);
-                    ConfigHelper._configIsChanging = false;
                 }
-
                 public static async Task<bool> Get()
                 {
                     if (Informations.Extension.Name == "RH Utensils") return false;
@@ -469,10 +543,9 @@ namespace Main.Wpf.Utilities
         public static class Menu
         {
             private static MenuState defaultMenuState;
-
             public static MenuState DefaultMenuState
             {
-                get { return defaultMenuState; }
+                get => defaultMenuState;
                 set
                 {
                     if (defaultMenuState == value) return;
@@ -482,10 +555,9 @@ namespace Main.Wpf.Utilities
             }
 
             private static bool isIndexLoading;
-
             public static bool IsIndexLoading
             {
-                get { return isIndexLoading; }
+                get => isIndexLoading;
                 set
                 {
                     if (isIndexLoading == value) return;
@@ -500,10 +572,9 @@ namespace Main.Wpf.Utilities
             }
 
             private static List<(string Title, string Icon, string Path, string StartArguments)> sites = new List<(string Title, string Icon, string Path, string StartArguments)>();
-
             public static List<(string Title, string Icon, string Path, string StartArguments)> Sites
             {
-                get { return sites; }
+                get => sites;
                 set
                 {
                     if (sites == value) return;
@@ -557,10 +628,9 @@ namespace Main.Wpf.Utilities
             }
 
             private static (bool HideMenu, string Path, string StartArguments) singleSite = (false, "", "");
-
             public static (bool HideMenu, string Path, string StartArguments) SingleSite
             {
-                get { return singleSite; }
+                get => singleSite;
                 set
                 {
                     if (singleSite == value) return;
@@ -575,7 +645,6 @@ namespace Main.Wpf.Utilities
         public static class Settings
         {
             private static string file = "";
-
             public static string File
             {
                 get => file;
@@ -583,7 +652,7 @@ namespace Main.Wpf.Utilities
                 {
                     if (string.IsNullOrEmpty(value)) value = @"C:\Users\{username}\AppData\Local\HampisProjekte\RH Utensils\{appName}\Settings.json";
 
-                    if (file != "") return;
+                    if (!string.IsNullOrEmpty(file)) return;
 
                     value = Path.GetFullPath(ReplaceVariables.Replace(value));
 
@@ -646,7 +715,6 @@ namespace Main.Wpf.Utilities
         public static class Updater
         {
             private static bool useCustomVersion;
-
             public static bool UseCustomVersion
             {
                 get => useCustomVersion;
@@ -669,7 +737,6 @@ namespace Main.Wpf.Utilities
                 }
 
                 private static string newestVersion = "-";
-
                 public static string NewestVersion
                 {
                     get => newestVersion;
@@ -694,7 +761,6 @@ namespace Main.Wpf.Utilities
             public static class Extension
             {
                 private static Version version;
-
                 public static Version Version
                 {
                     get => version;
@@ -707,7 +773,6 @@ namespace Main.Wpf.Utilities
                 }
 
                 private static Version runningVersion = null;
-
                 public static Version RunningVersion
                 {
                     get => runningVersion;
@@ -720,7 +785,6 @@ namespace Main.Wpf.Utilities
                 }
 
                 private static string newestVersion = "-";
-
                 public static string NewestVersion
                 {
                     get => newestVersion;
@@ -734,7 +798,6 @@ namespace Main.Wpf.Utilities
                 }
 
                 private static string versionsHistoryFile = "";
-
                 public static string VersionsHistoryFile
                 {
                     get => versionsHistoryFile;

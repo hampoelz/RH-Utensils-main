@@ -22,8 +22,6 @@ namespace Main.Wpf.Utilities
 
         public static void AddSite(int index)
         {
-            LogFile.WriteLog("Add page ...");
-
             try
             {
                 var menuItem = new ListViewItem();
@@ -64,8 +62,6 @@ namespace Main.Wpf.Utilities
 
         public static void ReloadSite(int index)
         {
-            LogFile.WriteLog("Update page ...");
-
             try
             {
                 var sites = Config.Menu.Sites;
@@ -194,9 +190,7 @@ namespace Main.Wpf.Utilities
 
             if (Config.Informations.Extension.Name == "RH Utensils") return;
 
-            ConfigHelper._configIsChanging = true;
             await XmlHelper.SetString(Config.File, "config/selectionIndex", (index + 1).ToString());
-            ConfigHelper._configIsChanging = false;
         }
 
         public static async Task SelectMenuItemAsync(int index)

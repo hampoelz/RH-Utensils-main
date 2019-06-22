@@ -21,7 +21,6 @@ namespace Main.Wpf.Utilities
                     }
                 }
             }
-                
 
             return false;
         }

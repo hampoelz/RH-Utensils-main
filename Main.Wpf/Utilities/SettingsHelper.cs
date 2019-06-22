@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -39,8 +42,10 @@ namespace Main.Wpf.Utilities
                 _syncSettingsOnChange = true;
             }
 
-            CreateSettingsWatcher();
+            _Sync = true;
         }
+
+        private static bool _Sync = false;
 
         public static void CreateFile()
         {
@@ -79,7 +84,7 @@ namespace Main.Wpf.Utilities
 
         private static FileSystemWatcher SettingsWatcher;
 
-        private static void CreateSettingsWatcher()
+        public static void CreateSettingsWatcher()
         {
             if (SettingsWatcher == null)
             {
@@ -117,11 +122,13 @@ namespace Main.Wpf.Utilities
 
             _syncInUse = true;
 
+            SendSettingsBroadcast();
+
             await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => Config.Informations.Extension.Theme = JsonHelper.ReadString(Config.Settings.Json, "theme")));
 
-            Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "lastChange", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
+            if (_Sync) Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "lastChange", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
 
-            if (_syncSettingsOnChange) await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
+            if (_Sync && _syncSettingsOnChange) await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
 
             await Task.Delay(500).ConfigureAwait(false);
 
@@ -187,6 +194,21 @@ namespace Main.Wpf.Utilities
 
         Finish:
             _SyncWithServer = false;
+        }
+
+        public static void SendSettingsBroadcast()
+        {
+            var settings = JObject.Parse(Config.Settings.Json);
+
+            foreach (var token in settings)
+            {
+                string[] elements = Regex.Split(token.ToString().Trim('[').Trim(']'), ", ");
+
+                var parameter = elements[0];
+                var value = elements[1];
+
+                MessageHelper.SendDataBroadcastMessage("set SettingProperty \"" + parameter + "\" \"" + value + "\"");
+            }
         }
     }
 }

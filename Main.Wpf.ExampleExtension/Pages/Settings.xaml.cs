@@ -1,9 +1,11 @@
-﻿using MaterialDesignThemes.Wpf.Transitions;
+﻿using Main.Wpf.ExampleExtension.Utilities;
+using MaterialDesignThemes.Wpf.Transitions;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
@@ -11,6 +13,9 @@ namespace Main.Wpf.ExampleExtension.Pages
 {
     public partial class Settings : Page
     {
+        public static ToggleButton TestProperty = new ToggleButton();
+        public static ToggleButton ThemeProperty = new ToggleButton();
+
         public Settings()
         {
             InitializeComponent();
@@ -18,8 +23,33 @@ namespace Main.Wpf.ExampleExtension.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            Test.IsChecked = bool.Parse(Functions.Settings.GetProperty("test", false.ToString()));
-            Theme.IsChecked = Functions.Settings.GetProperty("theme", "dark") != "dark";
+            TestControl.Children.Add(TestProperty);
+            TestProperty.Checked += TestProperty_Checked;
+            TestProperty.Unchecked += TestProperty_Unchecked;
+
+            ThemeControl.Children.Add(ThemeProperty);
+            ThemeProperty.Checked += ThemeProperty_Checked;
+            ThemeProperty.Unchecked += ThemeProperty_Unchecked;
+        }
+
+        private void ThemeProperty_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SettingsHelper.ChangeValue("theme", "dark");
+        }
+
+        private void ThemeProperty_Checked(object sender, RoutedEventArgs e)
+        {
+            SettingsHelper.ChangeValue("theme", "light");
+        }
+
+        private void TestProperty_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SettingsHelper.ChangeValue("test", false.ToString());
+        }
+
+        private void TestProperty_Checked(object sender, RoutedEventArgs e)
+        {
+            SettingsHelper.ChangeValue("test", true.ToString());
         }
 
         private async void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -63,26 +93,6 @@ namespace Main.Wpf.ExampleExtension.Pages
         private void Privacy_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("https://hampoelz.net/impressum/");
-        }
-
-        private void Test_Checked(object sender, RoutedEventArgs e)
-        {
-            Functions.Settings.ChangeValue("test", true.ToString());
-        }
-
-        private void Test_Unchecked(object sender, RoutedEventArgs e)
-        {
-            Functions.Settings.ChangeValue("test", false.ToString());
-        }
-
-        private void Theme_Checked(object sender, RoutedEventArgs e)
-        {
-            Functions.Settings.ChangeValue("theme", "light");
-        }
-
-        private void Theme_Unchecked(object sender, RoutedEventArgs e)
-        {
-            Functions.Settings.ChangeValue("theme", "dark");
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Main.Wpf.Pages
         {
             try
             {
-                if (Config.Informations.Extension.Favicon != "")
+                if (!string.IsNullOrEmpty(Config.Informations.Extension.Favicon))
                     Image.Source = new BitmapImage(new Uri(Config.Informations.Extension.Favicon));
             }
             catch (Exception ex)
@@ -49,7 +49,7 @@ namespace Main.Wpf.Pages
             MainProgrammVersion.Text = Config.Updater.Programm.Version.ToString();
             MainProgrammNewestVersion.Text = Config.Updater.Programm.NewestVersion;
 
-            if (Config.ExtensionDirectoryName != "")
+            if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName))
             {
                 AddOn.Text = Config.Informations.Extension.Name;
                 AddonInstalledVersion.Text = Config.Updater.Extension.Version.ToString();
@@ -171,7 +171,7 @@ namespace Main.Wpf.Pages
             MainProgrammVersion.Text = Config.Updater.Programm.Version.ToString();
             MainProgrammNewestVersion.Text = Config.Updater.Programm.NewestVersion;
 
-            if (Config.ExtensionDirectoryName != "")
+            if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName))
             {
                 await Task.Run(() => UpdateHelper.Update(true));
 

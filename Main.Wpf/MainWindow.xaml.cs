@@ -29,7 +29,7 @@ namespace Main.Wpf
         private readonly Panel _panel = new Panel();
 
         private IntPtr _appWin;
-        private Process _currentProcess;
+        public Process _currentProcess;
         public Grid IndexGrid = new Grid();
 
         public Frame Menu = new Frame();
@@ -54,12 +54,11 @@ namespace Main.Wpf
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
 
-            var hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
-            hwndSource.AddHook(new HwndSourceHook(WndProc));
+            MessageHelper.ReceiveDataMessages();
 
             try
             {
-                if (Config.Informations.Extension.Favicon != "")
+                if (!string.IsNullOrEmpty(Config.Informations.Extension.Favicon))
                 {
                     Uri iconUri = new Uri(Config.Informations.Extension.Favicon, UriKind.Relative);
                     Icon = new BitmapImage(iconUri);
@@ -70,8 +69,8 @@ namespace Main.Wpf
                 LogFile.WriteLog(ex);
             }
 
-            if (Config.Informations.Extension.WindowHeight > MinHeight) MinHeight = Config.Informations.Extension.WindowHeight;
-            if (Config.Informations.Extension.WindowWidth > MinWidth) MinWidth = Config.Informations.Extension.WindowWidth;
+            MinHeight = Config.Informations.Extension.WindowHeight;
+            MinWidth = Config.Informations.Extension.WindowWidth;
 
             CenterWindowOnScreen();
 
@@ -88,20 +87,6 @@ namespace Main.Wpf
             }
 
             await Login();
-        }
-
-        private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            if (msg == MessageHelper.WM_COPYDATA)
-            {
-                COPYDATASTRUCT _dataStruct = Marshal.PtrToStructure<COPYDATASTRUCT>(lParam);
-
-                string _msg = Marshal.PtrToStringUni(_dataStruct.lpData, _dataStruct.cbData / 2);
-
-                MessageHelper.Handle(_msg);
-            }
-
-            return IntPtr.Zero;
         }
 
         public async Task Login()
@@ -190,7 +175,7 @@ namespace Main.Wpf
 
         public static bool _loadingEXE;
 
-        private List<(Process proc, int id)> backgroundProcesses = new List<(Process proc, int id)>();
+        public static List<(Process proc, int id)> backgroundProcesses = new List<(Process proc, int id)>();
 
         public async Task SetExe(string exe, string argument, int id = -1)
         {
@@ -233,10 +218,7 @@ namespace Main.Wpf
                     }
                 }
 
-                if (!hideExe)
-                {
-                    _currentProcess?.Kill();
-                }
+                if (!hideExe) _currentProcess?.Kill();
 
                 var p = Process.Start(ps);
 
@@ -259,18 +241,29 @@ namespace Main.Wpf
 
                 if (!exeIsHidden)
                 {
+                    await WaitForExtension(p);
+
                     _currentProcess = p;
                     backgroundProcesses.Add((p, id));
 
-                    await WaitForExtension(p);
-
                     if (p != null) _appWin = p.MainWindowHandle;
+
+                    await Task.Delay(100);
+
+                    MessageHelper.SendDataMessage(p, "set Name \"" + Config.Informations.Extension.Name + "\"");
+                    MessageHelper.SendDataMessage(p, "set Color \"" + Config.Informations.Extension.Color + "\"");
+
+                    SettingsHelper.SendSettingsBroadcast();
+
+                    if (!string.IsNullOrEmpty(ExtensionsManager.FileToOpen)) MessageHelper.SendDataMessage(p, "open File \"" + ExtensionsManager.FileToOpen + "\"");
                 }
+
+                SetParent(_appWin, _panel.Handle);
 
                 Index.Visibility = Visibility.Collapsed;
                 IndexGrid.Visibility = Visibility.Visible;
 
-                SetParent(_appWin, _panel.Handle);
+                
 
                 ps.WindowStyle = ProcessWindowStyle.Maximized;
 

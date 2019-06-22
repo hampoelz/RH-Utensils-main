@@ -82,7 +82,7 @@ namespace Main.Wpf.Pages
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (Config.Informations.Extension.Name != "" && Config.Informations.Extension.Name != "RH Utensils")
+            if (!string.IsNullOrEmpty(Config.Informations.Extension.Name) && Config.Informations.Extension.Name != "RH Utensils")
             {
                 if (Config.Menu.DefaultMenuState == MenuState.collapsed || string.Equals(JsonHelper.ReadString(Config.Settings.Json, "menuState"), "collapsed", StringComparison.OrdinalIgnoreCase))
                 {
@@ -99,12 +99,14 @@ namespace Main.Wpf.Pages
                 }
             }
 
-            if (Config.Informations.Extension.Name != "" && Config.Informations.Extension.Name != "RH Utensils" && int.TryParse(await XmlHelper.ReadString(Config.File, "selectionIndex").ConfigureAwait(false), out var index) && index - 1 >= 0)
+            if (!string.IsNullOrEmpty(Config.Informations.Extension.Name) && Config.Informations.Extension.Name != "RH Utensils" && int.TryParse(await XmlHelper.ReadString(Config.File, "selectionIndex").ConfigureAwait(false), out var index) && index - 1 >= 0)
             {
                 await MenuHelper.SelectMenuItemAsync(index - 1).ConfigureAwait(false);
             }
-
-            await MenuHelper.SelectMenuItemAsync(0).ConfigureAwait(false);
+            else
+            {
+                await MenuHelper.SelectMenuItemAsync(0).ConfigureAwait(false);
+            }
 
             _loaded = true;
         }

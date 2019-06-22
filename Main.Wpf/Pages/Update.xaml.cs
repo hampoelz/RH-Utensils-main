@@ -26,7 +26,10 @@ namespace Main.Wpf.Pages
             {
                 if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name, "updater.exe")))
                 {
-                    var ps = new ProcessStartInfo(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name, "updater.exe"));
+                    var ps = new ProcessStartInfo(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name, "updater.exe"))
+                    {
+                        Arguments = "/VERYSILENT"
+                    };
                     LogFile.WriteLog("Start setup ...");
                     Process.Start(ps);
 
@@ -35,7 +38,10 @@ namespace Main.Wpf.Pages
 
                 if (File.Exists(@".\updater.exe"))
                 {
-                    var ps = new ProcessStartInfo(@".\updater.exe");
+                    var ps = new ProcessStartInfo(@".\updater.exe")
+                    {
+                        Arguments = "/VERYSILENT"
+                    };
                     LogFile.WriteLog("Start setup ...");
                     Process.Start(ps);
 

@@ -1,4 +1,4 @@
-﻿<!---->
+<!---->
 <!--Erweiterungs-Konfigurations-Datei | Bitte nicht genau diese Config kopieren - Füge nur notwendige Felder zur Config für deine Erweiterung hinzu-->
 <!---->
 <config>
@@ -25,33 +25,28 @@
                          Red
                          Orange
                          Purple-->
-
   <!--Standard-Design: Dark / Light-->
   <defaultTheme>dark</defaultTheme>
   <!--Logo der Erweiterung (Es können Platzhalter verwendet werden) | Im PNG-Format-->
-  <favicon>{extensionsDirectory}\{extensionName}\{extensionVersion}\Icons\logo.png</favicon>
-
+  <favicon>C:\Users\reneh\Google Drive\Hampis Projekte\Grafiken\Logo\Logo.png</favicon>
   <!---->
   <!--Dateizuordnungen | Sollte geändert werden-->
   <!---->
   <!--Auf welche Dateizuordnungen das Programm reagiern soll | Um weitere Zuordnungen zuzuordnen einfach kopieren und ändern-->
-  <fileAssociation>mp3</fileAssociation>
   <fileAssociation>wav</fileAssociation>
   <fileAssociation>mp4</fileAssociation>
   <fileAssociation>mov</fileAssociation>
   <!--Und so weiter ... -->
-
   <!---->
   <!--Menü Konfiguration-->
   <!---->
   <!--In welche position soll sich das Menü standardmäßig befinden: collapsed / expanded-->
   <menuState>expanded</menuState>
-
   <!---->
   <!--Seiten-Konfiguration | Sollte geändert werden | Funktioniert nur wenn "hideMenu = false"-->
   <!---->
   <!--Welche Seite soll ausgewählt werden | ACHTUNG: Beachte die Abstände im Menü - In diesem Fall hat die "Einstellungen"-Seite den Index 3-->
-  <selectionIndex>0</selectionIndex>
+  <selectionIndex>1</selectionIndex>
   <!--Menüeinträge / Seiten | Um weitere Seiten hinzuzufügen einfach kopieren und ändern-->
   <menu>
     <StartSeite>
@@ -79,7 +74,6 @@
     </Einstellungen>
     <!--Und so weiter ... -->
   </menu>
-
   <!---->
   <!--Single-Site-Konfiguration-->
   <!---->
@@ -90,18 +84,15 @@
   <singleSite_Path>{extensionsDirectory}\{extensionName}\{extensionVersion}\ExampleExtension.exe</singleSite_Path>
   <!--Start-Argument mit welchem die oben angegebene Erweiterungs-Datei gestartet werden soll - Wenn Dateizuordnung angegeben wurden kann der Platzhalter {fileAssociation} verwendet werden um den Datei-Pfad zu übergeben-->
   <singleSite_StartArguments>"{fileAssociation}" -page Home</singleSite_StartArguments>
-
   <!---->
   <!--Pfad zur JSON Datei, in welcher alle Benutzereinstellungen der Erweiterung gespeichert werden (Es können Platzhalter verwendet werden)-->
   <!---->
   <settingsFile>C:\Users\{username}\AppData\Local\HampisProjekte\RH Utensils\{appName}\Settings.json</settingsFile>
-
   <!---->
   <!--Update Informationen | Sollte geändert werden-->
   <!---->
   <!--Link zu der XML-Datei, welche alle Versionen und Downloadlinks von den Erweiterung beinhaltet sollte | Genauere Anleitung in der Wiki-->
   <versionsHistoryFile>https://raw.githubusercontent.com/rh-utensils/main/master/Main.Wpf.ExampleExtension/VersionHistory.xml</versionsHistoryFile>
-
   <!---->
   <!--Copyright und Entwikler Informationen | Sollte geändert werden-->
   <!---->
@@ -117,22 +108,19 @@
   <copyright_Organisation>Hampis Projekte</copyright_Organisation>
   <!--Website des Entwicklers, der Entwikler-Organisation oder Firma-->
   <copyright_Website>https://hampoelz.net/</copyright_Website>
-
   <!---->
   <!--Login Einstellungen-->
   <!---->
   <!--Soll die Login-Seite übersprungen werden | Die Login-Seite wird nicht angezeigt!-->
   <skipLogin>false</skipLogin>
   <!--Benutzer wird automatisch angemeldet | Wert wird automatisch vom Programm geändert!-->
-  <loggedIn>false</loggedIn>
+  <loggedIn>False</loggedIn>
   <!--Login-Seite / Firstrun-Seite wird angezeigt | Wert wird automatisch vom Programm geändert!-->
-  <firstRun>true</firstRun>
-
+  <firstRun>False</firstRun>
   <!---->
   <!--Bug-Tracker Website | Sollte geändert werden-->
   <!---->
   <issueTracker>https://github.com/rh-utensils/main/issues/</issueTracker>
-
   <!---->
   <!--Auth0 Informationen | Damit die Login-, Registrierungs- und Sync-Funktionen über deine eigene Datenbank aufgerufen werden | Genauere Anleitung in der Wiki-->
   <!---->
