@@ -92,9 +92,19 @@ namespace Main.Wpf.Utilities
                 await XmlHelper.SetString(Config.File, "config/favicon", ExtractQuote(msg));
                 Config.Informations.Extension.Favicon = ExtractQuote(msg);
             }
+            else if (msg.StartsWith("set WindowHeight"))
+            {
+                await XmlHelper.SetString(Config.File, "config/height", ExtractQuote(msg));
+                Config.Informations.Extension.WindowHeight = int.Parse(ExtractQuote(msg));
+            }
             else if (msg.StartsWith("set tmpWindowHeight"))
             {
                 Config.Informations.Extension.WindowHeight = int.Parse(ExtractQuote(msg));
+            }
+            else if (msg.StartsWith("set WindowWidth"))
+            {
+                await XmlHelper.SetString(Config.File, "config/width", ExtractQuote(msg));
+                Config.Informations.Extension.WindowWidth = int.Parse(ExtractQuote(msg));
             }
             else if (msg.StartsWith("set tmpWindowWidth"))
             {

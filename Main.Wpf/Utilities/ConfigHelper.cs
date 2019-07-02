@@ -27,6 +27,11 @@ namespace Main.Wpf.Utilities
                 Config.Informations.Extension.Theme = JsonHelper.ReadString(Config.Settings.Json, "theme");
                 Config.Informations.Extension.Favicon = await XmlHelper.ReadString(file, "favicon").ConfigureAwait(false);
 
+                string Height = await XmlHelper.ReadString(file, "height").ConfigureAwait(false);
+                string Width = await XmlHelper.ReadString(file, "width").ConfigureAwait(false);
+                Config.Informations.Extension.WindowHeight = ValidationHelper.IsStringValidInt(Height) ? int.Parse(Height) : 0;
+                Config.Informations.Extension.WindowWidth = ValidationHelper.IsStringValidInt(Width) ? int.Parse(Width) : 0;
+
                 Config.Menu.SingleSite = (await XmlHelper.ReadBool(file, "hideMenu").ConfigureAwait(false), await XmlHelper.ReadString(file, "singleSite_Path").ConfigureAwait(false), await XmlHelper.ReadString(file, "singleSite_StartArguments").ConfigureAwait(false));
 
                 List<(string Title, string Icon, string Path, string StartArguments)> sites = new List<(string Title, string Icon, string Path, string StartArguments)>();
