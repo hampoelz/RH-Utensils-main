@@ -3,3 +3,5 @@
 [![Build Status](https://dev.azure.com/rh-utensils/Main%20Programm/_apis/build/status/rh-utensils.main?branchName=master)](https://dev.azure.com/rh-utensils/Main%20Programm/_build/latest?definitionId=1&branchName=master)
 
 Für Vereinfachung des Account Management, der Update Auslieferung und der Darstellung
+
+**Beschreibung & Wiki sind bald verfügbar**
