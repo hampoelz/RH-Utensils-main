@@ -4,4 +4,4 @@
 
 Für Vereinfachung des Account Management, der Update Auslieferung und der Darstellung
 
-**Beschreibung & Wiki sind bald verfügbar**
+**Beschreibung & Wiki werden in Kürze verfügbar sein**
