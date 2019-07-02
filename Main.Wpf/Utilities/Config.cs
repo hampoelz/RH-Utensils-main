@@ -47,7 +47,6 @@ namespace Main.Wpf.Utilities
                 {
                     return Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)), "Extensions");
                 }
-                    
 
                 return extensionsDirectory;
             }
@@ -571,7 +570,7 @@ namespace Main.Wpf.Utilities
                 }
             }
 
-            private static List<(string Title, string Icon, string Path, string StartArguments)> sites = new List<(string Title, string Icon, string Path, string StartArguments)>();
+            private static readonly List<(string Title, string Icon, string Path, string StartArguments)> sites = new List<(string Title, string Icon, string Path, string StartArguments)>();
             public static List<(string Title, string Icon, string Path, string StartArguments)> Sites
             {
                 get => sites;
