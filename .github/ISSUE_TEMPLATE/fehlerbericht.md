@@ -30,13 +30,8 @@ Füge ggf. Logs hinzu, um dein Problem schneller zu beheben.
 Füge ggf. die Konfigurationsdatei hinzu, falls etwas falsch Konfiguriert wurde.
 
 **Desktop (bitte ergänze die folgenden Angaben):**
- - OS: [z.B. Windows 10]
- - Version [z.B. 22]
-
-**Smartphone (bitte ergänze die folgenden Angaben):**
- - Gerät: [z.B. iPhone 6]
- - OS: [z.B. iOS 8.1]
- - Version [z.B. 22]
+ - OS: [z.B. Windows]
+ - Version [z.B. 10]
 
 **Zusätzlicher Kontext**
 Füge hier einen anderen Kontext zum Problem hinzu.
