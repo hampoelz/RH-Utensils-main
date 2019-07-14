@@ -116,6 +116,8 @@ namespace Main.Wpf.Utilities
 
         private static async void OnChanged(object sender, FileSystemEventArgs e)
         {
+            await Task.Delay(500);
+
             if (_syncInUse) return;
 
             LogFile.WriteLog("Settings File change detected");
@@ -128,9 +130,7 @@ namespace Main.Wpf.Utilities
 
             if (_Sync) Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "lastChange", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
 
-            if (_Sync && _syncSettingsOnChange) await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
-
-            await Task.Delay(500).ConfigureAwait(false);
+            if (_Sync && _syncSettingsOnChange) await Task.Run(() => SyncWithServer());
 
             _syncInUse = false;
         }
@@ -202,7 +202,7 @@ namespace Main.Wpf.Utilities
 
             foreach (var token in settings)
             {
-                string[] elements = Regex.Split(token.ToString().Trim('[').Trim(']'), ", ");
+                string[] elements = Regex.Split(token.ToString().Substring(1, token.ToString().Length - 2), ", ");
 
                 var parameter = elements[0];
                 var value = elements[1];
