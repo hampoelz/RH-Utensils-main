@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -34,15 +36,25 @@ namespace Main.Wpf.Utilities
 
                 await WaitforSync();
 
-                var syncTimer = new DispatcherTimer();
-                syncTimer.Tick += SyncTimer_Tick;
-                syncTimer.Interval = new TimeSpan(0, 1, 0);
+                //var syncTimer = new DispatcherTimer();
+                //syncTimer.Tick += new EventHandler(SyncTimer_Tick);
+                //syncTimer.Interval = new TimeSpan(0, 0, 1);
+                //syncTimer.Start();
+
+                var syncTimer = new System.Timers.Timer();
+                syncTimer.Elapsed += SyncTimer_Tick;
+                syncTimer.Interval = 60000;
                 syncTimer.Start();
 
                 _syncSettingsOnChange = true;
             }
 
+
             _Sync = true;
+        }
+        private static async void SyncTimer_Tick(object sender, EventArgs e)
+        {
+            await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
         }
 
         private static bool _Sync = false;
@@ -77,10 +89,7 @@ namespace Main.Wpf.Utilities
             }
         }
 
-        private static async void SyncTimer_Tick(object sender, EventArgs e)
-        {
-            await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
-        }
+        
 
         private static FileSystemWatcher SettingsWatcher;
 
@@ -116,23 +125,23 @@ namespace Main.Wpf.Utilities
 
         private static async void OnChanged(object sender, FileSystemEventArgs e)
         {
-            await Task.Delay(500);
-
             if (_syncInUse) return;
 
             LogFile.WriteLog("Settings File change detected");
 
             _syncInUse = true;
 
-            SendSettingsBroadcast();
-
-            await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => Config.Informations.Extension.Theme = JsonHelper.ReadString(Config.Settings.Json, "theme")));
-
             if (_Sync) Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "lastChange", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
 
-            if (_Sync && _syncSettingsOnChange) await Task.Run(() => SyncWithServer());
+            SendSettingsBroadcast();
+
+            await Task.Delay(500);
 
             _syncInUse = false;
+
+            
+            await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => Config.Informations.Extension.Theme = JsonHelper.ReadString(Config.Settings.Json, "theme")));
+            if (_Sync && _syncSettingsOnChange) await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
         }
 
         private static bool _SyncWithServer;
