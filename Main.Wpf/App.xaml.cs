@@ -31,6 +31,8 @@ namespace Main.Wpf
             if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName)) await Task.Run(() => UpdateHelper.Update(true));
 
             if (Config.Informations.Extension.Name != "RH Utensils")  SettingsHelper.CreateSettingsWatcher();
+
+            LogFile.DeleteOldLogFiles();
         }
     }
 }
