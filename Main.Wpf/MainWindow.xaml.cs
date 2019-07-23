@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -159,8 +160,11 @@ namespace Main.Wpf
         public const int SW_HIDE = 0;
         public const int SW_SHOWNORMAL = 1;
 
-        [DllImport("User32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        static extern int SetForegroundWindow(IntPtr point);
 
         private async Task WaitForExtension(Process p)
         {
@@ -325,6 +329,82 @@ namespace Main.Wpf
             Wipe.Visibility = Visibility.Collapsed;
 
             sb.Stop();
+        }
+
+        private void MetroWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (_currentProcess == null) return;
+
+                IntPtr h = _currentProcess.MainWindowHandle;
+                SetForegroundWindow(h);
+
+                var k = new KeyConverter();
+
+                var convertedKey = k.ConvertToString(e.Key);
+
+                if (convertedKey.Length > 0)
+                {
+                    convertedKey = "{" + convertedKey.ToUpper() + "}";
+                }
+
+                switch (convertedKey)
+                {
+                    case "+":
+                        convertedKey = "{+}";
+                        break;
+                    case "^":
+                        convertedKey = "{^}";
+                        break;
+                    case "%":
+                        convertedKey = "{%}";
+                        break;
+                    case "~":
+                        convertedKey = "{~}";
+                        break;
+                    case "{":
+                        convertedKey = "{{}";
+                        break;
+                    case "}":
+                        convertedKey = "{}}";
+                        break;
+
+
+                    case "{SPACE}":
+                        convertedKey = " ";
+                        break;
+                    case "{RETURN}":
+                        convertedKey = "{ENTER}";
+                        break;
+
+                    case "{SHIFT}":
+                    case "{LEFTSHIFT}":
+                    case "{RIGHTSHIFT}":
+                        convertedKey = "+";
+                        break;
+                    case "{CTRL}":
+                    case "{LEFTCTRL}":
+                    case "{RIGHTCTRL}":
+                        convertedKey = "^";
+                        break;
+                    
+                    case "{SYSTEM}":
+                        convertedKey = "{F10}";
+                        break;
+                    case "{PAUSE}":
+                        convertedKey = "{BREAK}";
+                        break;
+
+                    // [To-Do] Test and add more
+                }
+
+                System.Windows.Forms.SendKeys.SendWait(convertedKey);
+            }
+            catch (Exception ex)
+            {
+                LogFile.WriteLog(ex);
+            }
         }
     }
 }
