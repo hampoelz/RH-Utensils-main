@@ -8,11 +8,13 @@ namespace Main.Wpf.Utilities
         {
             if (Config.ExtensionDirectoryName?.Length == 0) return value;
 
-            return value.Replace("{extensionsDirectory}", Config.ExtensionsDirectory)
-                .Replace("{extensionName}", Config.ExtensionDirectoryName)
-                .Replace("{extensionVersion}", Config.Updater.Extension.RunningVersion.ToString())
-                .Replace("{appName}", Config.Informations.Extension.Name)
-                .Replace("{username}", Environment.UserName);
+            value = value.Replace("{extensionsDirectory}", Config.ExtensionsDirectory);
+            value = value.Replace("{extensionName}", Config.ExtensionDirectoryName);
+            value = value.Replace("{extensionVersion}", Config.Updater.Extension.RunningVersion.ToString());
+            value = value.Replace("{appName}", Config.Informations.Extension.Name);
+            value = value.Replace("{username}", Environment.UserName);
+
+            return value;
         }
     }
 }

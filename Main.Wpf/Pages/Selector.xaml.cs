@@ -218,7 +218,6 @@ namespace Main.Wpf.Pages
                     }
                 }
 
-                
                 ConfirmUninstall.Visibility = Visibility.Collapsed;
                 Version.ItemsSource = "";
                 Start.IsEnabled = false;

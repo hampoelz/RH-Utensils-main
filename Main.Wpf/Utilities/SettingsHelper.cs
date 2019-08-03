@@ -1,11 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.ComponentModel;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -36,11 +33,6 @@ namespace Main.Wpf.Utilities
 
                 await WaitforSync();
 
-                //var syncTimer = new DispatcherTimer();
-                //syncTimer.Tick += new EventHandler(SyncTimer_Tick);
-                //syncTimer.Interval = new TimeSpan(0, 0, 1);
-                //syncTimer.Start();
-
                 var syncTimer = new System.Timers.Timer();
                 syncTimer.Elapsed += SyncTimer_Tick;
                 syncTimer.Interval = 60000;
@@ -49,15 +41,15 @@ namespace Main.Wpf.Utilities
                 _syncSettingsOnChange = true;
             }
 
-
             _Sync = true;
         }
+
         private static async void SyncTimer_Tick(object sender, EventArgs e)
         {
-            await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
+            await Task.Run(SyncWithServer).ConfigureAwait(false);
         }
 
-        private static bool _Sync = false;
+        private static bool _Sync;
 
         public static void CreateFile()
         {
@@ -88,8 +80,6 @@ namespace Main.Wpf.Utilities
                 LogFile.WriteLog(ex);
             }
         }
-
-        
 
         private static FileSystemWatcher SettingsWatcher;
 
@@ -139,7 +129,6 @@ namespace Main.Wpf.Utilities
 
             _syncInUse = false;
 
-            
             await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => Config.Informations.Extension.Theme = JsonHelper.ReadString(Config.Settings.Json, "theme")));
             if (_Sync && _syncSettingsOnChange) await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
         }
@@ -207,9 +196,7 @@ namespace Main.Wpf.Utilities
 
         public static void SendSettingsBroadcast()
         {
-            var settings = JObject.Parse(Config.Settings.Json);
-
-            foreach (var token in settings)
+            foreach (var token in JObject.Parse(Config.Settings.Json))
             {
                 string[] elements = Regex.Split(token.ToString().Substring(1, token.ToString().Length - 2), ", ");
 
