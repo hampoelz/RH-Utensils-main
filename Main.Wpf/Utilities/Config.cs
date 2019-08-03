@@ -284,6 +284,7 @@ namespace Main.Wpf.Utilities
 
                         if (!(Application.Current.MainWindow is MainWindow mw)) return;
                         mw.MinHeight = value;
+                        mw.Height = value;
 
                         mw.CenterWindowOnScreen();
                     }
@@ -302,6 +303,7 @@ namespace Main.Wpf.Utilities
 
                         if (!(Application.Current.MainWindow is MainWindow mw)) return;
                         mw.MinWidth = value;
+                        mw.Width = value;
 
                         mw.CenterWindowOnScreen();
                     }
