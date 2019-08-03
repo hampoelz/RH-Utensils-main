@@ -1,7 +1,6 @@
 ﻿using Main.Wpf.Utilities;
 using MaterialDesignThemes.Wpf;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -154,6 +153,22 @@ namespace Main.Wpf.Pages
 
                 await mw.LoadExtensionAsync(true);
 
+                while (!ConfigHelper._loaded) await Task.Delay(100);
+
+                var sites = Config.Menu.Sites;
+
+                foreach (MenuItem item in sites)
+                {
+                    if (item.Path == "account.exe" && item.Title == "Anmelden")
+                    {
+                        item.Title = "Abmelden";
+                        item.Icon = PackIconKind.AccountMinusOutline;
+                        break;
+                    }
+                }
+
+                await Config.Menu.SetSites(sites);
+
                 IsEnabled = true;
             }
         }
@@ -204,18 +219,23 @@ namespace Main.Wpf.Pages
             await Config.Login.LoggedIn.Set(true);
             await Config.Login.FirstRun.Set(false);
 
-            List<(string Title, string Icon, string Path, string StartArguments)> sites = new List<(string Title, string Icon, string Path, string StartArguments)>();
+            await mw.LoadExtensionAsync(true);
 
-            for (var site = 0; site != Config.Menu.Sites.Count - 1; ++site)
+            while (!ConfigHelper._loaded) await Task.Delay(100);
+
+            var sites = Config.Menu.Sites;
+
+            foreach (MenuItem item in sites)
             {
-                sites.Add((Config.Menu.Sites[site].Title, Config.Menu.Sites[site].Icon, Config.Menu.Sites[site].Path, Config.Menu.Sites[site].StartArguments));
+                if (item.Path == "account.exe" && item.Title == "Anmelden")
+                {
+                    item.Title = "Abmelden";
+                    item.Icon = PackIconKind.AccountMinusOutline;
+                    break;
+                }
             }
 
-            sites.Add(("Abmelden", "", "account.exe", ""));
-
-            Config.Menu.Sites = sites;
-
-            await mw.LoadExtensionAsync(true);
+            await Config.Menu.SetSites(sites);
 
             IsEnabled = true;
         }

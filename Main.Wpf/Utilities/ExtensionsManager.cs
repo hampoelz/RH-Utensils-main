@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MaterialDesignThemes.Wpf;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,19 +9,19 @@ namespace Main.Wpf.Utilities
 {
     public static class ExtensionsManager
     {
-        private static string fileToOpen = "";
+        private static string _fileToOpen = "";
 
         public static string FileToOpen
         {
-            get => fileToOpen;
+            get => _fileToOpen;
             set
             {
                 value = Path.GetFullPath(value);
 
-                if (fileToOpen == value || string.IsNullOrEmpty(value)) return;
+                if (_fileToOpen == value || string.IsNullOrEmpty(value)) return;
                 if (!File.Exists(value)) return;
 
-                fileToOpen = value;
+                _fileToOpen = value;
             }
         }
 
@@ -158,14 +159,15 @@ namespace Main.Wpf.Utilities
                     }
                 }
 
-                List<(string Title, string Icon, string Path, string StartArguments)> sites = new List<(string Title, string Icon, string Path, string StartArguments)>
+                List<MenuItem> sites = new List<MenuItem>
                 {
-                    ("Add-ons", "", "selector.exe", ""),
-                    ("Information", "", "info.exe", "")
+                    new MenuItem() {Title = "Add-ons", Icon = PackIconKind.ExtensionOutline, Path = "selector.exe"},
+                    new MenuItem() {Title = "Information", Icon = PackIconKind.InformationOutline, Path = "info.exe"}
                 };
-                if (!Config.Login.SkipLogin && Config.Informations.Extension.Name != "RH Utensils") sites.Add(("Anmelden", "", "account.exe", ""));
 
-                Config.Menu.Sites = sites;
+                if (!Config.Login.SkipLogin && Config.Informations.Extension.Name != "RH Utensils") sites.Add(new MenuItem() { Title = "Anmelden", Icon = PackIconKind.Login, Path = "account.exe" });
+
+                await Config.Menu.SetSites(sites);
             }
             catch (Exception ex)
             {

@@ -1,14 +1,14 @@
-﻿using System;
+﻿using MaterialDesignThemes.Wpf;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
 
 namespace Main.Wpf.Utilities
 {
     public static class ConfigHelper
     {
+        public static bool _loaded;
+
         public static async Task Read()
         {
             var file = Config.File;
@@ -21,8 +21,6 @@ namespace Main.Wpf.Utilities
 
                 Config.Settings.File = await XmlHelper.ReadString(file, "settingsFile").ConfigureAwait(false);
 
-                if (!File.Exists(Config.Settings.File)) SettingsHelper.CreateFile();
-
                 Config.Informations.Extension.Color = await XmlHelper.ReadString(file, "color").ConfigureAwait(false);
                 Config.Informations.Extension.Theme = JsonHelper.ReadString(Config.Settings.Json, "theme");
                 Config.Informations.Extension.Favicon = await XmlHelper.ReadString(file, "favicon").ConfigureAwait(false);
@@ -32,9 +30,11 @@ namespace Main.Wpf.Utilities
                 Config.Informations.Extension.WindowHeight = ValidationHelper.IsStringValidInt(Height) ? int.Parse(Height) : 0;
                 Config.Informations.Extension.WindowWidth = ValidationHelper.IsStringValidInt(Width) ? int.Parse(Width) : 0;
 
+                Config.Login.SkipLogin = await XmlHelper.ReadBool(file, "skipLogin").ConfigureAwait(false);
+
                 Config.Menu.SingleSite = (await XmlHelper.ReadBool(file, "hideMenu").ConfigureAwait(false), await XmlHelper.ReadString(file, "singleSite_Path").ConfigureAwait(false), await XmlHelper.ReadString(file, "singleSite_StartArguments").ConfigureAwait(false));
 
-                List<(string Title, string Icon, string Path, string StartArguments)> sites = new List<(string Title, string Icon, string Path, string StartArguments)>();
+                List<MenuItem> sites = new List<MenuItem>();
                 var Titels = XmlHelper.ReadStringList(file, "site_Title");
                 var Icons = XmlHelper.ReadStringList(file, "site_Icon");
                 var Paths = XmlHelper.ReadStringList(file, "site_Path");
@@ -42,17 +42,16 @@ namespace Main.Wpf.Utilities
 
                 for (var site = 0; site != Titels.Count; ++site)
                 {
-                    sites.Add((Titels[site], Icons[site], Paths[site], StartArguments[site]));
+                    if (Titels[site] == "null" || Paths[site] == "null") sites.Add(new MenuItem() { Space = true });
+                    else sites.Add(new MenuItem() { Title = Titels[site], Icon = Enum.TryParse(Icons[site], out PackIconKind Icon) ? Icon : PackIconKind.Application, Path = Paths[site], StartArguments = StartArguments[site] });
                 }
-                sites.Add(("", "", "", ""));
-                sites.Add(("Information", "", "info.exe", ""));
-                if (!Config.Login.SkipLogin) sites.Add(("Anmelden", "", "account.exe", ""));
+                sites.Add(new MenuItem() { Space = true });
+                sites.Add(new MenuItem() { Title = "Information", Icon = PackIconKind.InformationOutline, Path = "info.exe" });
+                if (!Config.Login.SkipLogin) sites.Add(new MenuItem() { Title = "Anmelden", Icon = PackIconKind.AccountPlusOutline, Path = "account.exe" });
 
-                Config.Menu.Sites = sites;
+                await Config.Menu.SetSites(sites);
 
                 Config.Menu.DefaultMenuState = MenuHelper.StringToMenuState(await XmlHelper.ReadString(file, "defaultMenuState").ConfigureAwait(false));
-
-                Config.Login.SkipLogin = await XmlHelper.ReadBool(file, "skipLogin").ConfigureAwait(false);
 
                 Config.Updater.Extension.VersionsHistoryFile = await XmlHelper.ReadString(file, "versionsHistoryFile").ConfigureAwait(false);
 
@@ -76,6 +75,8 @@ namespace Main.Wpf.Utilities
             {
                 LogFile.WriteLog(ex);
             }
+
+            _loaded = true;
         }
     }
 }

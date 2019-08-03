@@ -1,83 +1,53 @@
 ﻿using Main.Wpf.Utilities;
-using MaterialDesignThemes.Wpf;
 using MaterialDesignThemes.Wpf.Transitions;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
+using System.Windows.Controls.Primitives;
+using MenuItem = Main.Wpf.Utilities.MenuItem;
 
 namespace Main.Wpf.Pages
 {
     public partial class Menu
     {
-        public static TransitioningContent TrainsitionigContentSlide = new TransitioningContent();
+        public static Grid GridMenu = new Grid();
+        public static ToggleButton ToggleMenu = new ToggleButton();
+        public static TransitioningContent TrainsitionigContentSlide;
         public static Grid GridCursor = new Grid();
         public static ListView ListViewMenu = new ListView();
 
         public static bool _loaded;
 
+        public static bool _registered;
+
         public Menu()
         {
             InitializeComponent();
 
-            TrainsitionigContentSlide.OpeningEffect = new TransitionEffect(TransitionEffectKind.SlideInFromLeft, TimeSpan.FromSeconds(0.2));
+            GridMenu = _GridMenu;
+            ToggleMenu = _ToggleMenu;
+            TrainsitionigContentSlide = _TrainsitionigContentSlide;
+            GridCursor = _GridCursor;
+            ListViewMenu = _ListViewMenu;
 
-            GridCursor.Margin = new Thickness(0, 100, 0, 0);
-            var palette = new PaletteHelper().QueryPalette();
-            var hue = palette.PrimarySwatch.PrimaryHues.ToArray()[palette.PrimaryDarkHueIndex];
-            GridCursor.Background = new SolidColorBrush(hue.Color);
-            GridCursor.Width = 10;
-            GridCursor.HorizontalAlignment = HorizontalAlignment.Left;
-            GridCursor.Height = 60;
-            GridCursor.VerticalAlignment = VerticalAlignment.Top;
+            ListViewMenu.ItemsSource = new List<MenuItem>();
 
-            MainGrid.Children.Add(TrainsitionigContentSlide);
-            TrainsitionigContentSlide.Content = GridCursor;
-
-            ListViewMenu.Margin = new Thickness(0, 100, 0, 100);
-            ListViewMenu.Foreground = Brushes.LightGray;
-            ListViewMenu.FontSize = 18;
-            ListViewMenu.HorizontalAlignment = HorizontalAlignment.Left;
-            ListViewMenu.Width = 250;
-            MainGrid.Children.Add(ListViewMenu);
+            _registered = true;
         }
 
-        private void ToggleMenu_Checked(object sender, RoutedEventArgs e)
+        private void Menu_Expanded(object sender, RoutedEventArgs e)
         {
             if (!_loaded) return;
 
-            if (!(Application.Current.MainWindow is MainWindow mw)) return;
-
-            var da = new DoubleAnimation(60, 250, TimeSpan.FromMilliseconds(500));
-            mw.Menu.BeginAnimation(WidthProperty, da);
-            MainGrid.BeginAnimation(WidthProperty, da);
-
-            var ta = new ThicknessAnimation(new Thickness(60, 0, 0, 0), new Thickness(250, 0, 0, 0),
-                TimeSpan.FromMilliseconds(500));
-            mw.Index.BeginAnimation(MarginProperty, ta);
-            mw.IndexGrid.BeginAnimation(MarginProperty, ta);
-
-            Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "menuState", "expanded");
+            MenuHelper.ChangeMenuState(MenuState.collapsed);
         }
 
-        private void ToggleMenu_Unchecked(object sender, RoutedEventArgs e)
+        private void Menu_Collapsed(object sender, RoutedEventArgs e)
         {
             if (!_loaded) return;
 
-            if (!(Application.Current.MainWindow is MainWindow mw)) return;
-
-            var da = new DoubleAnimation(250, 60, TimeSpan.FromMilliseconds(500));
-            mw.Menu.BeginAnimation(WidthProperty, da);
-            MainGrid.BeginAnimation(WidthProperty, da);
-
-            var ta = new ThicknessAnimation(new Thickness(250, 0, 0, 0), new Thickness(60, 0, 0, 0),
-                TimeSpan.FromMilliseconds(500));
-            mw.Index.BeginAnimation(MarginProperty, ta);
-            mw.IndexGrid.BeginAnimation(MarginProperty, ta);
-
-            Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "menuState", "collapsed");
+            MenuHelper.ChangeMenuState(MenuState.expanded);
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -91,7 +61,7 @@ namespace Main.Wpf.Pages
                     if (Application.Current.MainWindow is MainWindow mw)
                     {
                         mw.Menu.Width = 60;
-                        MainGrid.Width = 60;
+                        GridMenu.Width = 60;
 
                         mw.Index.Margin = new Thickness(60, 0, 0, 0);
                         mw.IndexGrid.Margin = new Thickness(60, 0, 0, 0);
@@ -99,16 +69,31 @@ namespace Main.Wpf.Pages
                 }
             }
 
-            if (!string.IsNullOrEmpty(Config.Informations.Extension.Name) && Config.Informations.Extension.Name != "RH Utensils" && int.TryParse(await XmlHelper.ReadString(Config.File, "selectionIndex").ConfigureAwait(false), out var index) && index - 1 >= 0)
+            if (!string.IsNullOrEmpty(Config.Informations.Extension.Name) && Config.Informations.Extension.Name != "RH Utensils" && int.TryParse(await XmlHelper.ReadString(Config.File, "selectionIndex").ConfigureAwait(false), out var index) && index - 1 >= 0 && index <= Config.Menu.Sites.Count)
             {
-                await MenuHelper.SelectMenuItemAsync(index - 1).ConfigureAwait(false);
+                await MenuHelper.SelectMenuItemAsync(index - 1);
             }
             else
             {
-                await MenuHelper.SelectMenuItemAsync(0).ConfigureAwait(false);
+                await MenuHelper.SelectMenuItemAsync(0);
             }
 
             _loaded = true;
+        }
+
+        private async void ListViewMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!_loaded || Config.Menu._changeingSites) return;
+
+            int index = ListViewMenu.SelectedIndex;
+
+            await MenuHelper.SelectMenuItemAsync(index);
+
+            if (index + 1 == Config.Menu.Sites.Count) return;
+
+            if (Config.Informations.Extension.Name == "RH Utensils") return;
+
+            await XmlHelper.SetString(Config.File, "config/selectionIndex", (index + 1).ToString());
         }
     }
 }

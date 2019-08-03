@@ -1,18 +1,98 @@
-﻿using System;
+﻿using MaterialDesignThemes.Wpf;
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
+using System.Windows.Media.Animation;
 
 namespace Main.Wpf.Utilities
 {
     public enum MenuState { expanded, collapsed };
 
+    public class MenuItem
+    {
+        private string _title;
+
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                if (string.IsNullOrEmpty(value)) Space = true;
+
+                _title = value;
+            }
+        }
+
+        public PackIconKind Icon { get; set; }
+        public string Path { get; set; }
+        public string StartArguments { get; set; }
+
+        private bool _space;
+
+        public bool Space
+        {
+            get => _space;
+            set
+            {
+                if (value)
+                {
+                    Height = 20;
+                    IsEnabled = false;
+                }
+                else
+                {
+                    Height = 60;
+                    IsEnabled = true;
+                }
+
+                _space = value;
+            }
+        }
+
+        public int Height { get; set; } = 60;
+        public bool IsEnabled { get; set; } = true;
+        public bool IsSelected { get; set; }
+    }
+
     public static class MenuHelper
     {
+        public static void ChangeMenuState(MenuState state)
+        {
+            if (!(Application.Current.MainWindow is MainWindow mw)) return;
+
+            DoubleAnimation da;
+            ThicknessAnimation ta;
+
+            switch (state)
+            {
+                case MenuState.collapsed:
+                    da = new DoubleAnimation(60, 250, TimeSpan.FromMilliseconds(500));
+                    mw.Menu.BeginAnimation(FrameworkElement.WidthProperty, da);
+                    Pages.Menu.GridMenu.BeginAnimation(FrameworkElement.WidthProperty, da);
+
+                    ta = new ThicknessAnimation(new Thickness(60, 0, 0, 0), new Thickness(250, 0, 0, 0), TimeSpan.FromMilliseconds(500));
+                    mw.Index.BeginAnimation(FrameworkElement.MarginProperty, ta);
+                    mw.IndexGrid.BeginAnimation(FrameworkElement.MarginProperty, ta);
+
+                    Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "menuState", "expanded");
+                    break;
+
+                case MenuState.expanded:
+                    da = new DoubleAnimation(250, 60, TimeSpan.FromMilliseconds(500));
+                    mw.Menu.BeginAnimation(FrameworkElement.WidthProperty, da);
+                    Pages.Menu.GridMenu.BeginAnimation(FrameworkElement.WidthProperty, da);
+
+                    ta = new ThicknessAnimation(new Thickness(250, 0, 0, 0), new Thickness(60, 0, 0, 0), TimeSpan.FromMilliseconds(500));
+                    mw.Index.BeginAnimation(FrameworkElement.MarginProperty, ta);
+                    mw.IndexGrid.BeginAnimation(FrameworkElement.MarginProperty, ta);
+
+                    Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "menuState", "collapsed");
+                    break;
+            }
+        }
+
         public static MenuState StringToMenuState(string state)
         {
             if (!Enum.IsDefined(typeof(MenuState), state.ToLower())) return MenuState.expanded;
@@ -20,210 +100,21 @@ namespace Main.Wpf.Utilities
             return (MenuState)Enum.Parse(typeof(MenuState), state.ToLower());
         }
 
-        public static void AddSite(int index)
-        {
-            try
-            {
-                var menuItem = new ListViewItem();
-                Pages.Menu.ListViewMenu.Items.Add(menuItem);
-
-                var menuItemStack = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal
-                };
-
-                var menuItemIcon = new Image
-                {
-                    Width = 30,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(10)
-                };
-
-                var menuItemText = new TextBlock
-                {
-                    FontSize = 17,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(20, 0, 20, 0)
-                };
-
-                menuItem.Content = menuItemStack;
-                menuItemStack.Children.Add(menuItemIcon);
-                menuItemStack.Children.Add(menuItemText);
-
-                menuItem.Selected += Menu_Selected;
-
-                ReloadSite(index);
-            }
-            catch (Exception ex)
-            {
-                LogFile.WriteLog(ex);
-            }
-        }
-
-        public static void ReloadSite(int index)
-        {
-            try
-            {
-                var sites = Config.Menu.Sites;
-
-                if (sites.Count < index) return;
-
-                var items = Pages.Menu.ListViewMenu.Items;
-
-                ListViewItem menuItem = null;
-
-                foreach (var item in items)
-                {
-                    if (!(item is ListViewItem tempMenuItem)) continue;
-                    if (items[index] != tempMenuItem) continue;
-
-                    menuItem = tempMenuItem;
-                    break;
-                }
-
-                if (menuItem == null) return;
-
-                var menuItemStack = menuItem.Content as StackPanel;
-
-                Image menuItemIcon = null;
-
-                foreach (var item in menuItemStack.Children)
-                {
-                    if (!(item is Image tempMenuItemIcon)) continue;
-
-                    menuItemIcon = tempMenuItemIcon;
-                    break;
-                }
-
-                if (menuItemIcon == null) return;
-
-                TextBlock menuItemText = null;
-
-                foreach (var item in menuItemStack.Children)
-                {
-                    if (!(item is TextBlock tempMenuItemText)) continue;
-
-                    menuItemText = tempMenuItemText;
-                    break;
-                }
-
-                if (menuItemText == null) return;
-
-                if (sites[index].Title?.Length == 0 || string.Equals(sites[index].Title, "null", StringComparison.OrdinalIgnoreCase) || sites[index].Title == null)
-                {
-                    if (index == 0) return;
-
-                    menuItem.Height = 20;
-                    menuItem.IsEnabled = false;
-                    menuItem.Name = null;
-
-                    menuItemIcon.Source = null;
-
-                    menuItemText.Text = null;
-                }
-                else
-                {
-                    menuItem.Height = 60;
-                    menuItem.IsEnabled = true;
-                    menuItem.Name = "MenuItem_" + index;
-
-                    try
-                    {
-                        menuItemIcon.Source = new BitmapImage(new Uri(sites[index].Icon));
-                    }
-                    catch
-                    {
-                        menuItemIcon.Source = new BitmapImage(new Uri("/Assets/application.png", UriKind.Relative));
-                    }
-
-                    menuItemText.Text = sites[index].Title;
-
-                    switch (sites[index].Path)
-                    {
-                        case "account.exe" when Config.Login.LoggedIn.Get().Result:
-                            menuItemIcon.Source = new BitmapImage(new Uri("/Assets/logout.png", UriKind.Relative));
-                            menuItemText.Text = "Abmelden";
-                            break;
-
-                        case "account.exe":
-                            menuItemIcon.Source = new BitmapImage(new Uri("/Assets/login.png", UriKind.Relative));
-                            menuItemText.Text = "Anmelden";
-                            break;
-
-                        case "info.exe":
-                            menuItemIcon.Source = new BitmapImage(new Uri("/Assets/information.png", UriKind.Relative));
-                            menuItemText.Text = "Information";
-                            break;
-
-                        case "selector.exe":
-                            menuItemIcon.Source =
-                                new BitmapImage(new Uri("/Assets/extensions.png", UriKind.Relative));
-                            break;
-                    }
-                }
-
-                if (index == Pages.Menu.ListViewMenu.SelectedIndex)
-                {
-                    if (!(Application.Current.MainWindow is MainWindow mw)) return;
-                    mw.Title = sites[index].Title + " - " + Config.Informations.Extension.Name;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogFile.WriteLog(ex);
-            }
-        }
-
-        private static ListViewItem _lastSelectedItem;
-
-        private static async void Menu_Selected(object sender, RoutedEventArgs e)
-        {
-            if (!Pages.Menu._loaded) return;
-
-            var menuItem = (ListViewItem)sender;
-
-            var index = int.Parse(menuItem.Name.Replace("MenuItem_", ""));
-
-            await SelectMenuItemAsync(index).ConfigureAwait(false);
-
-            if (index + 1 == Config.Menu.Sites.Count) return;
-
-            if (Config.Informations.Extension.Name == "RH Utensils") return;
-
-            await XmlHelper.SetString(Config.File, "config/selectionIndex", (index + 1).ToString());
-        }
+        private static MenuItem _lastSelectedItem;
 
         public static async Task SelectMenuItemAsync(int index)
         {
             try
             {
-            start:
-
-                ItemCollection items = Pages.Menu.ListViewMenu.Items;
-
-                ListViewItem menuItem = null;
-
-                await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                {
-                    foreach (var item in items)
-                    {
-                        if (!(item is ListViewItem tempMenuItem)) continue;
-                        if (tempMenuItem.Name != "MenuItem_" + index.ToString()) continue;
-
-                        menuItem = tempMenuItem;
-                        break;
-                    }
-                }));
-
-                if (menuItem == null)
-                {
-                    index = 0;
-                    goto start;
-                }
+                while (!ConfigHelper._loaded) await Task.Delay(100);
 
                 var sites = Config.Menu.Sites;
 
-                if (sites[index].Path == "account.exe")
+                if (index < 0 || index > sites.Count) return;
+
+                var menuItem = sites[index];
+
+                if (menuItem.Path == "account.exe")
                 {
                     if (await Config.Login.LoggedIn.Get())
                     {
@@ -253,10 +144,6 @@ namespace Main.Wpf.Utilities
                         Application.Current.Shutdown();
                     }
 
-                    menuItem.IsSelected = false;
-
-                    _lastSelectedItem.IsSelected = true;
-
                     return;
                 }
 
@@ -265,7 +152,15 @@ namespace Main.Wpf.Utilities
                 MoveCursorMenu(index);
                 Pages.Menu.ListViewMenu.SelectedItems.Clear();
 
-                menuItem.IsSelected = true;
+                foreach (MenuItem item in sites)
+                {
+                    if (item == menuItem)
+                    {
+                        item.IsSelected = true;
+                    }
+                }
+
+                await Config.Menu.SetSites(sites);
 
                 if (!(Application.Current.MainWindow is MainWindow mw)) return;
 
@@ -294,7 +189,7 @@ namespace Main.Wpf.Utilities
             }
         }
 
-        private static void MoveCursorMenu(int index)
+        public static void MoveCursorMenu(int index)
         {
             var margin = 100;
 
