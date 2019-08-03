@@ -12,7 +12,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
@@ -54,7 +53,6 @@ namespace Main.Wpf
 
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-
             MessageHelper.ReceiveDataMessages();
 
             try
@@ -164,7 +162,7 @@ namespace Main.Wpf
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         [DllImport("user32.dll")]
-        static extern int SetForegroundWindow(IntPtr point);
+        private static extern int SetForegroundWindow(IntPtr point);
 
         private async Task WaitForExtension(Process p)
         {
@@ -200,6 +198,9 @@ namespace Main.Wpf
                 Index.Visibility = Visibility.Visible;
                 IndexGrid.Visibility = Visibility.Collapsed;
 
+                exe = ReplaceVariables.Replace(exe);
+                argument = (string.Equals(argument, "null", StringComparison.OrdinalIgnoreCase)) ? "" : argument;
+
                 var ps = new ProcessStartInfo(exe)
                 {
                     Arguments = argument,
@@ -233,11 +234,12 @@ namespace Main.Wpf
                     var proc = backgroundProcesses[i].proc;
                     var procID = backgroundProcesses[i].id;
 
-                    if (procID == id)
+                    if (procID == id && proc.MainModule.FileName == exe)
                     {
                         ShowWindow(proc.MainWindowHandle, SW_SHOWNORMAL);
                         _appWin = proc.MainWindowHandle;
                         p?.Kill();
+                        _currentProcess = proc;
                         exeIsHidden = true;
                         break;
                     }
@@ -266,8 +268,6 @@ namespace Main.Wpf
 
                 Index.Visibility = Visibility.Collapsed;
                 IndexGrid.Visibility = Visibility.Visible;
-
-                
 
                 ps.WindowStyle = ProcessWindowStyle.Maximized;
 
@@ -333,78 +333,11 @@ namespace Main.Wpf
 
         private void MetroWindow_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            try
-            {
-                if (_currentProcess == null) return;
+            var keyData = KeyInterop.VirtualKeyFromKey(e.Key);
 
-                IntPtr h = _currentProcess.MainWindowHandle;
-                SetForegroundWindow(h);
+            MessageHelper.SendDataMessage(_currentProcess, "key \"" + keyData + "\"");
 
-                var k = new KeyConverter();
-
-                var convertedKey = k.ConvertToString(e.Key);
-
-                if (convertedKey.Length > 0)
-                {
-                    convertedKey = "{" + convertedKey.ToUpper() + "}";
-                }
-
-                switch (convertedKey)
-                {
-                    case "+":
-                        convertedKey = "{+}";
-                        break;
-                    case "^":
-                        convertedKey = "{^}";
-                        break;
-                    case "%":
-                        convertedKey = "{%}";
-                        break;
-                    case "~":
-                        convertedKey = "{~}";
-                        break;
-                    case "{":
-                        convertedKey = "{{}";
-                        break;
-                    case "}":
-                        convertedKey = "{}}";
-                        break;
-
-
-                    case "{SPACE}":
-                        convertedKey = " ";
-                        break;
-                    case "{RETURN}":
-                        convertedKey = "{ENTER}";
-                        break;
-
-                    case "{SHIFT}":
-                    case "{LEFTSHIFT}":
-                    case "{RIGHTSHIFT}":
-                        convertedKey = "+";
-                        break;
-                    case "{CTRL}":
-                    case "{LEFTCTRL}":
-                    case "{RIGHTCTRL}":
-                        convertedKey = "^";
-                        break;
-                    
-                    case "{SYSTEM}":
-                        convertedKey = "{F10}";
-                        break;
-                    case "{PAUSE}":
-                        convertedKey = "{BREAK}";
-                        break;
-
-                    // [To-Do] Test and add more
-                }
-
-                System.Windows.Forms.SendKeys.SendWait(convertedKey);
-            }
-            catch (Exception ex)
-            {
-                LogFile.WriteLog(ex);
-            }
+            e.Handled = true;
         }
     }
 }
