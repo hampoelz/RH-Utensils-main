@@ -165,9 +165,9 @@ namespace Main.Wpf.Utilities
                     new MenuItem() {Title = "Information", Icon = PackIconKind.InformationOutline, Path = "info.exe"}
                 };
 
-                if (!Config.Login.SkipLogin && Config.Informations.Extension.Name != "RH Utensils") sites.Add(new MenuItem() { Title = "Anmelden", Icon = PackIconKind.Login, Path = "account.exe" });
-
                 await Config.Menu.SetSites(sites);
+
+                ConfigHelper._loaded = true;
             }
             catch (Exception ex)
             {
