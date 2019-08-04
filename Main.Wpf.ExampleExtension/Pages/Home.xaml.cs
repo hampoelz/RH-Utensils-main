@@ -15,12 +15,9 @@ namespace Main.Wpf.ExampleExtension.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            File = _File;
+
             if (string.IsNullOrEmpty(File.Text)) File.Text = "Nicht gefunden!";
-            File.FontSize = 20;
-            File.TextAlignment = TextAlignment.Center;
-            File.VerticalAlignment = VerticalAlignment.Center;
-            File.TextWrapping = TextWrapping.WrapWithOverflow;
-            Content.Children.Add(File);
         }
 
         private void GoToSettings_Click(object sender, RoutedEventArgs e)

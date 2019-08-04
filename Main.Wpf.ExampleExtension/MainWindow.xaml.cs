@@ -1,7 +1,5 @@
 ﻿using Main.Wpf.ExampleExtension.Utilities;
 using System;
-using System.Linq;
-using System.Reflection;
 using System.Windows;
 
 namespace Main.Wpf.ExampleExtension
