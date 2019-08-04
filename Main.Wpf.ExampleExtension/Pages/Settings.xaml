@@ -45,7 +45,7 @@
                                             <materialDesign:PackIcon Kind="Sync" Width="30" Height="Auto" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15,0,0,0" />
                                             <TextBlock FontSize="20" Text="Test Einstellung"  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="60,0,0,0" />
                                             <TextBlock FontSize="13" Text="Teste, die Syncronisierung"  HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="60,27,0,0" />
-                                            <Grid x:Name="TestControl"  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0" />
+                                            <ToggleButton x:Name="_TestProperty"  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0" Checked="TestProperty_Checked" Unchecked="TestProperty_Unchecked" />
                                         </Grid>
                                         <Separator />
                                         <Grid Margin="15,15,20,15">
@@ -72,8 +72,24 @@
                                         <Grid Margin="15,15,20,15">
                                             <TextBlock FontSize="20" Text="Theme" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
                                             <TextBlock FontSize="20" Text="Hell" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0" />
-                                            <Grid x:Name="ThemeControl" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,70,0" />
+                                            <ToggleButton x:Name="_ThemeProperty" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,70,0" Checked="ThemeProperty_Checked" Unchecked="ThemeProperty_Unchecked" />
                                             <TextBlock FontSize="20" Text="Dunkel" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,125,0" />
+                                        </Grid>
+                                        <Separator />
+                                        <Grid Margin="15,15,20,15">
+                                            <TextBlock FontSize="20" Text="Farbe" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+                                            <ComboBox x:Name="_ColorProperty" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,50,0" Width="135" SelectionChanged="ColorProperty_SelectionChanged" />
+                                            <Button x:Name="ColorProperty_Save" Style="{DynamicResource MaterialDesignToolButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0" Width="Auto" Height="Auto" Foreground="{DynamicResource MaterialDesignBody}" Click="ColorProperty_Save_Click">
+                                                <materialDesign:PackIcon Kind="ContentSaveOutline" />
+                                            </Button>
+                                        </Grid>
+                                        <Separator />
+                                        <Grid Margin="15,15,20,15">
+                                            <TextBlock FontSize="20" Text="Favicon" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+                                            <Button x:Name="FaviconProperty" HorizontalAlignment="Right" Content="Suchen" VerticalAlignment="Center" Style="{DynamicResource MaterialDesignToolButton}" Margin="0,0,50,0" Width="135" Foreground="{DynamicResource MaterialDesignBody}" Click="ChangeSize_Click" />
+                                            <Button x:Name="FaviconProperty_Save" Style="{DynamicResource MaterialDesignToolButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0" Width="Auto" Height="Auto" Foreground="{DynamicResource MaterialDesignBody}" Click="FaviconProperty_Save_Click">
+                                                <materialDesign:PackIcon Kind="ContentSaveOutline" />
+                                            </Button>
                                         </Grid>
                                     </ItemsControl>
                                 </materialDesign:Card>
@@ -86,11 +102,22 @@
                                 <materialDesign:TransitionEffect Kind="SlideInFromRight" />
                             </materialDesign:TransitioningContent.OpeningEffects>
                             <Grid>
-                                <TextBlock Text="Andere Sachen" VerticalAlignment="Top" Height="25" Width="800" Margin="10,10,0,0" FontSize="20" />
-                                <materialDesign:Card Width="800" Height="1000" Margin="0,45,0,30">
+                                <TextBlock Text="Andere Optionen" VerticalAlignment="Top" Height="25" Width="800" Margin="10,10,0,0" FontSize="20" />
+                                <materialDesign:Card Width="800" Margin="0,45,0,30">
                                     <ItemsControl>
                                         <Grid Margin="15,15,20,15">
-                                            <TextBlock FontSize="20" Text="Hier kommen weitere Einstellungs-Optionen ..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" />
+                                            <Button x:Name="Add" Width="200" Content="Erstelle eine neue Seite" Margin="10,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Click="Add_Button_Click" />
+                                            <Button x:Name="Update" Width="150" Content="Ändere diese Seite" Margin="220,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Click="Update_Button_Click" IsEnabled="False" />
+                                            <Button x:Name="Remove" Width="150" Content="Lösche diese Seite" Margin="380,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Click="Remove_Button_Click" IsEnabled="False" />
+                                            <Button x:Name="GoTo" Width="200" Content="Wechsle zu dieser Seite" Margin="540,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Click="GoTo_Button_Click" IsEnabled="False" />
+                                        </Grid>
+                                        <Separator />
+                                        <Grid Margin="15,15,20,15">
+                                            <TextBlock FontSize="20" Text="Fenster Größe ändern" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
+                                            <Button x:Name="ChangeSize" HorizontalAlignment="Right" Content="Ändern" VerticalAlignment="Center" Style="{DynamicResource MaterialDesignToolButton}" Margin="0,0,50,0" Width="135" Foreground="{DynamicResource MaterialDesignBody}" Click="ChangeSize_Click" />
+                                            <Button x:Name="ChangeSize_Save" Style="{DynamicResource MaterialDesignToolButton}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0" Width="Auto" Height="Auto" Foreground="{DynamicResource MaterialDesignBody}" Click="ChangeSize_Save_Click">
+                                                <materialDesign:PackIcon Kind="ContentSaveOutline" />
+                                            </Button>
                                         </Grid>
                                     </ItemsControl>
                                 </materialDesign:Card>

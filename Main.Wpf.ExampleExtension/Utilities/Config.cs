@@ -9,6 +9,7 @@ namespace Main.Wpf.ExampleExtension.Utilities
     public static class Config
     {
         private static string name = "";
+
         public static string Name
         {
             get => name;
@@ -23,6 +24,7 @@ namespace Main.Wpf.ExampleExtension.Utilities
         }
 
         private static string color = "";
+
         public static string Color
         {
             get => color;
@@ -43,6 +45,14 @@ namespace Main.Wpf.ExampleExtension.Utilities
                     var Color = new SwatchesProvider().Swatches.FirstOrDefault(a => a.Name == value);
                     new PaletteHelper().ReplacePrimaryColor(Color);
                     new PaletteHelper().ReplaceAccentColor(Color);
+
+                    for (var i = 0; i < Colors.Count; i++)
+                    {
+                        if (Config.Color.Equals(Colors[i], StringComparison.OrdinalIgnoreCase))
+                        {
+                            Pages.Settings.ColorProperty.SelectedIndex = i;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
