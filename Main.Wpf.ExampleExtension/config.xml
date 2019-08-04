@@ -2,13 +2,16 @@
 <!--Erweiterungs-Konfigurations-Datei | Bitte nicht genau diese Config kopieren - Füge nur notwendige Felder zur Config für deine Erweiterung hinzu-->
 <!---->
 <config>
+  <!--  -->
   <!---->
   <!--Erweiterungs-Hauptinformationen | Sollte geändert werden-->
   <!---->
+  <!--  -->
   <!--Name der Erweiterung-->
   <name>Example Extension</name>
+  <!--  -->
   <!--Haupt-Farbe der Erweiterung-->
-  <color>teal</color>
+  <color>Teal</color>
   <!--Verfügbare Farben: Yellow
                          Amber
                          DeepOrange
@@ -25,40 +28,50 @@
                          Red
                          Orange
                          Purple-->
+  <!--  -->
   <!--Standard-Design: Dark / Light-->
   <defaultTheme>dark</defaultTheme>
+  <!--  -->
   <!--Logo der Erweiterung (Es können Platzhalter verwendet werden) | Im PNG-Format-->
-  <favicon>C:\Users\reneh\Google Drive\Hampis Projekte\Grafiken\Logo\Logo.png</favicon>
+  <favicon>{extensionsDirectory}\{extensionName}\{extensionVersion}\logo.png</favicon>
+  <!--  -->
   <!---->
   <!--Dateizuordnungen | Sollte geändert werden-->
   <!---->
   <!--Auf welche Dateizuordnungen das Programm reagiern soll | Um weitere Zuordnungen zuzuordnen einfach kopieren und ändern-->
-  <fileAssociation>wav</fileAssociation>
-  <fileAssociation>mp4</fileAssociation>
-  <fileAssociation>mov</fileAssociation>
+  <fileAssociation>txt</fileAssociation>
+  <fileAssociation>test</fileAssociation>
   <!--Und so weiter ... -->
+  <!--  -->
   <!---->
   <!--Menü Konfiguration-->
   <!---->
+  <!--  -->
   <!--In welche position soll sich das Menü standardmäßig befinden: collapsed / expanded-->
   <menuState>expanded</menuState>
+  <!--  -->
   <!---->
   <!--Seiten-Konfiguration | Sollte geändert werden | Funktioniert nur wenn "hideMenu = false"-->
   <!---->
   <!--Welche Seite soll ausgewählt werden | ACHTUNG: Beachte die Abstände im Menü - In diesem Fall hat die "Einstellungen"-Seite den Index 3-->
   <selectionIndex>1</selectionIndex>
+  <!--  -->
   <!--Menüeinträge / Seiten | Um weitere Seiten hinzuzufügen einfach kopieren und ändern-->
   <menu>
     <StartSeite>
       <!--Name der Seite, welche im Menü angezeigt werden soll-->
       <site_Title>Home</site_Title>
+      <!--  -->
       <!--Pfad zum Icon welches bei dieser Seite im Menü angezeigt werden soll (Es können Platzhalter verwendet werden) | Im PNG-Format-->
-      <site_Icon>{extensionsDirectory}\{extensionName}\{extensionVersion}\Icons\home.png</site_Icon>
+      <site_Icon>Home</site_Icon>
+      <!--  -->
       <!--Pfad zur Erweiterungs-Datei welche diese Seite beinhaltet (Es können Platzhalter verwendet werden) | EXE-Datei-->
       <site_Path>{extensionsDirectory}\{extensionName}\{extensionVersion}\ExampleExtension.exe</site_Path>
+      <!--  -->
       <!--Start-Argument mit welchem die oben angegebene Erweiterungs-Datei gestartet werden soll - Wenn Dateizuordnung angegeben wurden kann die der Platzhalter {fileAssociation} verwendet werden um die Datei zu übergeben-->
       <site_StartArguments>"{fileAssociation}" -page Home</site_StartArguments>
     </StartSeite>
+    <!--  -->
     <!--Um einen Abstand einzufügen einfach "null" verwenden-->
     <Abstand>
       <site_Title>null</site_Title>
@@ -68,68 +81,97 @@
     </Abstand>
     <Einstellungen>
       <site_Title>Einstellungen</site_Title>
-      <site_Icon>{extensionsDirectory}\{extensionName}\{extensionVersion}\Icons\settings.png</site_Icon>
+      <site_Icon>Settings</site_Icon>
       <site_Path>{extensionsDirectory}\{extensionName}\{extensionVersion}\ExampleExtension.exe</site_Path>
       <site_StartArguments>-page Settings</site_StartArguments>
     </Einstellungen>
     <!--Und so weiter ... -->
   </menu>
+  <!--  -->
   <!---->
   <!--Single-Site-Konfiguration-->
   <!---->
   <!--Soll das Menü deaktiviert werden | ACHTUNG: Wenn "hideMenu" aktiviert, dann gilt die Seiten Konfiguration nicht und es kann nur eine Seite ("SingleSite") gewählt werden-->
   <hideMenu>false</hideMenu>
+  <!--  -->
   <!--Wenn das Menü deaktiviert ist, muss hier der Pfad zur Erweiterungs-Datei angegeben werden | Funktioniert nur wenn "hideMenu = true"-->
   <!--Pfad zur Erweiterungs-Datei welche die Seite beinhaltet (Es können Platzhalter verwendet werden) | EXE-Datei-->
   <singleSite_Path>{extensionsDirectory}\{extensionName}\{extensionVersion}\ExampleExtension.exe</singleSite_Path>
+  <!--  -->
   <!--Start-Argument mit welchem die oben angegebene Erweiterungs-Datei gestartet werden soll - Wenn Dateizuordnung angegeben wurden kann der Platzhalter {fileAssociation} verwendet werden um den Datei-Pfad zu übergeben-->
   <singleSite_StartArguments>"{fileAssociation}" -page Home</singleSite_StartArguments>
+  <!--  -->
   <!---->
   <!--Pfad zur JSON Datei, in welcher alle Benutzereinstellungen der Erweiterung gespeichert werden (Es können Platzhalter verwendet werden)-->
   <!---->
   <settingsFile>C:\Users\{username}\AppData\Local\HampisProjekte\RH Utensils\{appName}\Settings.json</settingsFile>
+  <!--  -->
   <!---->
   <!--Update Informationen | Sollte geändert werden-->
   <!---->
   <!--Link zu der XML-Datei, welche alle Versionen und Downloadlinks von den Erweiterung beinhaltet sollte | Genauere Anleitung in der Wiki-->
   <versionsHistoryFile>https://raw.githubusercontent.com/rh-utensils/main/master/Main.Wpf.ExampleExtension/VersionHistory.xml</versionsHistoryFile>
+  <!--  -->
   <!---->
   <!--Copyright und Entwikler Informationen | Sollte geändert werden-->
   <!---->
   <!--Website der Erweiterung-->
   <extension_Website>https://github.com/rh-utensils/main</extension_Website>
+  <!--  -->
   <!--Website zum SourceCode der Erweiterung-->
   <extension_SourceCode>https://github.com/rh-utensils/main</extension_SourceCode>
+  <!--  -->
   <!--Name des Entwicklers oder der Entwikler-Organisation-->
   <developer_Organisation>RH Utensils</developer_Organisation>
+  <!--  -->
   <!--Website des Entwicklers oder des Entwikler-Organisation-->
   <developer_Website>https://rh-utensils.hampoelz.net/</developer_Website>
+  <!--  -->
   <!--Copyright Hinweis des Entwicklers, der Entwikler-Organisation oder Firma-->
   <copyright_Organisation>Hampis Projekte</copyright_Organisation>
+  <!--  -->
   <!--Website des Entwicklers, der Entwikler-Organisation oder Firma-->
   <copyright_Website>https://hampoelz.net/</copyright_Website>
+  <!--  -->
   <!---->
   <!--Login Einstellungen-->
   <!---->
   <!--Soll die Login-Seite übersprungen werden | Die Login-Seite wird nicht angezeigt!-->
-  <skipLogin>false</skipLogin>
+  <skipLogin>False</skipLogin>
+  <!--  -->
   <!--Benutzer wird automatisch angemeldet | Wert wird automatisch vom Programm geändert!-->
   <loggedIn>False</loggedIn>
+  <!--  -->
   <!--Login-Seite / Firstrun-Seite wird angezeigt | Wert wird automatisch vom Programm geändert!-->
-  <firstRun>False</firstRun>
+  <firstRun>True</firstRun>
+  <!--  -->
   <!---->
   <!--Bug-Tracker Website | Sollte geändert werden-->
   <!---->
   <issueTracker>https://github.com/rh-utensils/main/issues/</issueTracker>
+  <!--  -->
   <!---->
   <!--Auth0 Informationen | Damit die Login-, Registrierungs- und Sync-Funktionen über deine eigene Datenbank aufgerufen werden | Genauere Anleitung in der Wiki-->
   <!---->
   <!--Deine Auth0 Domain-->
   <auth0_Domain>hampoelz.eu.auth0.com</auth0_Domain>
+  <!--  -->
   <!--Die Client ID von deiner Auth0 "Native" Application-->
   <auth0_ClientId>_9ZvrbGJUX4MfWdzt6F7pW2e0Z0Zc0OA</auth0_ClientId>
+  <!--  -->
   <!--Die Client ID von deiner Auth0 "MACHINE TO MACHINE" Application-->
   <auth0_APIClientId>GTgQvzJvhsSPT0w8sirtIj69cTwfS9AW</auth0_APIClientId>
+  <!--  -->
   <!--Der Client Secret Schlüssel von deiner Auth0 "MACHINE TO MACHINE" Application-->
   <auth0_APIClientSecret>J4db362UcFbgrQBaXb0doKt4MNEjyPh4W2kueckfCpEppl2zHzB8xyLu3N7REknh</auth0_APIClientSecret>
+  <!--  -->
+  <!---->
+  <!--Fenster-Informationen-->
+  <!---->
+  <!--  -->
+  <!--Minimale-Höhe des Fensters-->
+  <height>700</height>
+  <!--  -->
+  <!--Minimale-Breite des Fensters-->
+  <width>1200</width>
 </config>
