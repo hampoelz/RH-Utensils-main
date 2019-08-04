@@ -2,6 +2,7 @@
 using MaterialDesignThemes.Wpf.Transitions;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -68,6 +69,8 @@ namespace Main.Wpf.Pages
                     }
                 }
             }
+
+            while (!ConfigHelper._loaded) await Task.Delay(100);
 
             if (!string.IsNullOrEmpty(Config.Informations.Extension.Name) && Config.Informations.Extension.Name != "RH Utensils" && int.TryParse(await XmlHelper.ReadString(Config.File, "selectionIndex").ConfigureAwait(false), out var index) && index - 1 >= 0 && index <= Config.Menu.Sites.Count)
             {
