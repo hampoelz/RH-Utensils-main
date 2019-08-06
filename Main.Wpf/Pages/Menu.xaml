@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:utilities="clr-namespace:Main.Wpf.Utilities"
       mc:Ignorable="d"
       d:DesignHeight="670" d:DesignWidth="250"
       Title="Menu" Loaded="Page_Loaded">
@@ -22,7 +23,8 @@
         </materialDesign:TransitioningContent>
         <ListView x:Name="_ListViewMenu" Margin="0,100,0,100" HorizontalAlignment="Left"
                   HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                  Width="250" Panel.ZIndex="100" BorderThickness="0" SelectionChanged="ListViewMenu_SelectionChanged">
+                  Width="250" Panel.ZIndex="100" BorderThickness="0" SelectionChanged="ListViewMenu_SelectionChanged"
+                  d:DataContext="{d:DesignInstance }">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                     <Setter Property="Height" Value="{Binding Height}" />
@@ -32,7 +34,7 @@
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate DataType="utilities:MenuItem">
                     <StackPanel Visibility="Visible" Orientation="Horizontal">
                         <materialDesign:PackIcon Width="30" Height="Auto" VerticalAlignment="Center" Margin="10"
                                                  Kind="{Binding Icon}" Foreground="White" />
