@@ -40,29 +40,57 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type Thumb}">
                                     <Border Background="Transparent">
-                                        <Rectangle x:Name="Slider" Fill="#9E9E9E" Width="4" HorizontalAlignment="Right" RadiusX="2" RadiusY="2" />
+                                        <Rectangle x:Name="Slider" Fill="#9E9E9E" Width="4" HorizontalAlignment="Right"
+                                                   RadiusX="2" RadiusY="2" />
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
                                             <Trigger.EnterActions>
                                                 <BeginStoryboard>
                                                     <Storyboard>
-                                                        <DoubleAnimation To="12" DecelerationRatio="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Width" Duration="0:0:0.10" />
-                                                        <DoubleAnimation To="2" DecelerationRatio="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="RadiusX" Duration="0:0:0.10" />
-                                                        <DoubleAnimation To="2" DecelerationRatio="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="RadiusY" Duration="0:0:0.10" />
+                                                        <DoubleAnimation To="12" DecelerationRatio="1"
+                                                                         Storyboard.TargetName="Slider"
+                                                                         Storyboard.TargetProperty="Width"
+                                                                         Duration="0:0:0.10" />
+                                                        <DoubleAnimation To="2" DecelerationRatio="1"
+                                                                         Storyboard.TargetName="Slider"
+                                                                         Storyboard.TargetProperty="RadiusX"
+                                                                         Duration="0:0:0.10" />
+                                                        <DoubleAnimation To="2" DecelerationRatio="1"
+                                                                         Storyboard.TargetName="Slider"
+                                                                         Storyboard.TargetProperty="RadiusY"
+                                                                         Duration="0:0:0.10" />
                                                     </Storyboard>
                                                 </BeginStoryboard>
                                             </Trigger.EnterActions>
                                             <Trigger.ExitActions>
                                                 <BeginStoryboard>
                                                     <Storyboard>
-                                                        <DoubleAnimation To="12" DecelerationRatio="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Width" Duration="0:0:0.10" />
-                                                        <DoubleAnimation To="2" DecelerationRatio="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="RadiusX" Duration="0:0:0.10" />
-                                                        <DoubleAnimation To="2" DecelerationRatio="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="RadiusY" Duration="0:0:0.10" />
+                                                        <DoubleAnimation To="12" DecelerationRatio="1"
+                                                                         Storyboard.TargetName="Slider"
+                                                                         Storyboard.TargetProperty="Width"
+                                                                         Duration="0:0:0.10" />
+                                                        <DoubleAnimation To="2" DecelerationRatio="1"
+                                                                         Storyboard.TargetName="Slider"
+                                                                         Storyboard.TargetProperty="RadiusX"
+                                                                         Duration="0:0:0.10" />
+                                                        <DoubleAnimation To="2" DecelerationRatio="1"
+                                                                         Storyboard.TargetName="Slider"
+                                                                         Storyboard.TargetProperty="RadiusY"
+                                                                         Duration="0:0:0.10" />
 
-                                                        <DoubleAnimation To="4" AccelerationRatio="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Width" BeginTime="0:0:0.15" Duration="0:0:0.25" />
-                                                        <DoubleAnimation To="1" DecelerationRatio="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="RadiusX" BeginTime="0:0:0.15" Duration="0:0:0.25" />
-                                                        <DoubleAnimation To="1" DecelerationRatio="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="RadiusY" BeginTime="0:0:0.15" Duration="0:0:0.25" />
+                                                        <DoubleAnimation To="4" AccelerationRatio="1"
+                                                                         Storyboard.TargetName="Slider"
+                                                                         Storyboard.TargetProperty="Width"
+                                                                         BeginTime="0:0:0.15" Duration="0:0:0.25" />
+                                                        <DoubleAnimation To="1" DecelerationRatio="1"
+                                                                         Storyboard.TargetName="Slider"
+                                                                         Storyboard.TargetProperty="RadiusX"
+                                                                         BeginTime="0:0:0.15" Duration="0:0:0.25" />
+                                                        <DoubleAnimation To="1" DecelerationRatio="1"
+                                                                         Storyboard.TargetName="Slider"
+                                                                         Storyboard.TargetProperty="RadiusY"
+                                                                         BeginTime="0:0:0.15" Duration="0:0:0.25" />
                                                     </Storyboard>
                                                 </BeginStoryboard>
                                             </Trigger.ExitActions>
@@ -84,14 +112,20 @@
                                             <Trigger.EnterActions>
                                                 <BeginStoryboard>
                                                     <Storyboard>
-                                                        <DoubleAnimation To="12" DecelerationRatio="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Height" Duration="0:0:0.1" />
+                                                        <DoubleAnimation To="12" DecelerationRatio="1"
+                                                                         Storyboard.TargetName="Slider"
+                                                                         Storyboard.TargetProperty="Height"
+                                                                         Duration="0:0:0.1" />
                                                     </Storyboard>
                                                 </BeginStoryboard>
                                             </Trigger.EnterActions>
                                             <Trigger.ExitActions>
                                                 <BeginStoryboard>
                                                     <Storyboard>
-                                                        <DoubleAnimation To="4" DecelerationRatio="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Height" Duration="0:0:0.25" />
+                                                        <DoubleAnimation To="4" DecelerationRatio="1"
+                                                                         Storyboard.TargetName="Slider"
+                                                                         Storyboard.TargetProperty="Height"
+                                                                         Duration="0:0:0.25" />
                                                     </Storyboard>
                                                 </BeginStoryboard>
                                             </Trigger.ExitActions>
@@ -107,12 +141,15 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ScrollBar}">
-                            <Track x:Name="PART_Track" IsDirectionReversed="true" IsEnabled="{TemplateBinding IsMouseOver}">
+                            <Track x:Name="PART_Track" IsDirectionReversed="true"
+                                   IsEnabled="{TemplateBinding IsMouseOver}">
                                 <Track.DecreaseRepeatButton>
-                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}" Style="{StaticResource PageScrollButton}" />
+                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                                                  Style="{StaticResource PageScrollButton}" />
                                 </Track.DecreaseRepeatButton>
                                 <Track.IncreaseRepeatButton>
-                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}" Style="{StaticResource PageScrollButton}" />
+                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                                                  Style="{StaticResource PageScrollButton}" />
                                 </Track.IncreaseRepeatButton>
                                 <Track.Thumb>
                                     <Thumb Style="{StaticResource VerticalThumbStyle}" />
@@ -130,10 +167,12 @@
                                 <ControlTemplate TargetType="{x:Type ScrollBar}">
                                     <Track x:Name="PART_Track" IsEnabled="{TemplateBinding IsMouseOver}">
                                         <Track.DecreaseRepeatButton>
-                                            <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}" Style="{StaticResource PageScrollButton}" />
+                                            <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}"
+                                                          Style="{StaticResource PageScrollButton}" />
                                         </Track.DecreaseRepeatButton>
                                         <Track.IncreaseRepeatButton>
-                                            <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}" Style="{StaticResource PageScrollButton}" />
+                                            <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}"
+                                                          Style="{StaticResource PageScrollButton}" />
                                         </Track.IncreaseRepeatButton>
                                         <Track.Thumb>
                                             <Thumb Style="{StaticResource HorizontalThumbStyle}" />

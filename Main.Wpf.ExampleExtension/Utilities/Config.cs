@@ -1,58 +1,58 @@
-﻿using MaterialDesignColors;
-using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MaterialDesignColors;
+using MaterialDesignThemes.Wpf;
 
 namespace Main.Wpf.ExampleExtension.Utilities
 {
     public static class Config
     {
-        private static string name = "";
+        private static string _name = "";
+
+        private static string _color = "";
 
         public static string Name
         {
-            get => name;
+            get => _name;
             set
             {
-                if (!string.IsNullOrEmpty(name)) return;
+                if (!string.IsNullOrEmpty(_name)) return;
 
-                if (name == value || string.IsNullOrEmpty(value)) return;
+                if (_name == value || string.IsNullOrEmpty(value)) return;
 
-                name = value;
+                _name = value;
             }
         }
 
-        private static string color = "";
-
         public static string Color
         {
-            get => color;
+            get => _color;
             set
             {
                 value = value.ToLower();
 
-                if (color == value || string.IsNullOrEmpty(value)) return;
+                if (_color == value || string.IsNullOrEmpty(value)) return;
 
-                List<string> Colors = new List<string> { "yellow", "amber", "deeporange", "lightblue", "teal", "cyan", "pink", "green", "deeppurple", "indigo", "lightgreen", "blue", "lime", "red", "orange", "purple" };
+                var colors = new List<string>
+                {
+                    "yellow", "amber", "deeporange", "lightblue", "teal", "cyan", "pink", "green", "deeppurple",
+                    "indigo", "lightgreen", "blue", "lime", "red", "orange", "purple"
+                };
 
-                if (!Colors.Contains(value)) return;
+                if (!colors.Contains(value)) return;
 
-                color = value;
+                _color = value;
 
                 try
                 {
-                    var Color = new SwatchesProvider().Swatches.FirstOrDefault(a => a.Name == value);
-                    new PaletteHelper().ReplacePrimaryColor(Color);
-                    new PaletteHelper().ReplaceAccentColor(Color);
+                    var color = new SwatchesProvider().Swatches.FirstOrDefault(a => a.Name == value);
+                    new PaletteHelper().ReplacePrimaryColor(color);
+                    new PaletteHelper().ReplaceAccentColor(color);
 
-                    for (var i = 0; i < Colors.Count; i++)
-                    {
-                        if (Config.Color.Equals(Colors[i], StringComparison.OrdinalIgnoreCase))
-                        {
+                    for (var i = 0; i < colors.Count; i++)
+                        if (Color.Equals(colors[i], StringComparison.OrdinalIgnoreCase))
                             Pages.Settings.ColorProperty.SelectedIndex = i;
-                        }
-                    }
                 }
                 catch (Exception ex)
                 {

@@ -11,7 +11,7 @@ namespace Main.Wpf.ExampleExtension.Utilities
 
         public static void WriteLog(Exception ex)
         {
-            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "write LogFile exception \"" + ex.ToString() + "\"");
+            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "write LogFile exception \"" + ex + "\"");
         }
     }
 }

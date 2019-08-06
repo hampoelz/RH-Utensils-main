@@ -1,6 +1,4 @@
-﻿using Main.Wpf.ExampleExtension.Utilities;
-using MaterialDesignThemes.Wpf.Transitions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -9,10 +7,13 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Main.Wpf.ExampleExtension.Utilities;
+using MaterialDesignThemes.Wpf.Transitions;
+using Microsoft.Win32;
 
 namespace Main.Wpf.ExampleExtension.Pages
 {
-    public partial class Settings : Page
+    public partial class Settings
     {
         public static ToggleButton TestProperty = new ToggleButton();
         public static ToggleButton ThemeProperty = new ToggleButton();
@@ -29,50 +30,49 @@ namespace Main.Wpf.ExampleExtension.Pages
             ThemeProperty = _ThemeProperty;
             ColorProperty = _ColorProperty;
 
-            var colors = new List<string> { "Yellow", "Amber", "Deep Orange", "Light Blue", "Teal", "Cyan", "Pink", "Green", "Deep Purple", "Indigo", "Light Green", "Blue", "Lime", "Red", "Orange", "Purple" };
-
-            foreach (string color in colors)
+            var colors = new List<string>
             {
-                ColorProperty.Items.Add(color);
-            }
+                "Yellow", "Amber", "Deep Orange", "Light Blue", "Teal", "Cyan", "Pink", "Green", "Deep Purple",
+                "Indigo", "Light Green", "Blue", "Lime", "Red", "Orange", "Purple"
+            };
+
+            foreach (var color in colors) ColorProperty.Items.Add(color);
         }
 
         private async void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             var content = "";
 
-            for (int item = 0; item < IC_Settings.Items.Count; item++)
+            for (var item = 0; item < IcSettings.Items.Count; item++)
             {
-                UIElement uiElement = (UIElement)IC_Settings.ItemContainerGenerator.ContainerFromIndex(item);
-                if (!(uiElement is TransitioningContent TC)) continue;
+                var uiElement = (UIElement) IcSettings.ItemContainerGenerator.ContainerFromIndex(item);
+                if (!(uiElement is TransitioningContent tc)) continue;
 
-                if (VisualTreeHelper.GetOffset(TC).Y <= e.VerticalOffset)
+                if (!(VisualTreeHelper.GetOffset(tc).Y <= e.VerticalOffset)) continue;
+                var uiGrid = (UIElement) tc.Content;
+                if (!(uiGrid is Grid grid)) continue;
+
+                for (var children = 0; children < grid.Children.Count; children++)
                 {
-                    UIElement uiGrid = (UIElement)TC.Content;
-                    if (!(uiGrid is Grid grid)) continue;
+                    var uiTextBox = grid.Children[children];
 
-                    for (int children = 0; children < grid.Children.Count; children++)
-                    {
-                        UIElement uiTextBox = (UIElement)grid.Children[children];
+                    if (!(uiTextBox is TextBlock tb)) continue;
 
-                        if (!(uiTextBox is TextBlock TB)) continue;
-
-                        content = " / " + TB.Text;
-                    }
+                    content = " / " + tb.Text;
                 }
             }
 
-            if (TB_Navigation.Text == Title + content) return;
+            if (TbNavigation.Text == Title + content) return;
 
-            DoubleAnimation DA2 = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
-            TB_Navigation.BeginAnimation(OpacityProperty, DA2);
+            var da2 = new DoubleAnimation(0, TimeSpan.FromSeconds(0.2));
+            TbNavigation.BeginAnimation(OpacityProperty, da2);
 
             await Task.Delay(TimeSpan.FromSeconds(0.4));
 
-            TB_Navigation.Text = Title + content;
+            TbNavigation.Text = Title + content;
 
-            DoubleAnimation DA1 = new DoubleAnimation(1, TimeSpan.FromSeconds(0.2));
-            TB_Navigation.BeginAnimation(OpacityProperty, DA1);
+            var da1 = new DoubleAnimation(1, TimeSpan.FromSeconds(0.2));
+            TbNavigation.BeginAnimation(OpacityProperty, da1);
         }
 
         private void TestProperty_Unchecked(object sender, RoutedEventArgs e)
@@ -108,37 +108,38 @@ namespace Main.Wpf.ExampleExtension.Pages
 
         private void ColorProperty_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set tmp Color \"" + ColorProperty.SelectedItem + "\"");
+            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(),
+                "set tmp Color \"" + ColorProperty.SelectedItem + "\"");
         }
 
         private void ColorProperty_Save_Click(object sender, RoutedEventArgs e)
         {
-            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set Color \"" + ColorProperty.SelectedItem + "\"");
+            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(),
+                "set Color \"" + ColorProperty.SelectedItem + "\"");
         }
 
         #endregion Color
 
         #region Favicon
 
-        private string Favicon = "";
+        private string _favicon = "";
 
         private void FaviconProperty_Click(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog openDialog = new Microsoft.Win32.OpenFileDialog
+            var openDialog = new OpenFileDialog
             {
                 Filter = "Grafik Dateien (*.png)|*.png"
             };
-            if (openDialog.ShowDialog() == true)
-            {
-                Favicon = openDialog.FileName;
 
-                MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set tmp Favicon \"" + Favicon + "\"");
-            }
+            if (openDialog.ShowDialog() != true) return;
+            _favicon = openDialog.FileName;
+
+            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set tmp Favicon \"" + _favicon + "\"");
         }
 
         private void FaviconProperty_Save_Click(object sender, RoutedEventArgs e)
         {
-            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set Favicon \"" + Favicon + "\"");
+            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set Favicon \"" + _favicon + "\"");
         }
 
         #endregion Favicon
@@ -147,8 +148,10 @@ namespace Main.Wpf.ExampleExtension.Pages
 
         private void Add_Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "add tmp Site \"null\" \"null\" \"null\" \"null\"");
-            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "add tmp Site \"Test Page\" \"TestTube\" \"notepad.exe\" \"null\"");
+            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(),
+                "add tmp Site \"null\" \"null\" \"null\" \"null\"");
+            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(),
+                "add tmp Site \"Test Page\" \"TestTube\" \"notepad.exe\" \"null\"");
 
             Add.IsEnabled = false;
             Update.IsEnabled = true;
@@ -158,7 +161,8 @@ namespace Main.Wpf.ExampleExtension.Pages
 
         private void Update_Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "update tmp Site \"5\" \"New Test\" \"TestTubeOff\" \"powershell.exe\" \"null\"");
+            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(),
+                "update tmp Site \"5\" \"New Test\" \"TestTubeOff\" \"powershell.exe\" \"null\"");
 
             Add.IsEnabled = false;
             Update.IsEnabled = false;
@@ -186,33 +190,37 @@ namespace Main.Wpf.ExampleExtension.Pages
 
         #region Size
 
-        private int _Height = 700;
-        private int _Width = 1200;
+        private int _height = 700;
+        private int _width = 1200;
 
         private void ChangeSize_Click(object sender, RoutedEventArgs e)
         {
-            if (_Height != 800 && _Width != 1300)
+            if (_height != 800 && _width != 1300)
             {
-                _Height = 800;
-                _Width = 1300;
+                _height = 800;
+                _width = 1300;
 
-                MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set tmp WindowHeight \"" + _Height + "\"");
-                MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set tmp WindowWidth \"" + _Width + "\"");
+                MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(),
+                    "set tmp WindowHeight \"" + _height + "\"");
+                MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(),
+                    "set tmp WindowWidth \"" + _width + "\"");
             }
             else
             {
-                _Height = 700;
-                _Width = 1200;
+                _height = 700;
+                _width = 1200;
 
-                MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set tmp WindowHeight \"" + _Height + "\"");
-                MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set tmp WindowWidth \"" + _Width + "\"");
+                MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(),
+                    "set tmp WindowHeight \"" + _height + "\"");
+                MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(),
+                    "set tmp WindowWidth \"" + _width + "\"");
             }
         }
 
         private void ChangeSize_Save_Click(object sender, RoutedEventArgs e)
         {
-            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set WindowHeight \"" + _Height + "\"");
-            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set WindowWidth \"" + _Width + "\"");
+            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set WindowHeight \"" + _height + "\"");
+            MessageHelper.SendDataMessage(InstanceHelper.GetMainProcess(), "set WindowWidth \"" + _width + "\"");
         }
 
         #endregion Size
