@@ -45,8 +45,7 @@
 
                     <Grid Height="60" VerticalAlignment="Bottom">
                         <Button x:Name="BtnLogin" HorizontalAlignment="Left" Content="Anmelden" Width="110" Height="35"
-                                Foreground="White" Click="Login_Click" FontSize="15" Margin="10,0,0,0">
-                        </Button>
+                                Foreground="White" Click="Login_Click" FontSize="15" Margin="10,0,0,0" />
                         <Button x:Name="BtnSkip" HorizontalAlignment="Right" Content="Ohne Anmelden nutzen" Width="200"
                                 Height="35" Click="Skip_Click" Style="{DynamicResource MaterialDesignFlatButton}"
                                 FontSize="15" Margin="0,0,10,0" />

@@ -1,6 +1,4 @@
-﻿using Main.Wpf.Utilities;
-using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -9,6 +7,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using Main.Wpf.Utilities;
+using MaterialDesignThemes.Wpf;
 
 namespace Main.Wpf.Pages
 {
@@ -29,35 +29,35 @@ namespace Main.Wpf.Pages
             switch (type)
             {
                 case "error":
-                    InfoBox.Background = (Brush)converter.ConvertFromString("#B00020");
+                    InfoBox.Background = (Brush) converter.ConvertFromString("#B00020");
                     InfoBoxIcon.Kind = PackIconKind.ErrorOutline;
                     break;
 
                 case "warning":
-                    InfoBox.Background = (Brush)converter.ConvertFromString("#FF8800");
+                    InfoBox.Background = (Brush) converter.ConvertFromString("#FF8800");
                     InfoBoxIcon.Kind = PackIconKind.WarningOutline;
                     break;
 
                 case "success":
-                    InfoBox.Background = (Brush)converter.ConvertFromString("#007E33");
+                    InfoBox.Background = (Brush) converter.ConvertFromString("#007E33");
                     InfoBoxIcon.Kind = PackIconKind.CheckOutline;
                     break;
 
                 case "info":
-                    InfoBox.Background = (Brush)converter.ConvertFromString("#0099CC");
+                    InfoBox.Background = (Brush) converter.ConvertFromString("#0099CC");
                     InfoBoxIcon.Kind = PackIconKind.InfoOutline;
                     break;
 
                 default:
-                    {
-                        if (InfoBox.Margin != new Thickness(0, 0, 0, margin1)) return;
+                {
+                    if (InfoBox.Margin != new Thickness(0, 0, 0, margin1)) return;
 
-                        var taClose = new ThicknessAnimation(InfoBox.Margin, new Thickness(0, 0, 0, margin2),
-                            TimeSpan.FromSeconds(0.4));
-                        InfoBox.BeginAnimation(MarginProperty, taClose);
+                    var taClose = new ThicknessAnimation(InfoBox.Margin, new Thickness(0, 0, 0, margin2),
+                        TimeSpan.FromSeconds(0.4));
+                    InfoBox.BeginAnimation(MarginProperty, taClose);
 
-                        return;
-                    }
+                    return;
+                }
             }
 
             InfoBoxText.Text = text;
@@ -94,7 +94,7 @@ namespace Main.Wpf.Pages
 
                     try
                     {
-                        new Version(installedVersions[ii]);
+                        var unused = new Version(installedVersions[ii]);
                     }
                     catch
                     {
@@ -137,7 +137,7 @@ namespace Main.Wpf.Pages
 
                     try
                     {
-                        new Version(installedVersions[ii]);
+                        var unused = new Version(installedVersions[ii]);
                     }
                     catch
                     {
@@ -170,14 +170,10 @@ namespace Main.Wpf.Pages
 
         private void Uninstall_OnClick(object sender, RoutedEventArgs e)
         {
-            if (Version.Items.Count > 1)
-            {
-                ShowInfoBox("warning", "Willst du diese Add-on Version wirklich deinstallieren?");
-            }
-            else
-            {
-                ShowInfoBox("warning", "Willst du dieses Add-on wirklich deinstallieren?");
-            }
+            ShowInfoBox("warning",
+                Version.Items.Count > 1
+                    ? "Willst du diese Add-on Version wirklich deinstallieren?"
+                    : "Willst du dieses Add-on wirklich deinstallieren?");
 
             ConfirmUninstall.Visibility = Visibility.Visible;
         }
@@ -188,31 +184,32 @@ namespace Main.Wpf.Pages
             {
                 if (Version.Items.Count > 1)
                 {
-                    var ExtensionDirectory = Path.Combine(Config.ExtensionsDirectory, Extension.Text, Version.Text);
+                    var extensionDirectory = Path.Combine(Config.ExtensionsDirectory, Extension.Text, Version.Text);
 
-                    Directory.Delete(ExtensionDirectory, true);
+                    Directory.Delete(extensionDirectory, true);
 
                     ShowInfoBox("success", "Die Add-on Version " + Version.Text + " wurde erfolgreich deinstalliert.");
                 }
                 else
                 {
-                    string[] setupPaths = Directory.GetFiles(Path.Combine(Config.ExtensionsDirectory, Extension.Text), "unins*.exe");
-                    if (setupPaths.Count() > 0)
+                    var setupPaths = Directory.GetFiles(Path.Combine(Config.ExtensionsDirectory, Extension.Text),
+                        "unins*.exe");
+                    if (setupPaths.Any())
                     {
                         var ps = new ProcessStartInfo(setupPaths[0])
                         {
                             Arguments = "/VERYSILENT"
                         };
 
-                        var p = Process.Start(ps);
+                        Process.Start(ps);
 
                         ShowInfoBox("success", "Das Add-on wird im Hintergrund deinstalliert.");
                     }
                     else
                     {
-                        var ExtensionDirectory = Path.Combine(Config.ExtensionsDirectory, Extension.Text);
+                        var extensionDirectory = Path.Combine(Config.ExtensionsDirectory, Extension.Text);
 
-                        Directory.Delete(ExtensionDirectory, true);
+                        Directory.Delete(extensionDirectory, true);
 
                         ShowInfoBox("success", "Das Add-on wurde erfolgreich deinstalliert.");
                     }
@@ -235,7 +232,7 @@ namespace Main.Wpf.Pages
         {
             try
             {
-                var ps = new ProcessStartInfo(Assembly.GetEntryAssembly().Location)
+                var ps = new ProcessStartInfo(Assembly.GetEntryAssembly()?.Location)
                 {
                     Arguments = "-" + Extension.Text + " -version " + Version.Text
                 };

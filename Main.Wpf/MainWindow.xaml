@@ -4,8 +4,6 @@
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
-                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                   xmlns:wpf="clr-namespace:Main.Wpf"
                    mc:Ignorable="d"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
                    TextElement.FontWeight="Regular"
@@ -33,7 +31,8 @@
                    MinWidth="1200"
 
                    Height="700" Width="1200"
-                   Title="RH Utensils" Closed="MetroWindow_Closed" Loaded="MetroWindow_Loaded" PreviewKeyDown="MetroWindow_PreviewKeyDown">
+                   Title="RH Utensils" Closed="MetroWindow_Closed" Loaded="MetroWindow_Loaded"
+                   PreviewKeyDown="MetroWindow_PreviewKeyDown">
 
     <Grid Name="MainGrid">
         <Frame x:Name="Index" NavigationUIVisibility="Hidden" />

@@ -17,7 +17,8 @@
 
     <Grid>
         <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
-            <materialDesign:Card Padding="10" Width="400" Height="55" Background="{DynamicResource PrimaryHueDarkBrush}" VerticalAlignment="Stretch">
+            <materialDesign:Card Padding="10" Width="400" Height="55"
+                                 Background="{DynamicResource PrimaryHueDarkBrush}" VerticalAlignment="Stretch">
                 <Grid>
                     <materialDesign:PackIcon VerticalAlignment="Center" Kind="ProgressClock" Height="35" Width="35"
                                              Foreground="White" />

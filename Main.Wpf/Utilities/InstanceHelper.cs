@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 
 namespace Main.Wpf.Utilities
 {
@@ -8,40 +9,20 @@ namespace Main.Wpf.Utilities
         {
             if (Config.Informations.Extension.Name == "RH Utensils") return false;
 
-            Process _currentProcess = Process.GetCurrentProcess();
-            Process[] _allProcesses = Process.GetProcessesByName(_currentProcess.ProcessName);
+            var currentProcess = Process.GetCurrentProcess();
+            var allProcesses = Process.GetProcessesByName(currentProcess.ProcessName);
 
-            if (_allProcesses.Length > 1)
-            {
-                foreach (var process in _allProcesses)
-                {
-                    if (process.MainWindowTitle.EndsWith(Config.Informations.Extension.Name))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return allProcesses.Length > 1 && allProcesses.Any(process =>
+                       process.MainWindowTitle.EndsWith(Config.Informations.Extension.Name));
         }
 
         public static Process GetAlreadyRunningInstance()
         {
-            Process _currentProc = Process.GetCurrentProcess();
-            Process[] _allProcs = Process.GetProcessesByName(_currentProc.ProcessName);
+            var currentProc = Process.GetCurrentProcess();
+            var allProcs = Process.GetProcessesByName(currentProc.ProcessName);
 
-            for (int i = 0; i < _allProcs.Length; i++)
-            {
-                if (_allProcs[i].Id != _currentProc.Id)
-                {
-                    if (_allProcs[i].MainWindowTitle.EndsWith(Config.Informations.Extension.Name))
-                    {
-                        return _allProcs[i];
-                    }
-                }
-            }
-
-            return null;
+            return allProcs.Where(t => t.Id != currentProc.Id)
+                .FirstOrDefault(t => t.MainWindowTitle.EndsWith(Config.Informations.Extension.Name));
         }
     }
 }

@@ -1,17 +1,23 @@
-﻿using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
+using Main.Wpf.Pages;
+using MaterialDesignThemes.Wpf;
 
 namespace Main.Wpf.Utilities
 {
-    public enum MenuState { expanded, collapsed };
+    public enum MenuState
+    {
+        Expanded,
+        Collapsed
+    }
 
     public class MenuItem
     {
+        private bool _space;
         private string _title;
 
         public string Title
@@ -28,8 +34,6 @@ namespace Main.Wpf.Utilities
         public PackIconKind Icon { get; set; }
         public string Path { get; set; }
         public string StartArguments { get; set; }
-
-        private bool _space;
 
         public bool Space
         {
@@ -58,6 +62,8 @@ namespace Main.Wpf.Utilities
 
     public static class MenuHelper
     {
+        private static MenuItem _lastSelectedItem;
+
         public static void ChangeMenuState(MenuState state)
         {
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
@@ -67,24 +73,26 @@ namespace Main.Wpf.Utilities
 
             switch (state)
             {
-                case MenuState.collapsed:
+                case MenuState.Collapsed:
                     da = new DoubleAnimation(60, 250, TimeSpan.FromMilliseconds(500));
                     mw.Menu.BeginAnimation(FrameworkElement.WidthProperty, da);
-                    Pages.Menu.GridMenu.BeginAnimation(FrameworkElement.WidthProperty, da);
+                    Menu.GridMenu.BeginAnimation(FrameworkElement.WidthProperty, da);
 
-                    ta = new ThicknessAnimation(new Thickness(60, 0, 0, 0), new Thickness(250, 0, 0, 0), TimeSpan.FromMilliseconds(500));
+                    ta = new ThicknessAnimation(new Thickness(60, 0, 0, 0), new Thickness(250, 0, 0, 0),
+                        TimeSpan.FromMilliseconds(500));
                     mw.Index.BeginAnimation(FrameworkElement.MarginProperty, ta);
                     mw.IndexGrid.BeginAnimation(FrameworkElement.MarginProperty, ta);
 
                     Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "menuState", "expanded");
                     break;
 
-                case MenuState.expanded:
+                case MenuState.Expanded:
                     da = new DoubleAnimation(250, 60, TimeSpan.FromMilliseconds(500));
                     mw.Menu.BeginAnimation(FrameworkElement.WidthProperty, da);
-                    Pages.Menu.GridMenu.BeginAnimation(FrameworkElement.WidthProperty, da);
+                    Menu.GridMenu.BeginAnimation(FrameworkElement.WidthProperty, da);
 
-                    ta = new ThicknessAnimation(new Thickness(250, 0, 0, 0), new Thickness(60, 0, 0, 0), TimeSpan.FromMilliseconds(500));
+                    ta = new ThicknessAnimation(new Thickness(250, 0, 0, 0), new Thickness(60, 0, 0, 0),
+                        TimeSpan.FromMilliseconds(500));
                     mw.Index.BeginAnimation(FrameworkElement.MarginProperty, ta);
                     mw.IndexGrid.BeginAnimation(FrameworkElement.MarginProperty, ta);
 
@@ -95,12 +103,10 @@ namespace Main.Wpf.Utilities
 
         public static MenuState StringToMenuState(string state)
         {
-            if (!Enum.IsDefined(typeof(MenuState), state.ToLower())) return MenuState.expanded;
+            if (!Enum.IsDefined(typeof(MenuState), state.ToLower())) return MenuState.Expanded;
 
-            return (MenuState)Enum.Parse(typeof(MenuState), state.ToLower());
+            return (MenuState) Enum.Parse(typeof(MenuState), state.ToLower());
         }
-
-        private static MenuItem _lastSelectedItem;
 
         public static async Task SelectMenuItemAsync(int index)
         {
@@ -123,7 +129,7 @@ namespace Main.Wpf.Utilities
                         await Config.Login.LoggedIn.Set(false);
                         await Config.Login.FirstRun.Set(true);
 
-                        var ps = new ProcessStartInfo(Assembly.GetEntryAssembly().Location)
+                        var ps = new ProcessStartInfo(Assembly.GetEntryAssembly()?.Location)
                         {
                             Arguments = string.Join(" ", App.Parameters)
                         };
@@ -135,7 +141,7 @@ namespace Main.Wpf.Utilities
                     {
                         await Config.Login.LoggedIn.Set(true);
 
-                        var ps = new ProcessStartInfo(Assembly.GetEntryAssembly().Location)
+                        var ps = new ProcessStartInfo(Assembly.GetEntryAssembly()?.Location)
                         {
                             Arguments = string.Join(" ", App.Parameters)
                         };
@@ -150,15 +156,11 @@ namespace Main.Wpf.Utilities
                 if (menuItem == _lastSelectedItem) return;
 
                 MoveCursorMenu(index);
-                Pages.Menu.ListViewMenu.SelectedItems.Clear();
+                Menu.ListViewMenu.SelectedItems.Clear();
 
-                foreach (MenuItem item in sites)
-                {
+                foreach (var item in sites)
                     if (item == menuItem)
-                    {
                         item.IsSelected = true;
-                    }
-                }
 
                 await Config.Menu.SetSites(sites);
 
@@ -196,19 +198,14 @@ namespace Main.Wpf.Utilities
             var sites = Config.Menu.Sites;
 
             for (var i = 0; i < index; ++i)
-            {
-                if (sites[i].Title?.Length == 0 || string.Equals(sites[i].Title, "null", StringComparison.OrdinalIgnoreCase) || sites[i].Title == null)
-                {
+                if (sites[i].Title?.Length == 0 ||
+                    string.Equals(sites[i].Title, "null", StringComparison.OrdinalIgnoreCase) || sites[i].Title == null)
                     margin += 20;
-                }
                 else
-                {
                     margin += 60;
-                }
-            }
 
-            Pages.Menu.TrainsitionigContentSlide.OnApplyTemplate();
-            Pages.Menu.GridCursor.Margin = new Thickness(0, margin, 0, 0);
+            Menu.TrainsitionigContentSlide.OnApplyTemplate();
+            Menu.GridCursor.Margin = new Thickness(0, margin, 0, 0);
         }
     }
 }

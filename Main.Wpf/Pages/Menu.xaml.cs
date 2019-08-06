@@ -1,11 +1,11 @@
-﻿using Main.Wpf.Utilities;
-using MaterialDesignThemes.Wpf.Transitions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using Main.Wpf.Utilities;
+using MaterialDesignThemes.Wpf.Transitions;
 using MenuItem = Main.Wpf.Utilities.MenuItem;
 
 namespace Main.Wpf.Pages
@@ -41,21 +41,23 @@ namespace Main.Wpf.Pages
         {
             if (!_loaded) return;
 
-            MenuHelper.ChangeMenuState(MenuState.collapsed);
+            MenuHelper.ChangeMenuState(MenuState.Collapsed);
         }
 
         private void Menu_Collapsed(object sender, RoutedEventArgs e)
         {
             if (!_loaded) return;
 
-            MenuHelper.ChangeMenuState(MenuState.expanded);
+            MenuHelper.ChangeMenuState(MenuState.Expanded);
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(Config.Informations.Extension.Name) && Config.Informations.Extension.Name != "RH Utensils")
-            {
-                if (Config.Menu.DefaultMenuState == MenuState.collapsed || string.Equals(JsonHelper.ReadString(Config.Settings.Json, "menuState"), "collapsed", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(Config.Informations.Extension.Name) &&
+                Config.Informations.Extension.Name != "RH Utensils")
+                if (Config.Menu.DefaultMenuState == MenuState.Collapsed || string.Equals(
+                        JsonHelper.ReadString(Config.Settings.Json, "menuState"), "collapsed",
+                        StringComparison.OrdinalIgnoreCase))
                 {
                     ToggleMenu.IsChecked = false;
 
@@ -68,27 +70,25 @@ namespace Main.Wpf.Pages
                         mw.IndexGrid.Margin = new Thickness(60, 0, 0, 0);
                     }
                 }
-            }
 
             while (!ConfigHelper._loaded) await Task.Delay(100);
 
-            if (!string.IsNullOrEmpty(Config.Informations.Extension.Name) && Config.Informations.Extension.Name != "RH Utensils" && int.TryParse(await XmlHelper.ReadString(Config.File, "selectionIndex").ConfigureAwait(false), out var index) && index - 1 >= 0 && index <= Config.Menu.Sites.Count)
-            {
+            if (!string.IsNullOrEmpty(Config.Informations.Extension.Name) &&
+                Config.Informations.Extension.Name != "RH Utensils" &&
+                int.TryParse(await XmlHelper.ReadString(Config.File, "selectionIndex").ConfigureAwait(false),
+                    out var index) && index - 1 >= 0 && index <= Config.Menu.Sites.Count)
                 await MenuHelper.SelectMenuItemAsync(index - 1);
-            }
             else
-            {
                 await MenuHelper.SelectMenuItemAsync(0);
-            }
 
             _loaded = true;
         }
 
         private async void ListViewMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!_loaded || Config.Menu._changeingSites) return;
+            if (!_loaded || Config.Menu.ChangeingSites) return;
 
-            int index = ListViewMenu.SelectedIndex;
+            var index = ListViewMenu.SelectedIndex;
 
             await MenuHelper.SelectMenuItemAsync(index);
 

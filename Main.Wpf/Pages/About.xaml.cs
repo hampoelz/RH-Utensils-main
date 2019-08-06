@@ -1,17 +1,19 @@
-﻿using Main.Wpf.Utilities;
-using System;
-using System.ComponentModel;
+﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Main.Wpf.Properties;
+using Main.Wpf.Utilities;
 
 namespace Main.Wpf.Pages
 {
     internal partial class About
     {
+        private bool _isDownloading;
         private bool _loaded;
 
         public About()
@@ -56,7 +58,8 @@ namespace Main.Wpf.Pages
                 AddonVersion.Text = Config.Updater.Extension.RunningVersion.ToString();
                 AddonNewestVersion.Text = Config.Updater.Extension.NewestVersion;
 
-                ExtensionUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(UpdateHelper.UpdateChannels), JsonHelper.ReadString(Config.Settings.Json, "updateChannel").ToLower());
+                ExtensionUpdateChannel.SelectedIndex = (int) Enum.Parse(typeof(UpdateHelper.UpdateChannels),
+                    JsonHelper.ReadString(Config.Settings.Json, "updateChannel").ToLower());
             }
             else
             {
@@ -64,9 +67,10 @@ namespace Main.Wpf.Pages
                 ExtensionUpdateChannel.Text = "-";
             }
 
-            MainProgrammUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(UpdateHelper.UpdateChannels), Properties.Settings.Default.updateChannel.ToLower());
+            MainProgrammUpdateChannel.SelectedIndex = (int) Enum.Parse(typeof(UpdateHelper.UpdateChannels),
+                Settings.Default.updateChannel.ToLower());
 
-            isDownloading();
+            IsDownloading();
 
             _loaded = true;
         }
@@ -106,65 +110,53 @@ namespace Main.Wpf.Pages
             Process.Start("https://hampoelz.net/");
         }
 
-        private void MetroWindow_Closing(object sender, CancelEventArgs e)
-        {
-            MainWindow.IsAbout = false;
-        }
-
-        private bool _isDownloading;
-
-        private async void isDownloading()
+        private async void IsDownloading()
         {
             if (_isDownloading) return;
 
-            if (!UpdateHelper.isDownloading) return;
+            if (!UpdateHelper.IsDownloading) return;
 
             _isDownloading = true;
 
-            btn.IsEnabled = false;
+            CheckUpdatesButton.IsEnabled = false;
 
-            var Expand = new ThicknessAnimation(new Thickness(10, 0, 10, 5), TimeSpan.FromMilliseconds(250));
-            var Collapse = new ThicknessAnimation(new Thickness(10, 0, 310, 5), TimeSpan.FromMilliseconds(250));
-            var FadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(400));
-            var FadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(400));
+            var expand = new ThicknessAnimation(new Thickness(10, 0, 10, 5), TimeSpan.FromMilliseconds(250));
+            var collapse = new ThicknessAnimation(new Thickness(10, 0, 310, 5), TimeSpan.FromMilliseconds(250));
+            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(400));
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(400));
 
-            InstallUpdateInfo.BeginAnimation(OpacityProperty, FadeOut);
-            DownloadUpdateInfo.BeginAnimation(OpacityProperty, FadeIn);
+            InstallUpdateInfo.BeginAnimation(OpacityProperty, fadeOut);
+            DownloadUpdateInfo.BeginAnimation(OpacityProperty, fadeIn);
 
             await Task.Delay(350);
 
-            InfoCard.BeginAnimation(MarginProperty, Expand);
+            InfoCard.BeginAnimation(MarginProperty, expand);
 
-            while (UpdateHelper.isDownloading)
-            {
-                await Task.Delay(1000);
-            }
+            while (UpdateHelper.IsDownloading) await Task.Delay(1000);
 
-            InfoCard.BeginAnimation(MarginProperty, Collapse);
+            InfoCard.BeginAnimation(MarginProperty, collapse);
 
             await Task.Delay(200);
 
-            InstallUpdateInfo.BeginAnimation(OpacityProperty, FadeIn);
-            DownloadUpdateInfo.BeginAnimation(OpacityProperty, FadeOut);
+            InstallUpdateInfo.BeginAnimation(OpacityProperty, fadeIn);
+            DownloadUpdateInfo.BeginAnimation(OpacityProperty, fadeOut);
 
             _isDownloading = false;
 
-            btn.IsEnabled = true;
+            CheckUpdatesButton.IsEnabled = true;
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            btn.Click -= Button_Click;
+            CheckUpdatesButton.Click -= Button_Click;
 
-            var timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 100), DispatcherPriority.Normal, delegate
-            {
-                isDownloading();
-            }, Application.Current.Dispatcher);
+            var timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 100), DispatcherPriority.Normal,
+                delegate { IsDownloading(); }, Application.Current.Dispatcher);
 
-            var FadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(400));
-            var FadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(400));
-            btn_icon.BeginAnimation(OpacityProperty, FadeOut);
-            btn_load.BeginAnimation(OpacityProperty, FadeIn);
+            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(400));
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(400));
+            CheckUpdatesIcon.BeginAnimation(OpacityProperty, fadeOut);
+            CheckUpdatesProgressBar.BeginAnimation(OpacityProperty, fadeIn);
 
             await Task.Run(() => UpdateHelper.Update(false));
 
@@ -179,7 +171,8 @@ namespace Main.Wpf.Pages
                 AddonVersion.Text = Config.Updater.Extension.RunningVersion.ToString();
                 AddonNewestVersion.Text = Config.Updater.Extension.NewestVersion;
 
-                ExtensionUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(UpdateHelper.UpdateChannels), JsonHelper.ReadString(Config.Settings.Json, "updateChannel").ToLower());
+                ExtensionUpdateChannel.SelectedIndex = (int) Enum.Parse(typeof(UpdateHelper.UpdateChannels),
+                    JsonHelper.ReadString(Config.Settings.Json, "updateChannel").ToLower());
             }
             else
             {
@@ -187,33 +180,35 @@ namespace Main.Wpf.Pages
                 ExtensionUpdateChannel.Text = "-";
             }
 
-            MainProgrammUpdateChannel.SelectedIndex = (int)Enum.Parse(typeof(UpdateHelper.UpdateChannels), Properties.Settings.Default.updateChannel.ToLower());
+            MainProgrammUpdateChannel.SelectedIndex = (int) Enum.Parse(typeof(UpdateHelper.UpdateChannels),
+                Settings.Default.updateChannel.ToLower());
 
-            btn_load.BeginAnimation(OpacityProperty, FadeOut);
-            btn_icon.BeginAnimation(OpacityProperty, FadeIn);
+            CheckUpdatesProgressBar.BeginAnimation(OpacityProperty, fadeOut);
+            CheckUpdatesIcon.BeginAnimation(OpacityProperty, fadeIn);
 
             timer.Stop();
 
-            btn.Click += Button_Click;
+            CheckUpdatesButton.Click += Button_Click;
         }
 
-        private void MainProgrammUpdateChannel_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void MainProgrammUpdateChannel_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_loaded) return;
 
-            if (Properties.Settings.Default.updateChannel != MainProgrammUpdateChannel.SelectedItem.ToString())
-            {
-                Properties.Settings.Default.updateChannel = MainProgrammUpdateChannel.SelectedItem.ToString();
-                Properties.Settings.Default.Save();
-            }
+            if (Settings.Default.updateChannel == MainProgrammUpdateChannel.SelectedItem.ToString()) return;
+
+            Settings.Default.updateChannel = MainProgrammUpdateChannel.SelectedItem.ToString();
+            Settings.Default.Save();
         }
 
-        private void ExtensionUpdateChannel_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ExtensionUpdateChannel_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_loaded) return;
 
-            if (JsonHelper.ReadString(Config.Settings.Json, "updateChannel") != ExtensionUpdateChannel.SelectedItem.ToString())
-                Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "updateChannel", ExtensionUpdateChannel.SelectedItem.ToString());
+            if (JsonHelper.ReadString(Config.Settings.Json, "updateChannel") !=
+                ExtensionUpdateChannel.SelectedItem.ToString())
+                Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "updateChannel",
+                    ExtensionUpdateChannel.SelectedItem.ToString());
         }
     }
 }

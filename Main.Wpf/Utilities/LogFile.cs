@@ -7,13 +7,15 @@ namespace Main.Wpf.Utilities
 {
     public static class LogFile
     {
-        public static readonly string MBaseDir = !string.IsNullOrEmpty(Config.ExtensionDirectoryName) ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, "Logs") : Path.Combine(Path.GetFullPath(@".\"), "Logs");
+        public static readonly string MBaseDir = !string.IsNullOrEmpty(Config.ExtensionDirectoryName)
+            ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, "Logs")
+            : Path.Combine(Path.GetFullPath(@".\"), "Logs");
 
         public static string GetFilenameYYYMMDD(string suffix, string extension)
         {
             return DateTime.Now.ToString("yyyy_MM_dd")
-                + suffix
-                + extension;
+                   + suffix
+                   + extension;
         }
 
         public static void DeleteOldLogFiles()
@@ -56,19 +58,17 @@ namespace Main.Wpf.Utilities
                         new XElement("Source", ex.Source),
                         new XElement("Message", ex.Message),
                         new XElement("Stack", ex.StackTrace)
-                     )
+                    )
                 );
 
                 if (ex.InnerException != null)
-                {
                     xmlEntry.Element("Exception")
                         ?.Add(
-                        new XElement("InnerException",
-                            new XElement("Source", ex.InnerException.Source),
-                            new XElement("Message", ex.InnerException.Message),
-                            new XElement("Stack", ex.InnerException.StackTrace))
+                            new XElement("InnerException",
+                                new XElement("Source", ex.InnerException.Source),
+                                new XElement("Message", ex.InnerException.Message),
+                                new XElement("Stack", ex.InnerException.StackTrace))
                         );
-                }
                 sw.WriteLine(xmlEntry);
                 sw.Close();
             }

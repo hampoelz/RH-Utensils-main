@@ -31,10 +31,7 @@ namespace Main.Wpf.Utilities
 
         public static async Task SetString(string path, string singleNode, string newValue)
         {
-            while (IsFileLocked(path))
-            {
-                await Task.Delay(100).ConfigureAwait(false);
-            }
+            while (IsFileLocked(path)) await Task.Delay(100).ConfigureAwait(false);
 
             try
             {
@@ -48,7 +45,7 @@ namespace Main.Wpf.Utilities
                     var lastNode = tokens[tokens.Length - 1];
 
                     var parentNode = xmlDoc.SelectSingleNode(string.Join("/", nodes)) as XmlElement;
-                    parentNode.AppendChild(xmlDoc.CreateElement(lastNode));
+                    parentNode?.AppendChild(xmlDoc.CreateElement(lastNode));
                     xmlDoc.Save(path);
 
                     xmlDoc.Load(path);
@@ -56,7 +53,7 @@ namespace Main.Wpf.Utilities
                     node = xmlDoc.SelectSingleNode(singleNode) as XmlElement;
                 }
 
-                node.InnerText = newValue;
+                if (node != null) node.InnerText = newValue;
 
                 xmlDoc.Save(path);
             }
@@ -68,10 +65,7 @@ namespace Main.Wpf.Utilities
 
         public static async Task<string> ReadString(string path, string parameter)
         {
-            while (IsFileLocked(path))
-            {
-                await Task.Delay(100).ConfigureAwait(false);
-            }
+            while (IsFileLocked(path)) await Task.Delay(100).ConfigureAwait(false);
 
             var value = "";
 
@@ -103,10 +97,7 @@ namespace Main.Wpf.Utilities
 
         public static async Task<bool> ReadBool(string path, string parameter)
         {
-            while (IsFileLocked(path))
-            {
-                await Task.Delay(100).ConfigureAwait(false);
-            }
+            while (IsFileLocked(path)) await Task.Delay(100).ConfigureAwait(false);
 
             var value = false;
 

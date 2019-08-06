@@ -1,8 +1,8 @@
-﻿using Main.Wpf.Utilities;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using Main.Wpf.Utilities;
 
 namespace Main.Wpf.Pages
 {
@@ -24,9 +24,11 @@ namespace Main.Wpf.Pages
         {
             try
             {
-                if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name, "updater.exe")))
+                if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name,
+                    "updater.exe")))
                 {
-                    var ps = new ProcessStartInfo(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name, "updater.exe"))
+                    var ps = new ProcessStartInfo(Path.Combine(Config.ExtensionsDirectory,
+                        Config.Informations.Extension.Name, "updater.exe"))
                     {
                         Arguments = "/VERYSILENT"
                     };

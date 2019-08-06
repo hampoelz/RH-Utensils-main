@@ -32,7 +32,8 @@
                     </TextBlock>
 
                     <Grid Height="60" VerticalAlignment="Bottom">
-                        <Button x:Name="BtnUpdate" HorizontalAlignment="Left" Content="Update installieren" Width="160" Height="35"
+                        <Button x:Name="BtnUpdate" HorizontalAlignment="Left" Content="Update installieren" Width="160"
+                                Height="35"
                                 Foreground="White" FontSize="15" Margin="10,0,0,0" Click="BtnUpdate_Click" />
                         <Button x:Name="BtnSkip" HorizontalAlignment="Right" Content="Update aufschieben" Width="170"
                                 Height="35" Style="{DynamicResource MaterialDesignFlatButton}"

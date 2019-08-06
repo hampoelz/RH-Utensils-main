@@ -1,7 +1,4 @@
-﻿using MahApps.Metro.Controls;
-using Main.Wpf.Utilities;
-using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -18,6 +15,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using MahApps.Metro.Controls;
+using Main.Wpf.Utilities;
+using MaterialDesignThemes.Wpf;
 using Panel = System.Windows.Forms.Panel;
 using Path = System.IO.Path;
 
@@ -25,16 +25,21 @@ namespace Main.Wpf
 {
     public partial class MainWindow : MetroWindow
     {
-        public static bool IsAbout;
+        public const int SwHide = 0;
+        public const int SwShownormal = 1;
+
+        public static bool LoadingExe;
+
+        public static List<(Process proc, int id)> BackgroundProcesses = new List<(Process proc, int id)>();
         private readonly Panel _panel = new Panel();
 
+        private readonly Rectangle _wipe = new Rectangle();
+
         private IntPtr _appWin;
-        public Process _currentProcess;
+        public Process CurrentProcess;
         public Grid IndexGrid = new Grid();
 
         public Frame Menu = new Frame();
-
-        private readonly Rectangle Wipe = new Rectangle();
 
         public MainWindow()
         {
@@ -43,12 +48,12 @@ namespace Main.Wpf
             var palette = new PaletteHelper().QueryPalette();
             var hue = palette.PrimarySwatch.PrimaryHues.ToArray()[palette.PrimaryDarkHueIndex];
 
-            Wipe.Fill = new SolidColorBrush(hue.Color);
-            Wipe.Margin = new Thickness(0);
-            Wipe.Visibility = Visibility.Collapsed;
-            System.Windows.Controls.Panel.SetZIndex(Wipe, 100);
+            _wipe.Fill = new SolidColorBrush(hue.Color);
+            _wipe.Margin = new Thickness(0);
+            _wipe.Visibility = Visibility.Collapsed;
+            System.Windows.Controls.Panel.SetZIndex(_wipe, 100);
 
-            MainGrid.Children.Add(Wipe);
+            MainGrid.Children.Add(_wipe);
         }
 
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
@@ -59,7 +64,7 @@ namespace Main.Wpf
             {
                 if (!string.IsNullOrEmpty(Config.Informations.Extension.Favicon))
                 {
-                    Uri iconUri = new Uri(Config.Informations.Extension.Favicon, UriKind.Relative);
+                    var iconUri = new Uri(Config.Informations.Extension.Favicon, UriKind.Relative);
                     Icon = new BitmapImage(iconUri);
                 }
             }
@@ -73,7 +78,8 @@ namespace Main.Wpf
 
             CenterWindowOnScreen();
 
-            if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name, "updater.exe")))
+            if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name,
+                "updater.exe")))
             {
                 Index.Navigate(new Uri("Pages/Update.xaml", UriKind.Relative));
                 return;
@@ -91,26 +97,18 @@ namespace Main.Wpf
         public async Task Login()
         {
             if (Config.Login.SkipLogin)
-            {
                 await LoadExtensionAsync();
-            }
             else if (await Config.Login.FirstRun.Get())
-            {
                 Index.Navigate(new Uri("Pages/Login.xaml", UriKind.Relative));
-            }
             else if (await Config.Login.LoggedIn.Get())
-            {
                 Index.Navigate(new Uri("Pages/Login.xaml", UriKind.Relative));
-            }
             else
-            {
                 await LoadExtensionAsync();
-            }
         }
 
         public async Task LoadExtensionAsync(bool wipeAnimation = false)
         {
-            if (wipeAnimation) Wipe.Visibility = Visibility.Visible;
+            if (wipeAnimation) _wipe.Visibility = Visibility.Visible;
 
             await SettingsHelper.StartSync();
 
@@ -155,35 +153,23 @@ namespace Main.Wpf
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool MoveWindow(IntPtr hWnd, int x, int y, int cx, int cy, bool repaint);
 
-        public const int SW_HIDE = 0;
-        public const int SW_SHOWNORMAL = 1;
-
         [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        [DllImport("user32.dll")]
-        private static extern int SetForegroundWindow(IntPtr point);
-
-        private async Task WaitForExtension(Process p)
+        private static async Task WaitForExtension(Process p)
         {
             while (string.IsNullOrEmpty(p.MainWindowTitle))
             {
                 await Task.Delay(100);
                 p.Refresh();
             }
-
-            return;
         }
-
-        public static bool _loadingEXE;
-
-        public static List<(Process proc, int id)> backgroundProcesses = new List<(Process proc, int id)>();
 
         public async Task SetExe(string exe, string argument, int id = -1)
         {
-            if (_loadingEXE) return;
+            if (LoadingExe) return;
 
-            _loadingEXE = true;
+            LoadingExe = true;
 
             var host = new WindowsFormsHost();
 
@@ -199,7 +185,7 @@ namespace Main.Wpf
                 IndexGrid.Visibility = Visibility.Collapsed;
 
                 exe = ReplaceVariables.Replace(exe);
-                argument = (string.Equals(argument, "null", StringComparison.OrdinalIgnoreCase)) ? "" : argument;
+                argument = string.Equals(argument, "null", StringComparison.OrdinalIgnoreCase) ? "" : argument;
 
                 var ps = new ProcessStartInfo(exe)
                 {
@@ -208,49 +194,44 @@ namespace Main.Wpf
                     WindowStyle = ProcessWindowStyle.Minimized
                 };
 
-                bool hideExe = false;
+                var hideExe = false;
 
-                for (int i = 0; i < backgroundProcesses.Count; ++i)
+                for (var i = 0; i < BackgroundProcesses.Count; ++i)
                 {
-                    var proc = backgroundProcesses[i].proc;
-                    var procID = backgroundProcesses[i].id;
+                    var proc = BackgroundProcesses[i].proc;
 
-                    if (proc == _currentProcess)
-                    {
-                        ShowWindow(proc.MainWindowHandle, SW_HIDE);
-                        hideExe = true;
-                        break;
-                    }
+                    if (proc != CurrentProcess) continue;
+                    ShowWindow(proc.MainWindowHandle, SwHide);
+                    hideExe = true;
+                    break;
                 }
 
-                if (!hideExe) _currentProcess?.Kill();
+                if (!hideExe) CurrentProcess?.Kill();
 
                 var p = Process.Start(ps);
 
-                bool exeIsHidden = false;
+                var exeIsHidden = false;
 
-                for (int i = 0; i < backgroundProcesses.Count; ++i)
+                for (var i = 0; i < BackgroundProcesses.Count; ++i)
                 {
-                    var proc = backgroundProcesses[i].proc;
-                    var procID = backgroundProcesses[i].id;
+                    var proc = BackgroundProcesses[i].proc;
+                    var procId = BackgroundProcesses[i].id;
 
-                    if (procID == id && proc.MainModule.FileName == exe)
-                    {
-                        ShowWindow(proc.MainWindowHandle, SW_SHOWNORMAL);
-                        _appWin = proc.MainWindowHandle;
-                        p?.Kill();
-                        _currentProcess = proc;
-                        exeIsHidden = true;
-                        break;
-                    }
+                    if (procId != id || proc.MainModule?.FileName != exe) continue;
+                    ShowWindow(proc.MainWindowHandle, SwShownormal);
+                    _appWin = proc.MainWindowHandle;
+                    p?.Kill();
+                    CurrentProcess = proc;
+                    exeIsHidden = true;
+                    break;
                 }
 
                 if (!exeIsHidden)
                 {
                     await WaitForExtension(p);
 
-                    _currentProcess = p;
-                    backgroundProcesses.Add((p, id));
+                    CurrentProcess = p;
+                    BackgroundProcesses.Add((p, id));
 
                     if (p != null) _appWin = p.MainWindowHandle;
 
@@ -261,7 +242,8 @@ namespace Main.Wpf
 
                     SettingsHelper.SendSettingsBroadcast();
 
-                    if (!string.IsNullOrEmpty(ExtensionsManager.FileToOpen)) MessageHelper.SendDataMessage(p, "open File \"" + ExtensionsManager.FileToOpen + "\"");
+                    if (!string.IsNullOrEmpty(ExtensionsManager.FileToOpen))
+                        MessageHelper.SendDataMessage(p, "open File \"" + ExtensionsManager.FileToOpen + "\"");
                 }
 
                 SetParent(_appWin, _panel.Handle);
@@ -284,12 +266,12 @@ namespace Main.Wpf
                 Index.Visibility = Visibility.Visible;
                 IndexGrid.Visibility = Visibility.Collapsed;
 
-                _currentProcess = null;
+                CurrentProcess = null;
             }
 
             Pages.Menu.ListViewMenu.IsEnabled = true;
 
-            _loadingEXE = false;
+            LoadingExe = false;
         }
 
         public void CenterWindowOnScreen()
@@ -298,8 +280,8 @@ namespace Main.Wpf
             var screenHeight = SystemParameters.PrimaryScreenHeight;
             var windowWidth = Width;
             var windowHeight = Height;
-            Left = (screenWidth / 2) - (windowWidth / 2);
-            Top = (screenHeight / 2) - (windowHeight / 2);
+            Left = screenWidth / 2 - windowWidth / 2;
+            Top = screenHeight / 2 - windowHeight / 2;
         }
 
         private void MetroWindow_Closed(object sender, EventArgs e)
@@ -309,24 +291,24 @@ namespace Main.Wpf
 
         private async Task RunWipeAnimation()
         {
-            DoubleAnimation Opacity = new DoubleAnimation
+            var opacity = new DoubleAnimation
             {
                 From = 1,
                 To = 0,
                 Duration = TimeSpan.FromMilliseconds(300)
             };
-            Storyboard.SetTargetProperty(Opacity, new PropertyPath(OpacityProperty));
+            Storyboard.SetTargetProperty(opacity, new PropertyPath(OpacityProperty));
 
-            Storyboard sb = new Storyboard();
-            Storyboard.SetTarget(sb, Wipe);
+            var sb = new Storyboard();
+            Storyboard.SetTarget(sb, _wipe);
 
-            sb.Children.Add(Opacity);
+            sb.Children.Add(opacity);
 
             sb.Begin();
 
             await Task.Delay(300);
 
-            Wipe.Visibility = Visibility.Collapsed;
+            _wipe.Visibility = Visibility.Collapsed;
 
             sb.Stop();
         }
@@ -335,7 +317,7 @@ namespace Main.Wpf
         {
             var keyData = KeyInterop.VirtualKeyFromKey(e.Key);
 
-            MessageHelper.SendDataMessage(_currentProcess, "key \"" + keyData + "\"");
+            MessageHelper.SendDataMessage(CurrentProcess, "key \"" + keyData + "\"");
 
             e.Handled = true;
         }

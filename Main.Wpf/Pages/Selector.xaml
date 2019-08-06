@@ -38,7 +38,8 @@
                             Height="35" Margin="20" Background="#B00020" BorderBrush="Transparent" Foreground="White"
                             Content="Deinstallieren" IsEnabled="false" Click="Uninstall_OnClick" />
                     <Button x:Name="Start" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="130"
-                            Height="35" Margin="20" Background="Transparent" BorderBrush="White" Foreground="{DynamicResource MaterialDesignBody}"
+                            Height="35" Margin="20" Background="Transparent" BorderBrush="White"
+                            Foreground="{DynamicResource MaterialDesignBody}"
                             Content="Starten" IsEnabled="false" Click="Start_OnClick" />
                 </Grid>
             </materialDesign:Card>

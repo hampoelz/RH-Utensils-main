@@ -5,14 +5,21 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using Main.Wpf.Properties;
 
 namespace Main.Wpf.Utilities
 {
     public static class UpdateHelper
     {
-        public enum UpdateChannels { weekly, developer, beta, release };
+        public enum UpdateChannels
+        {
+            Weekly,
+            Developer,
+            Beta,
+            Release
+        }
 
-        public static bool isDownloading;
+        public static bool IsDownloading;
 
         public static void Update(bool updateExtension)
         {
@@ -27,13 +34,19 @@ namespace Main.Wpf.Utilities
             {
                 if (!InternetHelper.CheckConnection()) return;
 
-                var file = updateExtension ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, Config.Updater.Extension.RunningVersion.ToString(), "VersionHistory.xml") : Path.GetFullPath(@".\VersionHistory.xml");
+                var file = updateExtension
+                    ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName,
+                        Config.Updater.Extension.RunningVersion.ToString(), "VersionHistory.xml")
+                    : Path.GetFullPath(@".\VersionHistory.xml");
 
                 try
                 {
                     using (var client = new WebClient())
                     {
-                        client.DownloadFile(updateExtension ? Config.Updater.Extension.VersionsHistoryFile : Config.Updater.Programm.VersionsHistoryFile, file);
+                        client.DownloadFile(
+                            updateExtension
+                                ? Config.Updater.Extension.VersionsHistoryFile
+                                : Config.Updater.Programm.VersionsHistoryFile, file);
                     }
                 }
                 catch
@@ -41,7 +54,10 @@ namespace Main.Wpf.Utilities
                     return;
                 }
 
-                var userUpdateChannel = updateExtension ? (int)Enum.Parse(typeof(UpdateChannels), JsonHelper.ReadString(Config.Settings.Json, "updateChannel").ToLower()) : (int)Enum.Parse(typeof(UpdateChannels), Properties.Settings.Default.updateChannel);
+                var userUpdateChannel = updateExtension
+                    ? (int) Enum.Parse(typeof(UpdateChannels),
+                        JsonHelper.ReadString(Config.Settings.Json, "updateChannel").ToLower())
+                    : (int) Enum.Parse(typeof(UpdateChannels), Settings.Default.updateChannel);
 
                 var updateChannels = XmlHelper.ReadStringList(file, "updateChannel");
 
@@ -55,16 +71,17 @@ namespace Main.Wpf.Utilities
                 var serverUpdateFile = "";
                 var useSetup = false;
 
-                var updateChannel = (int)Enum.GetValues(typeof(UpdateChannels)).Cast<UpdateChannels>().Max();
+                var updateChannel = (int) Enum.GetValues(typeof(UpdateChannels)).Cast<UpdateChannels>().Max();
 
-            checkUpdateChannel:
+                checkUpdateChannel:
                 for (var i = 0; i != versions.Count; ++i)
                 {
                     if (latestVersion != versions[i]) continue;
 
-                    if (!Enum.IsDefined(typeof(UpdateChannels), (int)Enum.Parse(typeof(UpdateChannels), updateChannels[i].ToLower()))) continue;
+                    if (!Enum.IsDefined(typeof(UpdateChannels),
+                        (int) Enum.Parse(typeof(UpdateChannels), updateChannels[i].ToLower()))) continue;
 
-                    updateChannel = (int)Enum.Parse(typeof(UpdateChannels), updateChannels[i].ToLower());
+                    updateChannel = (int) Enum.Parse(typeof(UpdateChannels), updateChannels[i].ToLower());
                     serverUpdateFile = XmlHelper.ReadStringList(file, "file")[i];
                     useSetup = XmlHelper.ReadBoolList(file, "setup")[i];
                 }
@@ -77,7 +94,8 @@ namespace Main.Wpf.Utilities
                     goto checkUpdateChannel;
                 }
 
-                var currentVersion = updateExtension ? Config.Updater.Extension.Version : Config.Updater.Programm.Version;
+                var currentVersion =
+                    updateExtension ? Config.Updater.Extension.Version : Config.Updater.Programm.Version;
 
                 switch (updateExtension)
                 {
@@ -92,9 +110,11 @@ namespace Main.Wpf.Utilities
 
                 if (latestVersion <= currentVersion) goto updateFinished;
 
-                LogFile.WriteLog("New " + (updateExtension ? "extension" : "program") + " update found: Latest version: " + latestVersion + " / Installed version: " + currentVersion);
+                LogFile.WriteLog("New " + (updateExtension ? "extension" : "program") +
+                                 " update found: Latest version: " + latestVersion + " / Installed version: " +
+                                 currentVersion);
 
-                isDownloading = true;
+                IsDownloading = true;
 
                 try
                 {
@@ -102,14 +122,19 @@ namespace Main.Wpf.Utilities
                     {
                         LogFile.WriteLog("Download and install update ...");
 
-                        var localUpdateFile = updateExtension ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, "update.zip") : Path.GetFullPath(@".\update.zip");
+                        var localUpdateFile = updateExtension
+                            ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, "update.zip")
+                            : Path.GetFullPath(@".\update.zip");
 
                         using (var client = new WebClient())
                         {
                             client.DownloadFile(serverUpdateFile, localUpdateFile);
                         }
 
-                        var newExtensionDirectory = updateExtension ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, latestVersion.ToString()) : Path.GetFullPath(@".\update");
+                        var newExtensionDirectory = updateExtension
+                            ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName,
+                                latestVersion.ToString())
+                            : Path.GetFullPath(@".\update");
 
                         Directory.CreateDirectory(newExtensionDirectory);
                         ZipFile.ExtractToDirectory(localUpdateFile, newExtensionDirectory);
@@ -119,7 +144,9 @@ namespace Main.Wpf.Utilities
                     {
                         LogFile.WriteLog("Download the setup ...");
 
-                        var localUpdateFile = updateExtension ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, "updater.exe") : Path.GetFullPath(@".\updater.exe");
+                        var localUpdateFile = updateExtension
+                            ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, "updater.exe")
+                            : Path.GetFullPath(@".\updater.exe");
 
                         using (var client = new WebClient())
                         {
@@ -132,7 +159,7 @@ namespace Main.Wpf.Utilities
                     LogFile.WriteLog(ex);
                 }
 
-            updateFinished:
+                updateFinished:
                 File.Delete(file);
             }
             catch (Exception ex)
@@ -140,7 +167,7 @@ namespace Main.Wpf.Utilities
                 LogFile.WriteLog(ex);
             }
 
-            isDownloading = false;
+            IsDownloading = false;
         }
 
         public static void BackgroundProgrammUpdate()
@@ -158,7 +185,8 @@ namespace Main.Wpf.Utilities
                         batFile.WriteLine("for /d %%D in (*) do if /i not \"%%D\"==\"update\" rd /s /q \"%%D\"");
                         batFile.WriteLine("copy /v /y /z update\\*");
                         batFile.WriteLine("rd /s /q update");
-                        batFile.WriteLine("start /d \"\" \"" + AppDomain.CurrentDomain.BaseDirectory + "\" \"RH Utensils.exe\" " + string.Join(" ", App.Parameters));
+                        batFile.WriteLine("start /d \"\" \"" + AppDomain.CurrentDomain.BaseDirectory +
+                                          "\" \"RH Utensils.exe\" " + string.Join(" ", App.Parameters));
                         batFile.WriteLine("(goto) 2>nul & del \"%~f0\"");
                     }
 

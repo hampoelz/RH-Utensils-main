@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using System.Net.Mail;
 using System.Xml;
 using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Main.Wpf.Utilities
 {
@@ -29,7 +29,7 @@ namespace Main.Wpf.Utilities
         {
             try
             {
-                new MailAddress(mail);
+                var unused = new MailAddress(mail);
                 return true;
             }
             catch
@@ -44,7 +44,7 @@ namespace Main.Wpf.Utilities
 
             try
             {
-                XDocument.Load(file);
+                var unused = XDocument.Load(file);
                 return true;
             }
             catch (XmlException)

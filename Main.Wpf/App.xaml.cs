@@ -1,8 +1,8 @@
-﻿using Main.Wpf.Utilities;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using Main.Wpf.Utilities;
 
 namespace Main.Wpf
 {
@@ -14,11 +14,13 @@ namespace Main.Wpf
         {
             Parameters = e.Args;
 
-            await Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(async () => await ExtensionsManager.LoadExtension().ConfigureAwait(false)));
+            await Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                new Action(async () => await ExtensionsManager.LoadExtension().ConfigureAwait(false)));
 
             if (InstanceHelper.CheckInstances())
             {
-                MessageHelper.SendDataMessage(InstanceHelper.GetAlreadyRunningInstance(), "open File \"" + ExtensionsManager.FileToOpen + "\"");
+                MessageHelper.SendDataMessage(InstanceHelper.GetAlreadyRunningInstance(),
+                    "open File \"" + ExtensionsManager.FileToOpen + "\"");
                 Current.Shutdown();
             }
 

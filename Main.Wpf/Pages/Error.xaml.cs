@@ -1,6 +1,6 @@
-﻿using Main.Wpf.Utilities;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
+using Main.Wpf.Utilities;
 
 namespace Main.Wpf.Pages
 {

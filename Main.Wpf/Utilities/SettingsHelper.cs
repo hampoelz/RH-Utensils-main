@@ -1,24 +1,30 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Threading;
+using Newtonsoft.Json.Linq;
 
 namespace Main.Wpf.Utilities
 {
     public static class SettingsHelper
     {
+        private static bool _sync;
+
+        private static FileSystemWatcher _settingsWatcher;
+
+        private static bool _syncInUse;
+
+        private static bool _syncSettingsOnChange;
+
+        private static bool _syncWithServer;
+
         private static async Task WaitforSync()
         {
-            while (_SyncWithServer)
-            {
-                await Task.Delay(100);
-            }
-
-            return;
+            while (_syncWithServer) await Task.Delay(100);
         }
 
         public static async Task StartSync()
@@ -29,11 +35,11 @@ namespace Main.Wpf.Utilities
             {
                 LogFile.WriteLog("Enable account sync ...");
 
-                await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
+                await Task.Run(SyncWithServer).ConfigureAwait(false);
 
                 await WaitforSync();
 
-                var syncTimer = new System.Timers.Timer();
+                var syncTimer = new Timer();
                 syncTimer.Elapsed += SyncTimer_Tick;
                 syncTimer.Interval = 60000;
                 syncTimer.Start();
@@ -41,7 +47,7 @@ namespace Main.Wpf.Utilities
                 _syncSettingsOnChange = true;
             }
 
-            _Sync = true;
+            _sync = true;
         }
 
         private static async void SyncTimer_Tick(object sender, EventArgs e)
@@ -49,17 +55,16 @@ namespace Main.Wpf.Utilities
             await Task.Run(SyncWithServer).ConfigureAwait(false);
         }
 
-        private static bool _Sync;
-
         public static void CreateFile()
         {
             try
             {
                 var defaultSettingsFile = "{" +
-                                              "\"lastChange\": \"01.01.0001 00:00:00\"," +
-                                              "\"updateChannel\": \"release\"," +
-                                              "\"menuState\": \"expanded\"," +
-                                              "\"theme\": \"" + XmlHelper.ReadString(Config.File, "defaultTheme").Result + "\""
+                                          "\"lastChange\": \"01.01.0001 00:00:00\"," +
+                                          "\"updateChannel\": \"release\"," +
+                                          "\"menuState\": \"expanded\"," +
+                                          "\"theme\": \"" + XmlHelper.ReadString(Config.File, "defaultTheme").Result +
+                                          "\""
                                           + "}";
 
                 if (!File.Exists(Config.Settings.File))
@@ -69,11 +74,9 @@ namespace Main.Wpf.Utilities
                     Config.Settings.Json = defaultSettingsFile;
                 }
 
-                if (Config.Settings.Json?.Length == 0)
-                {
-                    LogFile.WriteLog("Local Settings File is empty - load defaults ...");
-                    Config.Settings.Json = defaultSettingsFile;
-                }
+                if (Config.Settings.Json?.Length != 0) return;
+                LogFile.WriteLog("Local Settings File is empty - load defaults ...");
+                Config.Settings.Json = defaultSettingsFile;
             }
             catch (Exception ex)
             {
@@ -81,37 +84,31 @@ namespace Main.Wpf.Utilities
             }
         }
 
-        private static FileSystemWatcher SettingsWatcher;
-
         public static void CreateSettingsWatcher()
         {
-            if (SettingsWatcher == null)
+            if (_settingsWatcher == null)
             {
                 var path = Path.GetDirectoryName(Config.Settings.File);
                 var filename = Path.GetFileName(Config.Settings.File);
 
-                SettingsWatcher = new FileSystemWatcher();
+                _settingsWatcher = new FileSystemWatcher();
 
-                SettingsWatcher.Changed += OnChanged;
+                _settingsWatcher.Changed += OnChanged;
 
-                SettingsWatcher.Path = path;
-                SettingsWatcher.Filter = filename;
+                _settingsWatcher.Path = path;
+                _settingsWatcher.Filter = filename;
 
-                SettingsWatcher.EnableRaisingEvents = true;
+                _settingsWatcher.EnableRaisingEvents = true;
             }
             else
             {
                 var path = Path.GetDirectoryName(Config.Settings.File);
                 var filename = Path.GetFileName(Config.Settings.File);
 
-                SettingsWatcher.Path = path;
-                SettingsWatcher.Filter = filename;
+                _settingsWatcher.Path = path;
+                _settingsWatcher.Filter = filename;
             }
         }
-
-        private static bool _syncInUse;
-
-        private static bool _syncSettingsOnChange;
 
         private static async void OnChanged(object sender, FileSystemEventArgs e)
         {
@@ -121,7 +118,9 @@ namespace Main.Wpf.Utilities
 
             _syncInUse = true;
 
-            if (_Sync) Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "lastChange", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
+            if (_sync)
+                Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "lastChange",
+                    DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
 
             SendSettingsBroadcast();
 
@@ -129,21 +128,21 @@ namespace Main.Wpf.Utilities
 
             _syncInUse = false;
 
-            await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => Config.Informations.Extension.Theme = JsonHelper.ReadString(Config.Settings.Json, "theme")));
-            if (_Sync && _syncSettingsOnChange) await Task.Run(() => SyncWithServer()).ConfigureAwait(false);
+            await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                new Action(() =>
+                    Config.Informations.Extension.Theme = JsonHelper.ReadString(Config.Settings.Json, "theme")));
+            if (_sync && _syncSettingsOnChange) await Task.Run(SyncWithServer).ConfigureAwait(false);
         }
-
-        private static bool _SyncWithServer;
 
         private static void SyncWithServer()
         {
             LogFile.WriteLog("Synchronize settings with the server ...");
 
-            _SyncWithServer = true;
+            _syncWithServer = true;
 
             try
             {
-            Sync:
+                Sync:
                 if (!InternetHelper.CheckConnection()) goto Finish;
 
                 var serverJson = AccountHelper.ReadMetadata();
@@ -154,7 +153,8 @@ namespace Main.Wpf.Utilities
 
                 try
                 {
-                    lastServerSync = DateTime.Parse(JsonHelper.ReadString(serverJson, "lastChange"), CultureInfo.InvariantCulture);
+                    lastServerSync = DateTime.Parse(JsonHelper.ReadString(serverJson, "lastChange"),
+                        CultureInfo.InvariantCulture);
                 }
                 catch
                 {
@@ -163,21 +163,25 @@ namespace Main.Wpf.Utilities
 
                 try
                 {
-                    lastLocalSync = DateTime.Parse(JsonHelper.ReadString(localJson, "lastChange"), CultureInfo.InvariantCulture);
+                    lastLocalSync = DateTime.Parse(JsonHelper.ReadString(localJson, "lastChange"),
+                        CultureInfo.InvariantCulture);
                 }
                 catch
                 {
                     lastLocalSync = DateTime.Parse("01.01.0001 00:00:00", CultureInfo.InvariantCulture);
                 }
 
-                if (lastServerSync == DateTime.Parse("01.01.0001 00:00:00", CultureInfo.InvariantCulture) || serverJson?.Length == 0)
+                if (lastServerSync == DateTime.Parse("01.01.0001 00:00:00", CultureInfo.InvariantCulture) ||
+                    serverJson?.Length == 0)
                 {
-                    AccountHelper.SetMetadata(JsonHelper.ChangeValue(localJson, "lastChange", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)));
+                    AccountHelper.SetMetadata(JsonHelper.ChangeValue(localJson, "lastChange",
+                        DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)));
 
                     goto Sync;
                 }
 
-                if (lastLocalSync.ToString(CultureInfo.InvariantCulture)?.Length == 0 || localJson?.Length == 0) goto Finish;
+                if (lastLocalSync.ToString(CultureInfo.InvariantCulture).Length == 0 || localJson?.Length == 0)
+                    goto Finish;
 
                 if (lastServerSync == lastLocalSync) goto Finish;
                 if (lastServerSync < lastLocalSync)
@@ -190,15 +194,15 @@ namespace Main.Wpf.Utilities
                 LogFile.WriteLog(ex);
             }
 
-        Finish:
-            _SyncWithServer = false;
+            Finish:
+            _syncWithServer = false;
         }
 
         public static void SendSettingsBroadcast()
         {
             foreach (var token in JObject.Parse(Config.Settings.Json))
             {
-                string[] elements = Regex.Split(token.ToString().Substring(1, token.ToString().Length - 2), ", ");
+                var elements = Regex.Split(token.ToString().Substring(1, token.ToString().Length - 2), ", ");
 
                 var parameter = elements[0];
                 var value = elements[1];

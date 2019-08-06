@@ -1,6 +1,6 @@
-﻿using Auth0.OidcClient;
+﻿using System;
+using Auth0.OidcClient;
 using RestSharp;
-using System;
 
 namespace Main.Wpf.Utilities
 {

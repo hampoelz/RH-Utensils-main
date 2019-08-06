@@ -1,5 +1,4 @@
-﻿using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -7,48 +6,46 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
+using Main.Wpf.Pages;
+using MaterialDesignThemes.Wpf;
 
 namespace Main.Wpf.Utilities
 {
     public static class MessageHelper
     {
-        public const int WM_COPYDATA = 0x004A;
+        public const int WmCopydata = 0x004A;
+
+        private static bool _isHandling;
 
         [DllImport("user32", EntryPoint = "SendMessageA")]
-        private static extern int SendMessage(IntPtr Hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
+        private static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
 
         public static void SendDataMessage(Process targetProcess, string msg)
         {
-            //Copy the string message to a global memory area in unicode format
-            IntPtr _stringMessageBuffer = Marshal.StringToHGlobalUni(msg);
+            var stringMessageBuffer = Marshal.StringToHGlobalUni(msg);
 
-            //Prepare copy data structure
-            COPYDATASTRUCT _copyData = new COPYDATASTRUCT
+            var copyData = new Copydatastruct
             {
                 dwData = IntPtr.Zero,
-                lpData = _stringMessageBuffer,
-                cbData = msg.Length * 2 //Number of bytes required for marshalling this string as a series of unicode characters
+                lpData = stringMessageBuffer,
+                cbData = msg.Length * 2
             };
-            IntPtr _copyDataBuff = IntPtrAlloc(_copyData);
+            var copyDataBuff = IntPtrAlloc(copyData);
 
-            //Send message to the other process
-            SendMessage(targetProcess.MainWindowHandle, WM_COPYDATA, IntPtr.Zero, _copyDataBuff);
+            SendMessage(targetProcess.MainWindowHandle, WmCopydata, IntPtr.Zero, copyDataBuff);
 
-            Marshal.FreeHGlobal(_copyDataBuff);
-            Marshal.FreeHGlobal(_stringMessageBuffer);
+            Marshal.FreeHGlobal(copyDataBuff);
+            Marshal.FreeHGlobal(stringMessageBuffer);
         }
 
         public static void SendDataBroadcastMessage(string msg)
         {
-            foreach ((Process proc, int id) in MainWindow.backgroundProcesses)
-            {
-                SendDataMessage(proc, msg);
-            }
+            foreach (var (proc, id) in MainWindow.BackgroundProcesses) SendDataMessage(proc, msg);
         }
 
         private static IntPtr IntPtrAlloc<T>(T param)
         {
-            IntPtr retval = Marshal.AllocHGlobal(Marshal.SizeOf(param));
+            var retval = Marshal.AllocHGlobal(Marshal.SizeOf(param));
             Marshal.StructureToPtr(param, retval, false);
             return retval;
         }
@@ -58,24 +55,21 @@ namespace Main.Wpf.Utilities
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
 
             var hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(mw).Handle);
-            hwndSource.AddHook(new HwndSourceHook(WndProc));
+            hwndSource?.AddHook(WndProc);
         }
 
         private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == MessageHelper.WM_COPYDATA)
-            {
-                COPYDATASTRUCT _dataStruct = Marshal.PtrToStructure<COPYDATASTRUCT>(lParam);
+            if (msg != WmCopydata) return IntPtr.Zero;
 
-                string _msg = Marshal.PtrToStringUni(_dataStruct.lpData, _dataStruct.cbData / 2);
+            var dataStruct = Marshal.PtrToStructure<Copydatastruct>(lParam);
 
-                MessageHelper.Handle(_msg);
-            }
+            var _msg = Marshal.PtrToStringUni(dataStruct.lpData, dataStruct.cbData / 2);
+
+            Handle(_msg);
 
             return IntPtr.Zero;
         }
-
-        private static bool _isHandling;
 
         private static async void Handle(string msg)
         {
@@ -121,12 +115,13 @@ namespace Main.Wpf.Utilities
             }
             else if (msg.StartsWith("set selectionIndex"))
             {
-                if (int.TryParse(ExtractQuote(msg), out var index) && index - 1 >= 0 && index <= Config.Menu.Sites.Count)
+                if (int.TryParse(ExtractQuote(msg), out var index) && index - 1 >= 0 &&
+                    index <= Config.Menu.Sites.Count)
                 {
                     if (Config.Menu.Sites[index - 1].Space) index = 1;
 
                     await MenuHelper.SelectMenuItemAsync(index - 1);
-                    await XmlHelper.SetString(Config.File, "config/selectionIndex", (index).ToString());
+                    await XmlHelper.SetString(Config.File, "config/selectionIndex", index.ToString());
                 }
                 else
                 {
@@ -135,7 +130,8 @@ namespace Main.Wpf.Utilities
             }
             else if (msg.StartsWith("set tmp selectionIndex"))
             {
-                if (int.TryParse(ExtractQuote(msg), out var index) && index - 1 >= 0 && index <= Config.Menu.Sites.Count)
+                if (int.TryParse(ExtractQuote(msg), out var index) && index - 1 >= 0 &&
+                    index <= Config.Menu.Sites.Count)
                 {
                     if (Config.Menu.Sites[index - 1].Space) index = 1;
 
@@ -155,8 +151,15 @@ namespace Main.Wpf.Utilities
 
                 var sites = Config.Menu.Sites;
 
-                if (title == "null" || path == "null") sites.Insert(sites.Count - 3, new MenuItem() { Space = true });
-                else sites.Insert(sites.Count - 3, new MenuItem { Title = title, Icon = Enum.TryParse(icon, out PackIconKind Icon) ? Icon : PackIconKind.Application, Path = path, StartArguments = startArguments });
+                if (title == "null" || path == "null") sites.Insert(sites.Count - 3, new MenuItem {Space = true});
+                else
+                    sites.Insert(sites.Count - 3,
+                        new MenuItem
+                        {
+                            Title = title,
+                            Icon = Enum.TryParse(icon, out PackIconKind _icon) ? _icon : PackIconKind.Application,
+                            Path = path, StartArguments = startArguments
+                        });
 
                 await Config.Menu.SetSites(sites);
             }
@@ -166,14 +169,16 @@ namespace Main.Wpf.Utilities
                 var title = ExtractQuotes(msg)[1];
                 var icon = ExtractQuotes(msg)[2];
 
-                var _currentIndex = Pages.Menu.ListViewMenu.SelectedIndex;
+                var currentIndex = Menu.ListViewMenu.SelectedIndex;
 
-                if (int.TryParse(ExtractQuotes(msg)[0], out var index) && index - 1 >= 0 && index - 1 <= Config.Menu.Sites.Count - 3)
+                if (int.TryParse(ExtractQuotes(msg)[0], out var index) && index - 1 >= 0 &&
+                    index - 1 <= Config.Menu.Sites.Count - 3)
                 {
                     sites[index - 1].Title = title;
-                    sites[index - 1].Icon = Enum.TryParse(icon, out PackIconKind Icon) ? Icon : PackIconKind.Application;
+                    sites[index - 1].Icon =
+                        Enum.TryParse(icon, out PackIconKind _icon) ? _icon : PackIconKind.Application;
 
-                    if (index - 1 != _currentIndex)
+                    if (index - 1 != currentIndex)
                     {
                         var path = ExtractQuotes(msg)[3];
                         var startArguments = ExtractQuotes(msg)[4];
@@ -189,25 +194,18 @@ namespace Main.Wpf.Utilities
             {
                 var sites = Config.Menu.Sites;
 
-                var _currentIndex = Pages.Menu.ListViewMenu.SelectedIndex;
+                var currentIndex = Menu.ListViewMenu.SelectedIndex;
 
-                if (int.TryParse(ExtractQuote(msg), out var index) && index - 1 >= 0 && index - 1 <= Config.Menu.Sites.Count - 3 && index - 1 != _currentIndex)
-                {
-                    sites.RemoveAt(index - 1);
-                }
+                if (int.TryParse(ExtractQuote(msg), out var index) && index - 1 >= 0 &&
+                    index - 1 <= Config.Menu.Sites.Count - 3 && index - 1 != currentIndex) sites.RemoveAt(index - 1);
 
                 await Config.Menu.SetSites(sites);
 
                 if (index - 1 == 0)
-                {
-                    _currentIndex = _currentIndex - index - 1;
-                }
-                else if (index - 1 < _currentIndex)
-                {
-                    _currentIndex--;
-                }
+                    currentIndex = currentIndex - index - 1;
+                else if (index - 1 < currentIndex) currentIndex--;
 
-                MenuHelper.MoveCursorMenu(_currentIndex);
+                MenuHelper.MoveCursorMenu(currentIndex);
             }
             else if (msg.StartsWith("change SettingProperty"))
             {
@@ -239,34 +237,28 @@ namespace Main.Wpf.Utilities
         {
             var reg = new Regex("\".*\"");
             var match = reg.Matches(str);
-            foreach (var item in match)
-            {
-                return item.ToString().Trim('"');
-            }
+            foreach (var item in match) return item.ToString().Trim('"');
 
             return "";
         }
 
         private static List<string> ExtractQuotes(string str)
         {
-            List<string> Quotes = new List<string>();
+            var quotes = new List<string>();
 
             var reg = new Regex("\".*?\"");
             var matches = reg.Matches(str);
-            foreach (var item in matches)
-            {
-                Quotes.Add(item.ToString().Trim('"'));
-            }
+            foreach (var item in matches) quotes.Add(item.ToString().Trim('"'));
 
-            return Quotes;
+            return quotes;
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct COPYDATASTRUCT
+    internal struct Copydatastruct
     {
-        public IntPtr dwData;    // Any value the sender chooses.  Perhaps its main window handle?
-        public int cbData;       // The count of bytes in the message.
-        public IntPtr lpData;    // The address of the message.
+        public IntPtr dwData;
+        public int cbData;
+        public IntPtr lpData;
     }
 }

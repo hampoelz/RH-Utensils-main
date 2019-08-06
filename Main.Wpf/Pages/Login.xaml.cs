@@ -1,19 +1,20 @@
-﻿using Main.Wpf.Utilities;
-using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Main.Wpf.Utilities;
+using MaterialDesignThemes.Wpf;
 
 namespace Main.Wpf.Pages
 {
     internal partial class Login
     {
-        private readonly Ellipse Wipe = new Ellipse();
+        private readonly Ellipse _wipe = new Ellipse();
 
         public Login()
         {
@@ -22,13 +23,13 @@ namespace Main.Wpf.Pages
             var palette = new PaletteHelper().QueryPalette();
             var hue = palette.PrimarySwatch.PrimaryHues.ToArray()[palette.PrimaryDarkHueIndex];
 
-            Wipe.Fill = new SolidColorBrush(hue.Color);
-            Wipe.VerticalAlignment = VerticalAlignment.Center;
-            Wipe.HorizontalAlignment = HorizontalAlignment.Center;
-            Wipe.Visibility = Visibility.Collapsed;
-            System.Windows.Controls.Panel.SetZIndex(Wipe, 10);
+            _wipe.Fill = new SolidColorBrush(hue.Color);
+            _wipe.VerticalAlignment = VerticalAlignment.Center;
+            _wipe.HorizontalAlignment = HorizontalAlignment.Center;
+            _wipe.Visibility = Visibility.Collapsed;
+            Panel.SetZIndex(_wipe, 10);
 
-            MainGrid.Children.Add(Wipe);
+            MainGrid.Children.Add(_wipe);
         }
 
         private void ShowInfoBox(string type = "", string text = "", int height = 0)
@@ -41,35 +42,35 @@ namespace Main.Wpf.Pages
             switch (type)
             {
                 case "error":
-                    InfoBox.Background = (Brush)converter.ConvertFromString("#B00020");
+                    InfoBox.Background = (Brush) converter.ConvertFromString("#B00020");
                     InfoBoxIcon.Kind = PackIconKind.ErrorOutline;
                     break;
 
                 case "warning":
-                    InfoBox.Background = (Brush)converter.ConvertFromString("#FF8800");
+                    InfoBox.Background = (Brush) converter.ConvertFromString("#FF8800");
                     InfoBoxIcon.Kind = PackIconKind.WarningOutline;
                     break;
 
                 case "success":
-                    InfoBox.Background = (Brush)converter.ConvertFromString("#007E33");
+                    InfoBox.Background = (Brush) converter.ConvertFromString("#007E33");
                     InfoBoxIcon.Kind = PackIconKind.CheckOutline;
                     break;
 
                 case "info":
-                    InfoBox.Background = (Brush)converter.ConvertFromString("#0099CC");
+                    InfoBox.Background = (Brush) converter.ConvertFromString("#0099CC");
                     InfoBoxIcon.Kind = PackIconKind.InfoOutline;
                     break;
 
                 default:
-                    {
-                        if (InfoBox.Margin != new Thickness(0, 0, 0, margin1)) return;
+                {
+                    if (InfoBox.Margin != new Thickness(0, 0, 0, margin1)) return;
 
-                        var taClose = new ThicknessAnimation(InfoBox.Margin, new Thickness(0, 0, 0, margin2),
-                            TimeSpan.FromSeconds(0.4));
-                        InfoBox.BeginAnimation(MarginProperty, taClose);
+                    var taClose = new ThicknessAnimation(InfoBox.Margin, new Thickness(0, 0, 0, margin2),
+                        TimeSpan.FromSeconds(0.4));
+                    InfoBox.BeginAnimation(MarginProperty, taClose);
 
-                        return;
-                    }
+                    return;
+                }
             }
 
             InfoBoxText.Text = text;
@@ -102,10 +103,7 @@ namespace Main.Wpf.Pages
                 LogFile.WriteLog(ex);
             }
 
-            if (await Config.Login.FirstRun.Get())
-            {
-                return;
-            }
+            if (await Config.Login.FirstRun.Get()) return;
 
             ShowInfoBox("info", "Der Anmelde-Prozess läuft gerade ...");
 
@@ -157,15 +155,13 @@ namespace Main.Wpf.Pages
 
                 var sites = Config.Menu.Sites;
 
-                foreach (MenuItem item in sites)
-                {
+                foreach (var item in sites)
                     if (item.Path == "account.exe" && item.Title == "Anmelden")
                     {
                         item.Title = "Abmelden";
                         item.Icon = PackIconKind.AccountMinusOutline;
                         break;
                     }
-                }
 
                 await Config.Menu.SetSites(sites);
 
@@ -225,15 +221,13 @@ namespace Main.Wpf.Pages
 
             var sites = Config.Menu.Sites;
 
-            foreach (MenuItem item in sites)
-            {
+            foreach (var item in sites)
                 if (item.Path == "account.exe" && item.Title == "Anmelden")
                 {
                     item.Title = "Abmelden";
                     item.Icon = PackIconKind.AccountMinusOutline;
                     break;
                 }
-            }
 
             await Config.Menu.SetSites(sites);
 
@@ -260,38 +254,38 @@ namespace Main.Wpf.Pages
         {
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
 
-            Wipe.Visibility = Visibility.Visible;
+            _wipe.Visibility = Visibility.Visible;
 
-            DoubleAnimation WipeHeight = new DoubleAnimation
+            var wipeHeight = new DoubleAnimation
             {
                 From = 0,
                 Duration = TimeSpan.FromMilliseconds(300)
             };
-            Storyboard.SetTargetProperty(WipeHeight, new PropertyPath(HeightProperty));
+            Storyboard.SetTargetProperty(wipeHeight, new PropertyPath(HeightProperty));
 
-            DoubleAnimation WipeWidth = new DoubleAnimation
+            var wipeWidth = new DoubleAnimation
             {
                 From = 0,
                 Duration = TimeSpan.FromMilliseconds(300)
             };
-            Storyboard.SetTargetProperty(WipeWidth, new PropertyPath(WidthProperty));
+            Storyboard.SetTargetProperty(wipeWidth, new PropertyPath(WidthProperty));
 
             if (mw.ActualHeight > mw.ActualWidth)
             {
-                WipeHeight.To = mw.ActualHeight * 2;
-                WipeWidth.To = mw.ActualHeight * 2;
+                wipeHeight.To = mw.ActualHeight * 2;
+                wipeWidth.To = mw.ActualHeight * 2;
             }
             else
             {
-                WipeHeight.To = mw.ActualWidth * 2;
-                WipeWidth.To = mw.ActualWidth * 2;
+                wipeHeight.To = mw.ActualWidth * 2;
+                wipeWidth.To = mw.ActualWidth * 2;
             }
 
-            Storyboard sb = new Storyboard();
-            Storyboard.SetTarget(sb, Wipe);
+            var sb = new Storyboard();
+            Storyboard.SetTarget(sb, _wipe);
 
-            sb.Children.Add(WipeHeight);
-            sb.Children.Add(WipeWidth);
+            sb.Children.Add(wipeHeight);
+            sb.Children.Add(wipeWidth);
 
             sb.Begin();
 

@@ -1,9 +1,10 @@
-﻿using MaterialDesignThemes.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Main.Wpf.Properties;
+using MaterialDesignThemes.Wpf;
 
 namespace Main.Wpf.Utilities
 {
@@ -32,7 +33,6 @@ namespace Main.Wpf.Utilities
                 Version customVersion = null;
 
                 for (var arg = 0; arg != App.Parameters.Length; ++arg)
-                {
                     switch (App.Parameters[arg])
                     {
                         case "-extensionsDirectory":
@@ -49,6 +49,7 @@ namespace Main.Wpf.Utilities
                             {
                                 Config.Updater.UseCustomVersion = false;
                             }
+
                             break;
 
                         case "-config":
@@ -57,65 +58,66 @@ namespace Main.Wpf.Utilities
                             break;
 
                         case "-programmUpdateChannel":
-                            Properties.Settings.Default.updateChannel = App.Parameters[arg + 1];
-                            Properties.Settings.Default.Save();
+                            Settings.Default.updateChannel = App.Parameters[arg + 1];
+                            Settings.Default.Save();
                             break;
 
                         case "-skipLogin":
                             Config.Login.SkipLogin = true;
                             break;
                     }
-                }
 
                 if (Config.File?.Length == 0)
                 {
                     if (!Directory.Exists(Config.ExtensionsDirectory))
-                    {
                         try
                         {
                             Directory.CreateDirectory(Config.ExtensionsDirectory);
                         }
                         catch
                         {
-                            Config.ExtensionsDirectory = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)), "Extensions");
+                            Config.ExtensionsDirectory =
+                                Path.Combine(
+                                    Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)),
+                                    "Extensions");
                             Directory.CreateDirectory(Config.ExtensionsDirectory);
                         }
-                    }
 
                     var extensionsDirectories = Directory.GetDirectories(Config.ExtensionsDirectory);
                     var extensions = Directory.GetDirectories(Config.ExtensionsDirectory);
 
                     for (var extension = 0; extensionsDirectories.Length != extension; ++extension)
                     {
-                        extensions[extension] = extensions[extension].Replace(Config.ExtensionsDirectory, "").Replace(@"\", "").Replace("/", "");
+                        extensions[extension] = extensions[extension].Replace(Config.ExtensionsDirectory, "")
+                            .Replace(@"\", "").Replace("/", "");
 
                         var installedVersions = Directory.GetDirectories(extensionsDirectories[extension]);
 
                         for (var version = 0; version != installedVersions.Length; ++version)
                         {
-                            installedVersions[version] = installedVersions[version].Replace(extensionsDirectories[extension], "").Replace(@"\", "").Replace("/", "");
+                            installedVersions[version] = installedVersions[version]
+                                .Replace(extensionsDirectories[extension], "").Replace(@"\", "").Replace("/", "");
 
                             try
                             {
-                                new Version(installedVersions[version]);
+                                var unused = new Version(installedVersions[version]);
                             }
                             catch
                             {
-                                installedVersions = installedVersions.Where(val => val != installedVersions[version]).ToArray();
+                                installedVersions = installedVersions.Where(val => val != installedVersions[version])
+                                    .ToArray();
                                 --version;
                             }
                         }
 
-                        Version runningVersion = null;
-
-                        if (!Config.Updater.UseCustomVersion)
-                            runningVersion = installedVersions.Max(s => new Version(s));
-                        else
-                            runningVersion = customVersion;
+                        var runningVersion = !Config.Updater.UseCustomVersion
+                            ? installedVersions.Max(s => new Version(s))
+                            : customVersion;
 
                         if (runningVersion == null) continue;
 
-                        var extensionDirectory = Path.Combine(extensionsDirectories[extension], runningVersion.ToString());
+                        var extensionDirectory =
+                            Path.Combine(extensionsDirectories[extension], runningVersion.ToString());
 
                         var configFile = Path.Combine(extensionDirectory, "config.xml");
 
@@ -135,18 +137,18 @@ namespace Main.Wpf.Utilities
 
                             return;
                         }
-                        else if (App.Parameters.Contains("-" + extensions[extension]))
-                        {
-                            Config.ExtensionDirectoryName = extensions[extension];
 
-                            Config.Updater.Extension.RunningVersion = runningVersion;
-                            Config.Updater.Extension.Version = installedVersions.Max(s => new Version(s));
+                        if (!App.Parameters.Contains("-" + extensions[extension])) continue;
 
-                            Config.File = configFile;
-                            await ConfigHelper.Read().ConfigureAwait(false);
+                        Config.ExtensionDirectoryName = extensions[extension];
 
-                            return;
-                        }
+                        Config.Updater.Extension.RunningVersion = runningVersion;
+                        Config.Updater.Extension.Version = installedVersions.Max(s => new Version(s));
+
+                        Config.File = configFile;
+                        await ConfigHelper.Read().ConfigureAwait(false);
+
+                        return;
                     }
                 }
                 else
@@ -159,10 +161,10 @@ namespace Main.Wpf.Utilities
                     }
                 }
 
-                List<MenuItem> sites = new List<MenuItem>
+                var sites = new List<MenuItem>
                 {
-                    new MenuItem() {Title = "Add-ons", Icon = PackIconKind.ExtensionOutline, Path = "selector.exe"},
-                    new MenuItem() {Title = "Information", Icon = PackIconKind.InformationOutline, Path = "info.exe"}
+                    new MenuItem {Title = "Add-ons", Icon = PackIconKind.ExtensionOutline, Path = "selector.exe"},
+                    new MenuItem {Title = "Information", Icon = PackIconKind.InformationOutline, Path = "info.exe"}
                 };
 
                 await Config.Menu.SetSites(sites);
@@ -180,15 +182,9 @@ namespace Main.Wpf.Utilities
             var fileAssociations = XmlHelper.ReadStringList(configFile, "fileAssociation");
 
             for (var arg = 0; arg != App.Parameters.Length; ++arg)
-            {
-                for (var fileAssociation = 0; fileAssociation != fileAssociations.Count; ++fileAssociation)
-                {
-                    if (App.Parameters[arg].EndsWith("." + fileAssociations[fileAssociation]))
-                    {
-                        return (true, App.Parameters[arg]);
-                    }
-                }
-            }
+            for (var fileAssociation = 0; fileAssociation != fileAssociations.Count; ++fileAssociation)
+                if (App.Parameters[arg].EndsWith("." + fileAssociations[fileAssociation]))
+                    return (true, App.Parameters[arg]);
 
             return (false, "");
         }

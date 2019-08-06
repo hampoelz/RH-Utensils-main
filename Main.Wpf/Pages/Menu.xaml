@@ -15,10 +15,14 @@
                           Checked="Menu_Expanded" Unchecked="Menu_Collapsed" />
         </Grid>
 
-        <materialDesign:TransitioningContent x:Name="_TrainsitionigContentSlide" OpeningEffect="{materialDesign:TransitionEffect SlideInFromLeft, Duration=0:0:0.2}">
-            <Grid x:Name="_GridCursor" Margin="0 100 0 0" Background="{DynamicResource PrimaryHueDarkBrush}" Width="10" HorizontalAlignment="Left" Height="60" VerticalAlignment="Top" />
+        <materialDesign:TransitioningContent x:Name="_TrainsitionigContentSlide"
+                                             OpeningEffect="{materialDesign:TransitionEffect SlideInFromLeft, Duration=0:0:0.2}">
+            <Grid x:Name="_GridCursor" Margin="0 100 0 0" Background="{DynamicResource PrimaryHueDarkBrush}" Width="10"
+                  HorizontalAlignment="Left" Height="60" VerticalAlignment="Top" />
         </materialDesign:TransitioningContent>
-        <ListView x:Name="_ListViewMenu" Margin="0,100,0,100" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Width="250" Panel.ZIndex="100" BorderThickness="0" SelectionChanged="ListViewMenu_SelectionChanged">
+        <ListView x:Name="_ListViewMenu" Margin="0,100,0,100" HorizontalAlignment="Left"
+                  HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  Width="250" Panel.ZIndex="100" BorderThickness="0" SelectionChanged="ListViewMenu_SelectionChanged">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                     <Setter Property="Height" Value="{Binding Height}" />
@@ -30,8 +34,10 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Visibility="Visible" Orientation="Horizontal">
-                        <materialDesign:PackIcon Width="30" Height="Auto" VerticalAlignment="Center" Margin="10" Kind="{Binding Icon}" Foreground="White" />
-                        <TextBlock FontSize="18" VerticalAlignment="Center" Margin="20,0,20,0" Text="{Binding Title}" TextTrimming="CharacterEllipsis" Width="150" Foreground="LightGray" />
+                        <materialDesign:PackIcon Width="30" Height="Auto" VerticalAlignment="Center" Margin="10"
+                                                 Kind="{Binding Icon}" Foreground="White" />
+                        <TextBlock FontSize="18" VerticalAlignment="Center" Margin="20,0,20,0" Text="{Binding Title}"
+                                   TextTrimming="CharacterEllipsis" Width="150" Foreground="LightGray" />
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

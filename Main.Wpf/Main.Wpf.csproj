@@ -320,7 +320,6 @@
     <Compile Include="Utilities\ValidationHelper.cs" />
     <Compile Include="Utilities\ExtensionsManager.cs" />
     <Compile Include="Utilities\XmlHelper.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
