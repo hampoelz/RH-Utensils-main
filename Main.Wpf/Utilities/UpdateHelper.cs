@@ -13,10 +13,10 @@ namespace Main.Wpf.Utilities
     {
         public enum UpdateChannels
         {
-            Weekly,
-            Developer,
-            Beta,
-            Release
+            weekly,
+            developer,
+            beta,
+            release
         }
 
         public static bool IsDownloading;
