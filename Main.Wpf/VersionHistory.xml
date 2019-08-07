@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <versionHistory>
+  <v0.2>
+    <updateChannel>beta</updateChannel>
+    <version>0.2</version>
+    <setup>>True</setup>
+    <file>https://raw.githubusercontent.com/rh-utensils/main/master/Setup Files/Output/Main Setup.exe</file>
+  </v0.2>
   <v0.1.1>
     <updateChannel>developer</updateChannel>
     <version>0.1.1</version>
