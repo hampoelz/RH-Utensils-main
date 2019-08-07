@@ -1,5 +1,5 @@
 #define ExtensionName           "ExampleExtension"
-#define ExtensionVersion        "0.1"
+#define ExtensionVersion        "0.2"
 #define ExtensionPublisher      "RH Utensils"
 #define ExtensionPublisherURL   "https://rh-utensils.hampoelz.net/"
 #define ExtensionSupportURL     "https://github.com/rh-utensils/main/issues/"
@@ -29,6 +29,7 @@ OutputBaseFilename       = {#ExtensionName} Setup
 WizardStyle              = modern
 SetupIconFile            = {#ExtensionName} Logo.ico
 MinVersion               = 6.1
+ChangesAssociations      = yes
 
 #include <idp.iss>
 
@@ -38,10 +39,13 @@ Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 [Tasks]
 Name: "desktopicon"; Description: "Desktop-Symbol erstellen"; GroupDescription: "{cm:AdditionalIcons}"
 Name: "programsicon"; Description: "Startmenü-Symbol erstellen"; GroupDescription: "{cm:AdditionalIcons}"
+Name: "fileaccessory"; Description: "Als Standartprogramm für unterstützte Dateitypen registrieren"; GroupDescription: "Andere"
 
 [Dirs]
 Name: "{app}"
+Name: "{app}\Logs"
 Name: "{app}\{#ExtensionVersion}"
+Name: "{userpf}\RH Utensils\SetUserFTA"
 
 [Icons]
 IconFilename: "{app}\{#ExtensionVersion}\Icons\logo.ico"; Name: "{userprograms}\{#ExtensionPublisher}\{#ExtensionName}"; Filename: "{userpf}\RH Utensils\Main\RH Utensils.exe"; Parameters: "-""{#ExtensionName}"""; Tasks: programsicon
@@ -51,9 +55,19 @@ IconFilename: "{app}\{#ExtensionVersion}\Icons\logo.ico"; Name: "{userdesktop}\{
 Type: filesandordirs; Name: "{app}"
 
 [Run]
-Filename: "{tmp}\unzip.exe"; Parameters: "x ""{tmp}\{#ExtensionName}.zip"" -y -o""{app}\{#ExtensionVersion}"""; Flags: runhidden; StatusMsg: "Entpacke Programm Dateien ..."
-Filename: "{tmp}\MainSetup.exe"; Parameters: "/VERYSILENT"; Flags: skipifdoesntexist; StatusMsg: "Installiere RH Utensils Main ..."
-Filename: "{userpf}\RH Utensils\Main\RH Utensils.exe"; Parameters: "-""{#ExtensionName}"""; Flags: nowait postinstall skipifsilent; Description: "{#ExtensionName} starten"
+Filename: "{tmp}\unzip.exe";                                           Parameters: "x ""{tmp}\{#ExtensionName}.zip"" -y -o""{app}\{#ExtensionVersion}"""; Flags: runhidden;                       StatusMsg: "Entpacke Programm Dateien ..."
+Filename: "{tmp}\unzip.exe";                                           Parameters: "x ""{tmp}\SetUserFTA.zip"" -y -o""{userpf}\RH Utensils""";            Flags: runhidden;                       StatusMsg: "Entpacke UserFTA ..."
+Filename: "{tmp}\MainSetup.exe";                                       Parameters: "/VERYSILENT";                                                         Flags: skipifdoesntexist;               StatusMsg: "Installiere RH Utensils Main ..."
+Filename: "{userpf}\RH Utensils\SetUserFTA\SetUserFTA.exe";            Parameters: ".mp3 {#ExtensionName}";                                               Flags: waituntilidle;                   Tasks: fileaccessory
+Filename: "{userpf}\RH Utensils\SetUserFTA\SetUserFTA.exe";            Parameters: ".wav {#ExtensionName}";                                               Flags: waituntilidle;                   Tasks: fileaccessory
+Filename: "{userpf}\RH Utensils\Main\RH Utensils.exe";                 Parameters: "-""{#ExtensionName}""";                                               Flags: nowait postinstall skipifsilent; Description: "{#ExtensionName} Starten";
+
+[Registry]
+Root: "HKCU"; Subkey: "Software\Classes\.txt";                                 ValueType: string; ValueData: "{#ExtensionName}";                             Flags: uninsdeletevalue;       Tasks: fileaccessory
+Root: "HKCU"; Subkey: "Software\Classes\.test";                                ValueType: string; ValueData: "{#ExtensionName}";                             Flags: uninsdeletevalue;       Tasks: fileaccessory
+Root: "HKCU"; Subkey: "Software\Classes\{#ExtensionName}";                     ValueType: string; ValueData: "Musik-Datei";                                  Flags: uninsdeletekey;         Tasks: fileaccessory
+Root: "HKCU"; Subkey: "Software\Classes\{#ExtensionName}\DefaultIcon";         ValueType: string; ValueData: "{app}\{#ExtensionVersion}\Icons\file.ico";                                    Tasks: fileaccessory
+Root: "HKCU"; Subkey: "Software\Classes\{#ExtensionName}\shell\open\command";  ValueType: string; ValueData: """{userpf}\RH Utensils\Main\RH Utensils.exe"" -""{#ExtensionName}"" ""%1""";  Tasks: fileaccessory
 
 [Code]
 procedure InitializeWizard();
@@ -64,6 +78,7 @@ begin
   end;
 
   idpAddFile('https://raw.githubusercontent.com/rh-utensils/main/master/Setup Files/7za.exe', ExpandConstant('{tmp}\unzip.exe'));
+  idpAddFile('http://kolbi.cz/SetUserFTA.zip', ExpandConstant('{tmp}\SetUserFTA.zip'));
   idpAddFile('{#ZipFileLink}', ExpandConstant('{tmp}\{#ExtensionName}.zip'));
 
   idpDownloadAfter(wpReady);

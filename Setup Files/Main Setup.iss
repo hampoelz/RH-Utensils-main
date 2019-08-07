@@ -1,4 +1,4 @@
-#define ProgrammVersion  "0.1.1"
+#define ProgrammVersion  "0.2"
 #define ZipFileLink      "https://github.com/rh-utensils/main/releases/download/v" + ProgrammVersion + "/Main.zip"
 
 [Setup]
@@ -36,7 +36,8 @@ Name: "programsicon"; Description: "Startmenü-Symbol erstellen"; GroupDescriptio
 
 [Dirs]
 Name: "{userpf}\RH Utensils"
-Name: "{userpf}\RH Utensils\Main"
+Name: "{app}"
+Name: "{app}\Logs"
 
 [Icons]
 Name: "{userprograms}\RH Utensils\Main"; Filename: "{app}\RH Utensils.exe"; Tasks: programsicon
