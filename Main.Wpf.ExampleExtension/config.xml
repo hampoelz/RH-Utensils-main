@@ -33,7 +33,7 @@
   <defaultTheme>dark</defaultTheme>
   <!--  -->
   <!--Logo der Erweiterung (Es können Platzhalter verwendet werden) | Im PNG-Format-->
-  <favicon>{extensionsDirectory}\{extensionName}\{extensionVersion}\logo.png</favicon>
+  <favicon>{extensionsDirectory}\{extensionName}\{extensionVersion}\Icons\logo.png</favicon>
   <!--  -->
   <!---->
   <!--Dateizuordnungen | Sollte geändert werden-->
