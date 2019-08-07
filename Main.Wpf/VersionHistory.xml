@@ -8,7 +8,7 @@
     <file>https://raw.githubusercontent.com/rh-utensils/main/master/Setup Files/Output/Main Setup.exe</file>
   </v0.2>
   <v0.1.1>
-    <updateChannel>developer</updateChannel>
+    <updateChannel>beta</updateChannel>
     <version>0.1.1</version>
     <setup>False</setup>
     <file>https://github.com/rh-utensils/main/releases/download/v0.1.1/Main.zip</file>
