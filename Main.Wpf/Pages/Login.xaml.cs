@@ -16,6 +16,7 @@ namespace Main.Wpf.Pages
     {
         private readonly Ellipse _wipe = new Ellipse();
 
+        [Obsolete]
         public Login()
         {
             InitializeComponent();

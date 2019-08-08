@@ -108,6 +108,7 @@ namespace Main.Wpf.Utilities
             return (MenuState) Enum.Parse(typeof(MenuState), state.ToLower());
         }
 
+        [Obsolete]
         public static async Task SelectMenuItemAsync(int index)
         {
             try
@@ -198,7 +199,7 @@ namespace Main.Wpf.Utilities
             var sites = Config.Menu.Sites;
 
             for (var i = 0; i < index; ++i)
-                if (sites[i].Title?.Length == 0 ||
+                if (string.IsNullOrEmpty(sites[i].Title) ||
                     string.Equals(sites[i].Title, "null", StringComparison.OrdinalIgnoreCase) || sites[i].Title == null)
                     margin += 20;
                 else

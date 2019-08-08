@@ -6,7 +6,7 @@ namespace Main.Wpf.Utilities
     {
         public static string Replace(string value)
         {
-            if (Config.ExtensionDirectoryName?.Length == 0) return value;
+            if (string.IsNullOrEmpty(Config.ExtensionDirectoryName)) return value;
 
             value = value.Replace("{extensionsDirectory}", Config.ExtensionsDirectory);
             value = value.Replace("{extensionName}", Config.ExtensionDirectoryName);

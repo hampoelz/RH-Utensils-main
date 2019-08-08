@@ -77,11 +77,6 @@ namespace Main.Wpf.Utilities
             }
         }
 
-        public static bool HasProperty(this Type obj, string propertyName)
-        {
-            return obj.GetProperty(propertyName) != null;
-        }
-
         public static class Auth0
         {
             private static string _domain;
@@ -294,6 +289,7 @@ namespace Main.Wpf.Utilities
                     }
                 }
 
+                [Obsolete]
                 public static string Color
                 {
                     get => _color;
@@ -316,8 +312,11 @@ namespace Main.Wpf.Utilities
                         try
                         {
                             var color = new SwatchesProvider().Swatches.FirstOrDefault(a => a.Name == value);
-                            new PaletteHelper().ReplacePrimaryColor(color);
-                            new PaletteHelper().ReplaceAccentColor(color);
+                            if (color != null)
+                            {
+                                new PaletteHelper().ReplacePrimaryColor(color);
+                                new PaletteHelper().ReplaceAccentColor(color);
+                            }
 
                             var palette = new PaletteHelper().QueryPalette();
                             var hue = palette.PrimarySwatch.PrimaryHues.ToArray()[palette.PrimaryDarkHueIndex];
@@ -332,6 +331,7 @@ namespace Main.Wpf.Utilities
                     }
                 }
 
+                [Obsolete]
                 public static string Theme
                 {
                     get => _theme;
@@ -469,16 +469,16 @@ namespace Main.Wpf.Utilities
             {
                 public static async Task Set(bool value)
                 {
-                    if (Informations.Extension.Name == "RH Utensils") return;
+                    if (string.IsNullOrEmpty(ExtensionDirectoryName)) return;
 
-                    await XmlHelper.SetString(File, "config/loggedIn", value.ToString()).ConfigureAwait(false);
+                    await XmlHelper.SetString(File, "config/loggedIn", value.ToString());
                 }
 
                 public static async Task<bool> Get()
                 {
-                    if (Informations.Extension.Name == "RH Utensils") return false;
+                    if (string.IsNullOrEmpty(ExtensionDirectoryName)) return false;
 
-                    return await XmlHelper.ReadBool(File, "loggedIn").ConfigureAwait(false);
+                    return await XmlHelper.ReadBool(File, "loggedIn");
                 }
             }
 
@@ -486,16 +486,16 @@ namespace Main.Wpf.Utilities
             {
                 public static async Task Set(bool value)
                 {
-                    if (Informations.Extension.Name == "RH Utensils") return;
+                    if (string.IsNullOrEmpty(ExtensionDirectoryName)) return;
 
-                    await XmlHelper.SetString(File, "config/firstRun", value.ToString()).ConfigureAwait(false);
+                    await XmlHelper.SetString(File, "config/firstRun", value.ToString());
                 }
 
                 public static async Task<bool> Get()
                 {
-                    if (Informations.Extension.Name == "RH Utensils") return false;
+                    if (string.IsNullOrEmpty(ExtensionDirectoryName)) return false;
 
-                    return await XmlHelper.ReadBool(File, "firstRun").ConfigureAwait(false);
+                    return await XmlHelper.ReadBool(File, "firstRun");
                 }
             }
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using System.Net.Mail;
 using System.Xml;
 using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
@@ -20,19 +19,6 @@ namespace Main.Wpf.Utilities
                 return true;
             }
             catch (OutOfMemoryException)
-            {
-                return false;
-            }
-        }
-
-        public static bool IsMailValid(string mail)
-        {
-            try
-            {
-                var unused = new MailAddress(mail);
-                return true;
-            }
-            catch
             {
                 return false;
             }
@@ -57,7 +43,7 @@ namespace Main.Wpf.Utilities
         {
             try
             {
-                var obj = JObject.Parse(json);
+                var unused = JObject.Parse(json);
                 return true;
             }
             catch

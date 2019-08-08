@@ -40,7 +40,7 @@ namespace Main.Wpf.Utilities
 
         public static void SendDataBroadcastMessage(string msg)
         {
-            foreach (var (proc, id) in MainWindow.BackgroundProcesses) SendDataMessage(proc, msg);
+            foreach (var (proc, _) in MainWindow.BackgroundProcesses) SendDataMessage(proc, msg);
         }
 
         private static IntPtr IntPtrAlloc<T>(T param)
@@ -71,6 +71,7 @@ namespace Main.Wpf.Utilities
             return IntPtr.Zero;
         }
 
+        [Obsolete]
         private static async void Handle(string msg)
         {
             while (_isHandling) await Task.Delay(100);

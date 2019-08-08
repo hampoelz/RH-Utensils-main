@@ -26,6 +26,7 @@ namespace Main.Wpf.Utilities
             }
         }
 
+        [Obsolete]
         public static async Task LoadExtension()
         {
             try
@@ -54,7 +55,7 @@ namespace Main.Wpf.Utilities
 
                         case "-config":
                             Config.File = App.Parameters[arg + 1];
-                            await ConfigHelper.Read().ConfigureAwait(false);
+                            await ConfigHelper.Read();
                             break;
 
                         case "-programmUpdateChannel":
@@ -67,7 +68,7 @@ namespace Main.Wpf.Utilities
                             break;
                     }
 
-                if (Config.File?.Length == 0)
+                if (string.IsNullOrEmpty(Config.File))
                 {
                     if (!Directory.Exists(Config.ExtensionsDirectory))
                         try
@@ -78,7 +79,9 @@ namespace Main.Wpf.Utilities
                         {
                             Config.ExtensionsDirectory =
                                 Path.Combine(
-                                    Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)),
+                                    Path.GetDirectoryName(
+                                        Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)) ??
+                                    throw new InvalidOperationException(),
                                     "Extensions");
                             Directory.CreateDirectory(Config.ExtensionsDirectory);
                         }
@@ -133,7 +136,7 @@ namespace Main.Wpf.Utilities
                             Config.Updater.Extension.Version = installedVersions.Max(s => new Version(s));
 
                             Config.File = configFile;
-                            await ConfigHelper.Read().ConfigureAwait(false);
+                            await ConfigHelper.Read();
 
                             return;
                         }
@@ -146,7 +149,7 @@ namespace Main.Wpf.Utilities
                         Config.Updater.Extension.Version = installedVersions.Max(s => new Version(s));
 
                         Config.File = configFile;
-                        await ConfigHelper.Read().ConfigureAwait(false);
+                        await ConfigHelper.Read();
 
                         return;
                     }

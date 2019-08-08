@@ -53,8 +53,7 @@ namespace Main.Wpf.Pages
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(Config.Informations.Extension.Name) &&
-                Config.Informations.Extension.Name != "RH Utensils")
+            if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName))
                 if (Config.Menu.DefaultMenuState == MenuState.Collapsed || string.Equals(
                         JsonHelper.ReadString(Config.Settings.Json, "menuState"), "collapsed",
                         StringComparison.OrdinalIgnoreCase))
@@ -73,9 +72,8 @@ namespace Main.Wpf.Pages
 
             while (!ConfigHelper._loaded) await Task.Delay(100);
 
-            if (!string.IsNullOrEmpty(Config.Informations.Extension.Name) &&
-                Config.Informations.Extension.Name != "RH Utensils" &&
-                int.TryParse(await XmlHelper.ReadString(Config.File, "selectionIndex").ConfigureAwait(false),
+            if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName) &&
+                int.TryParse(await XmlHelper.ReadString(Config.File, "selectionIndex"),
                     out var index) && index - 1 >= 0 && index <= Config.Menu.Sites.Count)
                 await MenuHelper.SelectMenuItemAsync(index - 1);
             else
@@ -94,7 +92,7 @@ namespace Main.Wpf.Pages
 
             if (index + 1 == Config.Menu.Sites.Count) return;
 
-            if (Config.Informations.Extension.Name == "RH Utensils") return;
+            if (string.IsNullOrEmpty(Config.ExtensionDirectoryName)) return;
 
             await XmlHelper.SetString(Config.File, "config/selectionIndex", (index + 1).ToString());
         }

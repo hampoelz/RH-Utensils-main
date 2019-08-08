@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Xml.Linq;
@@ -9,7 +10,7 @@ namespace Main.Wpf.Utilities
     {
         public static readonly string MBaseDir = !string.IsNullOrEmpty(Config.ExtensionDirectoryName)
             ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, "Logs")
-            : Path.Combine(Path.GetFullPath(@".\"), "Logs");
+            : Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName), "Logs");
 
         public static string GetFilenameYYYMMDD(string suffix, string extension)
         {

@@ -31,7 +31,7 @@ namespace Main.Wpf.Utilities
 
         public static async Task SetString(string path, string singleNode, string newValue)
         {
-            while (IsFileLocked(path)) await Task.Delay(100).ConfigureAwait(false);
+            while (IsFileLocked(path)) await Task.Delay(100);
 
             try
             {
@@ -65,7 +65,7 @@ namespace Main.Wpf.Utilities
 
         public static async Task<string> ReadString(string path, string parameter)
         {
-            while (IsFileLocked(path)) await Task.Delay(100).ConfigureAwait(false);
+            while (IsFileLocked(path)) await Task.Delay(100);
 
             var value = "";
 
@@ -97,7 +97,7 @@ namespace Main.Wpf.Utilities
 
         public static async Task<bool> ReadBool(string path, string parameter)
         {
-            while (IsFileLocked(path)) await Task.Delay(100).ConfigureAwait(false);
+            while (IsFileLocked(path)) await Task.Delay(100);
 
             var value = false;
 

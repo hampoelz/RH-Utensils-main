@@ -150,43 +150,51 @@ namespace Main.Wpf.Pages
         {
             CheckUpdatesButton.Click -= Button_Click;
 
-            var timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 100), DispatcherPriority.Normal,
-                delegate { IsDownloading(); }, Application.Current.Dispatcher);
-
-            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(400));
-            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(400));
-            CheckUpdatesIcon.BeginAnimation(OpacityProperty, fadeOut);
-            CheckUpdatesProgressBar.BeginAnimation(OpacityProperty, fadeIn);
-
-            await Task.Run(() => UpdateHelper.Update(false));
-
-            MainProgrammVersion.Text = Config.Updater.Programm.Version.ToString();
-            MainProgrammNewestVersion.Text = Config.Updater.Programm.NewestVersion;
-
-            if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName))
+            try
             {
-                await Task.Run(() => UpdateHelper.Update(true));
+                var timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 100), DispatcherPriority.Normal,
+                    delegate { IsDownloading(); },
+                    Application.Current.Dispatcher ?? throw new InvalidOperationException());
 
-                AddonInstalledVersion.Text = Config.Updater.Extension.Version.ToString();
-                AddonVersion.Text = Config.Updater.Extension.RunningVersion.ToString();
-                AddonNewestVersion.Text = Config.Updater.Extension.NewestVersion;
+                var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(400));
+                var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(400));
+                CheckUpdatesIcon.BeginAnimation(OpacityProperty, fadeOut);
+                CheckUpdatesProgressBar.BeginAnimation(OpacityProperty, fadeIn);
 
-                ExtensionUpdateChannel.SelectedIndex = (int) Enum.Parse(typeof(UpdateHelper.UpdateChannels),
-                    JsonHelper.ReadString(Config.Settings.Json, "updateChannel").ToLower());
+                await Task.Run(() => UpdateHelper.Update(false));
+
+                MainProgrammVersion.Text = Config.Updater.Programm.Version.ToString();
+                MainProgrammNewestVersion.Text = Config.Updater.Programm.NewestVersion;
+
+                if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName))
+                {
+                    await Task.Run(() => UpdateHelper.Update(true));
+
+                    AddonInstalledVersion.Text = Config.Updater.Extension.Version.ToString();
+                    AddonVersion.Text = Config.Updater.Extension.RunningVersion.ToString();
+                    AddonNewestVersion.Text = Config.Updater.Extension.NewestVersion;
+
+                    ExtensionUpdateChannel.SelectedIndex = (int) Enum.Parse(typeof(UpdateHelper.UpdateChannels),
+                        JsonHelper.ReadString(Config.Settings.Json, "updateChannel").ToLower());
+                }
+                else
+                {
+                    ExtensionUpdateChannel.IsEnabled = false;
+                    ExtensionUpdateChannel.Text = "-";
+                }
+
+                MainProgrammUpdateChannel.SelectedIndex = (int) Enum.Parse(typeof(UpdateHelper.UpdateChannels),
+                    Settings.Default.updateChannel.ToLower());
+
+                CheckUpdatesProgressBar.BeginAnimation(OpacityProperty, fadeOut);
+                CheckUpdatesIcon.BeginAnimation(OpacityProperty, fadeIn);
+
+                timer.Stop();
             }
-            else
+            catch (Exception ex)
             {
-                ExtensionUpdateChannel.IsEnabled = false;
-                ExtensionUpdateChannel.Text = "-";
+                LogFile.WriteLog(ex);
             }
-
-            MainProgrammUpdateChannel.SelectedIndex = (int) Enum.Parse(typeof(UpdateHelper.UpdateChannels),
-                Settings.Default.updateChannel.ToLower());
-
-            CheckUpdatesProgressBar.BeginAnimation(OpacityProperty, fadeOut);
-            CheckUpdatesIcon.BeginAnimation(OpacityProperty, fadeIn);
-
-            timer.Stop();
 
             CheckUpdatesButton.Click += Button_Click;
         }

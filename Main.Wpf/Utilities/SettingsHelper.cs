@@ -29,13 +29,13 @@ namespace Main.Wpf.Utilities
 
         public static async Task StartSync()
         {
-            if (Config.Informations.Extension.Name == "RH Utensils") return;
+            if (string.IsNullOrEmpty(Config.ExtensionDirectoryName)) return;
 
             if (!await Config.Login.LoggedIn.Get()) return;
             {
                 LogFile.WriteLog("Enable account sync ...");
 
-                await Task.Run(SyncWithServer).ConfigureAwait(false);
+                await Task.Run(SyncWithServer);
 
                 await WaitforSync();
 
@@ -52,7 +52,7 @@ namespace Main.Wpf.Utilities
 
         private static async void SyncTimer_Tick(object sender, EventArgs e)
         {
-            await Task.Run(SyncWithServer).ConfigureAwait(false);
+            await Task.Run(SyncWithServer);
         }
 
         public static void CreateFile()
@@ -70,7 +70,8 @@ namespace Main.Wpf.Utilities
                 if (!File.Exists(Config.Settings.File))
                 {
                     LogFile.WriteLog("Create Local Settings File ...");
-                    Directory.CreateDirectory(Path.GetDirectoryName(Config.Settings.File));
+                    Directory.CreateDirectory(Path.GetDirectoryName(Config.Settings.File) ??
+                                              throw new InvalidOperationException());
                     Config.Settings.Json = defaultSettingsFile;
                 }
 
@@ -84,6 +85,7 @@ namespace Main.Wpf.Utilities
             }
         }
 
+        [Obsolete]
         public static void CreateSettingsWatcher()
         {
             if (_settingsWatcher == null)
@@ -110,28 +112,38 @@ namespace Main.Wpf.Utilities
             }
         }
 
+        [Obsolete]
         private static async void OnChanged(object sender, FileSystemEventArgs e)
         {
-            if (_syncInUse) return;
+            try
+            {
+                if (_syncInUse) return;
 
-            LogFile.WriteLog("Settings File change detected");
+                LogFile.WriteLog("Settings File change detected");
 
-            _syncInUse = true;
+                _syncInUse = true;
 
-            if (_sync)
-                Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "lastChange",
-                    DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
+                if (_sync)
+                    Config.Settings.Json = JsonHelper.ChangeValue(Config.Settings.Json, "lastChange",
+                        DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
 
-            SendSettingsBroadcast();
+                SendSettingsBroadcast();
 
-            await Task.Delay(500);
+                await Task.Delay(500);
 
-            _syncInUse = false;
+                _syncInUse = false;
 
-            await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                new Action(() =>
-                    Config.Informations.Extension.Theme = JsonHelper.ReadString(Config.Settings.Json, "theme")));
-            if (_sync && _syncSettingsOnChange) await Task.Run(SyncWithServer).ConfigureAwait(false);
+                if (Application.Current.Dispatcher != null)
+                    await Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                        new Action(() =>
+                            Config.Informations.Extension.Theme =
+                                JsonHelper.ReadString(Config.Settings.Json, "theme")));
+                if (_sync && _syncSettingsOnChange) await Task.Run(SyncWithServer);
+            }
+            catch (Exception ex)
+            {
+                LogFile.WriteLog(ex);
+            }
         }
 
         private static void SyncWithServer()
@@ -172,7 +184,7 @@ namespace Main.Wpf.Utilities
                 }
 
                 if (lastServerSync == DateTime.Parse("01.01.0001 00:00:00", CultureInfo.InvariantCulture) ||
-                    serverJson?.Length == 0)
+                    string.IsNullOrEmpty(serverJson))
                 {
                     AccountHelper.SetMetadata(JsonHelper.ChangeValue(localJson, "lastChange",
                         DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)));
@@ -180,7 +192,8 @@ namespace Main.Wpf.Utilities
                     goto Sync;
                 }
 
-                if (lastLocalSync.ToString(CultureInfo.InvariantCulture).Length == 0 || localJson?.Length == 0)
+                if (string.IsNullOrEmpty(lastLocalSync.ToString(CultureInfo.InvariantCulture)) ||
+                    string.IsNullOrEmpty(localJson))
                     goto Finish;
 
                 if (lastServerSync == lastLocalSync) goto Finish;

@@ -24,7 +24,7 @@
         <ListView x:Name="_ListViewMenu" Margin="0,100,0,100" HorizontalAlignment="Left"
                   HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   Width="250" Panel.ZIndex="100" BorderThickness="0" SelectionChanged="ListViewMenu_SelectionChanged"
-                  d:DataContext="{d:DesignInstance }">
+                  d:DataContext="{d:DesignInstance}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                     <Setter Property="Height" Value="{Binding Height}" />
