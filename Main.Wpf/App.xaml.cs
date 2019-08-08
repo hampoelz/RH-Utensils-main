@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -6,35 +9,78 @@ using Main.Wpf.Utilities;
 
 namespace Main.Wpf
 {
-    public partial class App : Application
+    public partial class App
     {
         public static string[] Parameters;
 
+        private Mutex _mutex;
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [Obsolete]
         private async void App_Startup(object sender, StartupEventArgs e)
         {
-            Parameters = e.Args;
-
-            await Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                new Action(async () => await ExtensionsManager.LoadExtension().ConfigureAwait(false)));
-
-            if (InstanceHelper.CheckInstances())
+            try
             {
-                MessageHelper.SendDataMessage(InstanceHelper.GetAlreadyRunningInstance(),
-                    "open File \"" + ExtensionsManager.FileToOpen + "\"");
+                Parameters = e.Args;
+
+                if (Current.Dispatcher != null)
+                    await Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                        new Action(async () => await ExtensionsManager.LoadExtension()));
+
+                Mutex(Config.Informations.Extension.Name);
+
+                await Task.Run(UpdateHelper.BackgroundProgrammUpdate);
+
+                Window window = new MainWindow();
+                window.Show();
+
+                await Task.Run(() => UpdateHelper.Update(false));
+                if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName))
+                    await Task.Run(() => UpdateHelper.Update(true));
+
+                if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName)) SettingsHelper.CreateSettingsWatcher();
+
+                LogFile.DeleteOldLogFiles();
+            }
+            catch (Exception ex)
+            {
+                LogFile.WriteLog(ex);
                 Current.Shutdown();
             }
+        }
 
-            await Task.Run(UpdateHelper.BackgroundProgrammUpdate);
+        private void Mutex(string name)
+        {
+            _mutex = new Mutex(true, name, out var createdNew);
 
-            Window window = new MainWindow();
-            window.Show();
+            if (!createdNew)
+            {
+                var current = Process.GetCurrentProcess();
+                foreach (var process in Process.GetProcessesByName(current.ProcessName))
+                {
+                    if (process.Id == current.Id) continue;
 
-            await Task.Run(() => UpdateHelper.Update(false));
-            if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName)) await Task.Run(() => UpdateHelper.Update(true));
+                    SetForegroundWindow(process.MainWindowHandle);
 
-            if (Config.Informations.Extension.Name != "RH Utensils") SettingsHelper.CreateSettingsWatcher();
+                    MessageHelper.SendDataMessage(process, "open File \"" + ExtensionsManager.FileToOpen + "\"");
 
-            LogFile.DeleteOldLogFiles();
+                    break;
+                }
+
+                Current.Shutdown();
+            }
+            else
+            {
+                Exit += CloseMutexHandler;
+            }
+        }
+
+        protected virtual void CloseMutexHandler(object sender, EventArgs e)
+        {
+            _mutex?.Close();
         }
     }
 }
