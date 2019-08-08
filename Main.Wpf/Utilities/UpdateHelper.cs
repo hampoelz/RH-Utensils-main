@@ -5,6 +5,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using System.Windows;
 using Main.Wpf.Properties;
 
 namespace Main.Wpf.Utilities
@@ -23,7 +25,7 @@ namespace Main.Wpf.Utilities
 
         public static void Update(bool updateExtension)
         {
-            if (updateExtension && Config.ExtensionDirectoryName?.Length == 0) return;
+            if (updateExtension && string.IsNullOrEmpty(Config.ExtensionDirectoryName)) return;
 
             LogFile.WriteLog("Check for new " + (updateExtension ? "extension" : "program") + " updates ...");
 
@@ -35,9 +37,12 @@ namespace Main.Wpf.Utilities
                 if (!InternetHelper.CheckConnection()) return;
 
                 var file = updateExtension
-                    ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName,
+                    ? Path.Combine(Config.ExtensionsDirectory,
+                        Config.ExtensionDirectoryName ?? throw new InvalidOperationException(),
                         Config.Updater.Extension.RunningVersion.ToString(), "VersionHistory.xml")
-                    : Path.GetFullPath(@".\VersionHistory.xml");
+                    : Path.Combine(
+                        Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                        throw new InvalidOperationException(), "VersionHistory.xml");
 
                 try
                 {
@@ -124,7 +129,9 @@ namespace Main.Wpf.Utilities
 
                         var localUpdateFile = updateExtension
                             ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, "update.zip")
-                            : Path.GetFullPath(@".\update.zip");
+                            : Path.Combine(
+                                Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                                throw new InvalidOperationException(), "update.zip");
 
                         using (var client = new WebClient())
                         {
@@ -134,7 +141,9 @@ namespace Main.Wpf.Utilities
                         var newExtensionDirectory = updateExtension
                             ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName,
                                 latestVersion.ToString())
-                            : Path.GetFullPath(@".\update");
+                            : Path.Combine(
+                                Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                                throw new InvalidOperationException(), "update");
 
                         Directory.CreateDirectory(newExtensionDirectory);
                         ZipFile.ExtractToDirectory(localUpdateFile, newExtensionDirectory);
@@ -146,7 +155,9 @@ namespace Main.Wpf.Utilities
 
                         var localUpdateFile = updateExtension
                             ? Path.Combine(Config.ExtensionsDirectory, Config.ExtensionDirectoryName, "updater.exe")
-                            : Path.GetFullPath(@".\updater.exe");
+                            : Path.Combine(
+                                Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                                throw new InvalidOperationException(), "updater.exe");
 
                         using (var client = new WebClient())
                         {
@@ -174,32 +185,81 @@ namespace Main.Wpf.Utilities
         {
             try
             {
-                if (Directory.Exists(Path.GetFullPath(@".\update")))
+                if (!Directory.Exists(
+                    Path.Combine(
+                        Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                        throw new InvalidOperationException(),
+                        "update"))) return;
+                using (var batFile = new StreamWriter(File.Create(Path.Combine(
+                    Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                    throw new InvalidOperationException(), "update.bat"))))
                 {
-                    using (var batFile = new StreamWriter(File.Create(Path.GetFullPath(@".\update.bat"))))
-                    {
-                        batFile.WriteLine("@echo off");
-                        batFile.WriteLine("timeout /t 1 /nobreak > nul");
-                        batFile.WriteLine("copy /v /y /z *.log update\\*.log");
-                        batFile.WriteLine("for %%F in (*) do if not \"%%F\"==\"update.bat\" del \"%%F\"");
-                        batFile.WriteLine("for /d %%D in (*) do if /i not \"%%D\"==\"update\" rd /s /q \"%%D\"");
-                        batFile.WriteLine("copy /v /y /z update\\*");
-                        batFile.WriteLine("rd /s /q update");
-                        batFile.WriteLine("start /d \"\" \"" + AppDomain.CurrentDomain.BaseDirectory +
-                                          "\" \"RH Utensils.exe\" " + string.Join(" ", App.Parameters));
-                        batFile.WriteLine("(goto) 2>nul & del \"%~f0\"");
-                    }
-
-                    var startInfo = new ProcessStartInfo(Path.GetFullPath(@".\update.bat"))
-                    {
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        WorkingDirectory = Path.GetDirectoryName(@".\")
-                    };
-                    Process.Start(startInfo);
-
-                    Environment.Exit(0);
+                    batFile.WriteLine("@echo off");
+                    batFile.WriteLine("timeout /t 1 /nobreak > nul");
+                    batFile.WriteLine("copy /v /y /z *.log update\\*.log");
+                    batFile.WriteLine("for %%F in (*) do if not \"%%F\"==\"update.bat\" del \"%%F\"");
+                    batFile.WriteLine("for /d %%D in (*) do if /i not \"%%D\"==\"update\" rd /s /q \"%%D\"");
+                    batFile.WriteLine("copy /v /y /z update\\*");
+                    batFile.WriteLine("rd /s /q update");
+                    batFile.WriteLine("start /d \"\" \"" + AppDomain.CurrentDomain.BaseDirectory +
+                                      "\" \"RH Utensils.exe\" " + string.Join(" ", App.Parameters));
+                    batFile.WriteLine("(goto) 2>nul & del \"%~f0\"");
                 }
+
+                var startInfo = new ProcessStartInfo(Path.Combine(
+                    Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                    throw new InvalidOperationException(), "update.bat"))
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    WorkingDirectory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                                       throw new InvalidOperationException()
+                };
+                Process.Start(startInfo);
+
+                Environment.Exit(0);
+            }
+            catch (Exception ex)
+            {
+                LogFile.WriteLog(ex);
+            }
+        }
+
+        public static async Task SetupProgrammUpdate()
+        {
+            try
+            {
+                if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name,
+                    "updater.exe")))
+                {
+                    var ps = new ProcessStartInfo(Path.Combine(Config.ExtensionsDirectory,
+                        Config.Informations.Extension.Name, "updater.exe"))
+                    {
+                        Arguments = "/VERYSILENT"
+                    };
+                    LogFile.WriteLog("Start setup ...");
+                    Process.Start(ps);
+
+                    Application.Current.Shutdown();
+                }
+
+                if (File.Exists(@".\updater.exe"))
+                {
+                    var ps = new ProcessStartInfo(@".\updater.exe")
+                    {
+                        Arguments = "/VERYSILENT"
+                    };
+                    LogFile.WriteLog("Start setup ...");
+                    Process.Start(ps);
+
+                    Application.Current.Shutdown();
+                }
+
+                LogFile.WriteLog("No setup found ...");
+
+                if (!(Application.Current.MainWindow is MainWindow mw)) return;
+
+                await mw.Login();
             }
             catch (Exception ex)
             {

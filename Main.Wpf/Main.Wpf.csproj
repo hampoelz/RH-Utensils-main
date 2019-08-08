@@ -305,7 +305,6 @@
     <Compile Include="Utilities\ConfigHelper.cs" />
     <Compile Include="Utilities\MessageHelper.cs" />
     <Compile Include="Utilities\IndexHelper.cs" />
-    <Compile Include="Utilities\InstanceHelper.cs" />
     <Compile Include="Utilities\InternetHelper.cs" />
     <Compile Include="Utilities\JsonHelper.cs" />
     <Compile Include="Utilities\LogFile.cs" />
@@ -336,9 +335,6 @@
     </Compile>
     <Compile Include="Pages\Selector.xaml.cs">
       <DependentUpon>Selector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\Update.xaml.cs">
-      <DependentUpon>Update.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -392,10 +388,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Pages\Selector.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Pages\Update.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

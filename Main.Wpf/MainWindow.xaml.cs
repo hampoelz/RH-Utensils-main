@@ -15,7 +15,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using MahApps.Metro.Controls;
 using Main.Wpf.Utilities;
 using MaterialDesignThemes.Wpf;
 using Panel = System.Windows.Forms.Panel;
@@ -23,7 +22,7 @@ using Path = System.IO.Path;
 
 namespace Main.Wpf
 {
-    public partial class MainWindow : MetroWindow
+    public partial class MainWindow
     {
         public const int SwHide = 0;
         public const int SwShownormal = 1;
@@ -41,6 +40,7 @@ namespace Main.Wpf
 
         public Frame Menu = new Frame();
 
+        [Obsolete]
         public MainWindow()
         {
             InitializeComponent();
@@ -54,6 +54,8 @@ namespace Main.Wpf
             System.Windows.Controls.Panel.SetZIndex(_wipe, 100);
 
             MainGrid.Children.Add(_wipe);
+
+            Title = Config.Informations.Extension.Name;
         }
 
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
@@ -67,31 +69,33 @@ namespace Main.Wpf
                     var iconUri = new Uri(Config.Informations.Extension.Favicon, UriKind.Relative);
                     Icon = new BitmapImage(iconUri);
                 }
+
+                MinHeight = Config.Informations.Extension.WindowHeight;
+                MinWidth = Config.Informations.Extension.WindowWidth;
+
+                CenterWindowOnScreen();
+
+                if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name,
+                    "updater.exe")))
+                {
+                    await UpdateHelper.SetupProgrammUpdate();
+                    return;
+                }
+
+                if (File.Exists(Path.Combine(
+                    Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                    throw new InvalidOperationException(), "updater.exe")))
+                {
+                    await UpdateHelper.SetupProgrammUpdate();
+                    return;
+                }
+
+                await Login();
             }
             catch (Exception ex)
             {
                 LogFile.WriteLog(ex);
             }
-
-            MinHeight = Config.Informations.Extension.WindowHeight;
-            MinWidth = Config.Informations.Extension.WindowWidth;
-
-            CenterWindowOnScreen();
-
-            if (File.Exists(Path.Combine(Config.ExtensionsDirectory, Config.Informations.Extension.Name,
-                "updater.exe")))
-            {
-                Index.Navigate(new Uri("Pages/Update.xaml", UriKind.Relative));
-                return;
-            }
-
-            if (File.Exists(Path.GetFullPath(@".\updater.exe")))
-            {
-                Index.Navigate(new Uri("Pages/Update.xaml", UriKind.Relative));
-                return;
-            }
-
-            await Login();
         }
 
         public async Task Login()
@@ -106,44 +110,52 @@ namespace Main.Wpf
                 await LoadExtensionAsync();
         }
 
+        [Obsolete]
         public async Task LoadExtensionAsync(bool wipeAnimation = false)
         {
-            if (wipeAnimation) _wipe.Visibility = Visibility.Visible;
-
-            await SettingsHelper.StartSync();
-
-            var timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 1), DispatcherPriority.Normal, delegate
+            try
             {
-                if (_appWin != IntPtr.Zero) MoveWindow(_appWin, 0, 0, _panel.Width, _panel.Height, true);
-            }, Application.Current.Dispatcher);
+                if (wipeAnimation) _wipe.Visibility = Visibility.Visible;
 
-            timer.Start();
+                await SettingsHelper.StartSync();
 
-            if (Config.Menu.SingleSite.HideMenu)
-            {
-                MainGrid.Children.Add(IndexGrid);
+                var timer = new DispatcherTimer(new TimeSpan(0, 0, 0, 0, 1), DispatcherPriority.Normal, delegate
+                    {
+                        if (_appWin != IntPtr.Zero) MoveWindow(_appWin, 0, 0, _panel.Width, _panel.Height, true);
+                    }, Application.Current.Dispatcher ?? throw new InvalidOperationException());
 
-                Index.Visibility = Visibility.Collapsed;
+                timer.Start();
 
-                if (wipeAnimation) await RunWipeAnimation();
+                if (Config.Menu.SingleSite.HideMenu)
+                {
+                    MainGrid.Children.Add(IndexGrid);
 
-                await SetExe(Config.Menu.SingleSite.Path, Config.Menu.SingleSite.StartArguments);
+                    Index.Visibility = Visibility.Collapsed;
+
+                    if (wipeAnimation) await RunWipeAnimation();
+
+                    await SetExe(Config.Menu.SingleSite.Path, Config.Menu.SingleSite.StartArguments);
+                }
+                else
+                {
+                    IndexGrid.Margin = new Thickness(250, 0, 0, 0);
+                    MainGrid.Children.Add(IndexGrid);
+
+                    Index.Margin = new Thickness(250, 0, 0, 0);
+                    Index.Visibility = Visibility.Collapsed;
+
+                    Menu.HorizontalAlignment = HorizontalAlignment.Left;
+                    Menu.NavigationUIVisibility = NavigationUIVisibility.Hidden;
+                    Menu.Navigate(new Uri("Pages/Menu.xaml", UriKind.Relative));
+                    Menu.Width = 250;
+                    MainGrid.Children.Add(Menu);
+
+                    if (wipeAnimation) await RunWipeAnimation();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                IndexGrid.Margin = new Thickness(250, 0, 0, 0);
-                MainGrid.Children.Add(IndexGrid);
-
-                Index.Margin = new Thickness(250, 0, 0, 0);
-                Index.Visibility = Visibility.Collapsed;
-
-                Menu.HorizontalAlignment = HorizontalAlignment.Left;
-                Menu.NavigationUIVisibility = NavigationUIVisibility.Hidden;
-                Menu.Navigate(new Uri("Pages/Menu.xaml", UriKind.Relative));
-                Menu.Width = 250;
-                MainGrid.Children.Add(Menu);
-
-                if (wipeAnimation) await RunWipeAnimation();
+                LogFile.WriteLog(ex);
             }
         }
 
@@ -165,6 +177,7 @@ namespace Main.Wpf
             }
         }
 
+        [Obsolete]
         public async Task SetExe(string exe, string argument, int id = -1)
         {
             if (LoadingExe) return;
