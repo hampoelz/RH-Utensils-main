@@ -196,7 +196,7 @@ namespace Main.Wpf.Utilities
                 {
                     batFile.WriteLine("@echo off");
                     batFile.WriteLine("timeout /t 1 /nobreak > nul");
-                    batFile.WriteLine("copy /v /y /z *.log update\\*.log");
+                    batFile.WriteLine("xcopy Logs\\*.log update\\Logs\\*.log /E");
                     batFile.WriteLine("for %%F in (*) do if not \"%%F\"==\"update.bat\" del \"%%F\"");
                     batFile.WriteLine("for /d %%D in (*) do if /i not \"%%D\"==\"update\" rd /s /q \"%%D\"");
                     batFile.WriteLine("copy /v /y /z update\\*");
