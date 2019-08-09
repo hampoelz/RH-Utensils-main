@@ -4,8 +4,8 @@
   <v0.1.1>
     <updateChannel>beta</updateChannel>
     <version>0.2.1</version>
-    <setup>True</setup>
-    <file>https://raw.githubusercontent.com/rh-utensils/main/master/Setup Files/Output/Main Setup.exe</file>
+    <setup>False</setup>
+    <file>https://github.com/rh-utensils/main/releases/download/v0.2.1/Main.zip</file>
   </v0.1.1>
   <v0.2>
     <updateChannel>beta</updateChannel>
