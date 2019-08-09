@@ -201,8 +201,7 @@ namespace Main.Wpf.Utilities
                     batFile.WriteLine("for /d %%D in (*) do if /i not \"%%D\"==\"update\" rd /s /q \"%%D\"");
                     batFile.WriteLine("copy /v /y /z update\\*");
                     batFile.WriteLine("rd /s /q update");
-                    batFile.WriteLine("start /d \"\" \"" + AppDomain.CurrentDomain.BaseDirectory +
-                                      "\" \"RH Utensils.exe\" " + string.Join(" ", App.Parameters));
+                    batFile.WriteLine("start \"\" \"" + Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ?? throw new InvalidOperationException(), "RH Utensils.exe") + " " + string.Join(" ", App.Parameters));
                     batFile.WriteLine("(goto) 2>nul & del \"%~f0\"");
                 }
 
@@ -243,9 +242,13 @@ namespace Main.Wpf.Utilities
                     Application.Current.Shutdown();
                 }
 
-                if (File.Exists(@".\updater.exe"))
+                if (File.Exists(Path.Combine(
+                    Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                    throw new InvalidOperationException(), "updater.exe")))
                 {
-                    var ps = new ProcessStartInfo(@".\updater.exe")
+                    var ps = new ProcessStartInfo(Path.Combine(
+                            Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                            throw new InvalidOperationException(), "updater.exe"))
                     {
                         Arguments = "/VERYSILENT"
                     };
