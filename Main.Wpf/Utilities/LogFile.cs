@@ -33,6 +33,8 @@ namespace Main.Wpf.Utilities
         {
             try
             {
+                if (!Directory.Exists(MBaseDir)) Directory.CreateDirectory(MBaseDir);
+
                 var filename = Path.Combine(MBaseDir, GetFilenameYYYMMDD("_LOG", ".log"));
                 var sw = new StreamWriter(filename, true);
                 var xmlEntry = new XElement("logEntry",
@@ -51,6 +53,8 @@ namespace Main.Wpf.Utilities
         {
             try
             {
+                if (!Directory.Exists(MBaseDir)) Directory.CreateDirectory(MBaseDir);
+
                 var filename = Path.Combine(MBaseDir, GetFilenameYYYMMDD("_LOG", ".log"));
                 var sw = new StreamWriter(filename, true);
                 var xmlEntry = new XElement("logEntry",
