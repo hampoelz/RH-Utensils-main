@@ -201,7 +201,7 @@ namespace Main.Wpf.Utilities
                     batFile.WriteLine("for /d %%D in (*) do if /i not \"%%D\"==\"update\" rd /s /q \"%%D\"");
                     batFile.WriteLine("copy /v /y /z update\\*");
                     batFile.WriteLine("rd /s /q update");
-                    batFile.WriteLine("start \"\" \"" + Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ?? throw new InvalidOperationException(), "RH Utensils.exe") + " " + string.Join(" ", App.Parameters));
+                    batFile.WriteLine("start \"\" \"" + Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ?? throw new InvalidOperationException(), "RH Utensils.exe") + "\" " + string.Join(" ", App.Parameters));
                     batFile.WriteLine("(goto) 2>nul & del \"%~f0\"");
                 }
 
