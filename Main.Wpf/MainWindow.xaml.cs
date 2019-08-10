@@ -58,6 +58,7 @@ namespace Main.Wpf
             Title = Config.Informations.Extension.Name;
         }
 
+        [Obsolete]
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
             MessageHelper.ReceiveDataMessages();
@@ -98,6 +99,7 @@ namespace Main.Wpf
             }
         }
 
+        [Obsolete]
         public async Task Login()
         {
             if (Config.Login.SkipLogin)

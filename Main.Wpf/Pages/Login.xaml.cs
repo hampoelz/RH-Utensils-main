@@ -86,6 +86,7 @@ namespace Main.Wpf.Pages
             ShowInfoBox();
         }
 
+        [Obsolete]
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
@@ -170,6 +171,7 @@ namespace Main.Wpf.Pages
             }
         }
 
+        [Obsolete]
         private async void Login_Click(object sender, RoutedEventArgs e)
         {
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
@@ -235,6 +237,7 @@ namespace Main.Wpf.Pages
             IsEnabled = true;
         }
 
+        [Obsolete]
         private async void Skip_Click(object sender, RoutedEventArgs e)
         {
             if (!(Application.Current.MainWindow is MainWindow mw)) return;

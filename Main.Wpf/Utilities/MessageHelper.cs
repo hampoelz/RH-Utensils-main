@@ -50,6 +50,7 @@ namespace Main.Wpf.Utilities
             return retval;
         }
 
+        [Obsolete]
         public static void ReceiveDataMessages()
         {
             if (!(Application.Current.MainWindow is MainWindow mw)) return;
@@ -58,6 +59,7 @@ namespace Main.Wpf.Utilities
             hwndSource?.AddHook(WndProc);
         }
 
+        [Obsolete]
         private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             if (msg != WmCopydata) return IntPtr.Zero;

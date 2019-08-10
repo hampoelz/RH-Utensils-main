@@ -51,6 +51,7 @@ namespace Main.Wpf.Pages
             MenuHelper.ChangeMenuState(MenuState.Expanded);
         }
 
+        [Obsolete]
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName))
@@ -82,6 +83,7 @@ namespace Main.Wpf.Pages
             _loaded = true;
         }
 
+        [Obsolete]
         private async void ListViewMenu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_loaded || Config.Menu.ChangeingSites) return;
