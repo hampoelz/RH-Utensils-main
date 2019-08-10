@@ -196,11 +196,15 @@ namespace Main.Wpf.Utilities
                 {
                     batFile.WriteLine("@echo off");
                     batFile.WriteLine("timeout /t 1 /nobreak > nul");
-                    batFile.WriteLine("xcopy Logs\\*.log update\\Logs\\*.log /E");
+                    batFile.WriteLine("if not exist \"update\\RH Utensils.exe\" goto finish");
+                    batFile.WriteLine("mkdir update\\Logs");
+                    batFile.WriteLine("if exist Logs\\*.log copy /v /y /z Logs\\*.log update\\Logs\\*.log");
+                    batFile.WriteLine("if exist settings.json copy /v /y /z settings.json update\\settings.json");
                     batFile.WriteLine("for %%F in (*) do if not \"%%F\"==\"update.bat\" del \"%%F\"");
                     batFile.WriteLine("for /d %%D in (*) do if /i not \"%%D\"==\"update\" rd /s /q \"%%D\"");
-                    batFile.WriteLine("copy /v /y /z update\\*");
+                    batFile.WriteLine("xcopy /v /y /z /e update\\*");
                     batFile.WriteLine("rd /s /q update");
+                    batFile.WriteLine(":finish");
                     batFile.WriteLine("start \"\" \"" + Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ?? throw new InvalidOperationException(), "RH Utensils.exe") + "\" " + string.Join(" ", App.Parameters));
                     batFile.WriteLine("(goto) 2>nul & del \"%~f0\"");
                 }
@@ -224,6 +228,7 @@ namespace Main.Wpf.Utilities
             }
         }
 
+        [Obsolete]
         public static async Task SetupProgrammUpdate()
         {
             try
