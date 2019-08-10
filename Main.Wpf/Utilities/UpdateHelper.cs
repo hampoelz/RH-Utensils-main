@@ -223,7 +223,7 @@ namespace Main.Wpf.Utilities
                 };
                 Process.Start(startInfo);
 
-                Application.Current.Shutdown();
+                Process.GetCurrentProcess().Kill();
             }
             catch (Exception ex)
             {
@@ -247,7 +247,7 @@ namespace Main.Wpf.Utilities
                     LogFile.WriteLog("Start setup ...");
                     Process.Start(ps);
 
-                    Application.Current.Shutdown();
+                    Process.GetCurrentProcess().Kill();
                 }
 
                 if (File.Exists(Path.Combine(
@@ -263,7 +263,7 @@ namespace Main.Wpf.Utilities
                     LogFile.WriteLog("Start setup ...");
                     Process.Start(ps);
 
-                    Application.Current.Shutdown();
+                    Process.GetCurrentProcess().Kill();
                 }
 
                 LogFile.WriteLog("No setup found ...");
