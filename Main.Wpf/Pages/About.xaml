@@ -99,8 +99,8 @@
                             </materialDesign:TransitioningContent.OpeningEffects>
                             <Button x:Name="CheckUpdatesButton" VerticalAlignment="Top" HorizontalAlignment="Right"
                                     Margin="10" Padding="0" Height="35" Width="35"
-                                    Style="{DynamicResource MaterialDesignFloatingActionAccentButton}"
-                                    Click="Button_Click">
+                                    Style="{DynamicResource MaterialDesignFloatingActionButton}"
+                                    Click="Button_Click" Foreground="White">
                                 <Grid>
                                     <materialDesign:PackIcon x:Name="CheckUpdatesIcon" Kind="Autorenew" Height="25"
                                                              Width="25" Foreground="White" Opacity="1" />
@@ -173,7 +173,7 @@
                                   SelectionChanged="ExtensionUpdateChannel_SelectionChanged" />
 
                         <materialDesign:Card x:Name="InfoCard" Height="45" Panel.ZIndex="1"
-                                             Background="{DynamicResource SecondaryAccentBrush}"
+                                             Background="{DynamicResource PrimaryHueMidBrush}"
                                              VerticalAlignment="Bottom" Margin="10,0,310,5">
                             <Grid>
                                 <Grid x:Name="InstallUpdateInfo" HorizontalAlignment="Center" Opacity="1">
