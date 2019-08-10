@@ -216,7 +216,7 @@ namespace Main.Wpf.Utilities
                 };
                 Process.Start(startInfo);
 
-                Environment.Exit(0);
+                Application.Current.Shutdown();
             }
             catch (Exception ex)
             {
