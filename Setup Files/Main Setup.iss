@@ -1,4 +1,4 @@
-#define ProgrammVersion  "0.2.4"
+#define ProgrammVersion  "0.2.4.1"
 #define ZipFileLink      "https://github.com/rh-utensils/main/releases/download/v" + ProgrammVersion + "/Main.zip"
 
 [Setup]
