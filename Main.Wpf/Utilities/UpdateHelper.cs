@@ -199,6 +199,8 @@ namespace Main.Wpf.Utilities
                     batFile.WriteLine("mkdir update\\Logs");
                     batFile.WriteLine("if exist Logs\\*.log copy /v /y /z Logs\\*.log update\\Logs\\*.log");
                     batFile.WriteLine("if exist settings.json copy /v /y /z settings.json update\\settings.json");
+                    batFile.WriteLine("if exist unins*.exe copy /v /y /z unins*.exe update\\unins*.exe");
+                    batFile.WriteLine("if exist unins*.dat copy /v /y /z unins*.dat update\\unins*.dat");
                     batFile.WriteLine("for %%F in (*) do if not \"%%F\"==\"update.bat\" del \"%%F\"");
                     batFile.WriteLine("for /d %%D in (*) do if /i not \"%%D\"==\"update\" rd /s /q \"%%D\"");
                     batFile.WriteLine("xcopy /v /y /z /e update\\*");
