@@ -62,7 +62,7 @@ namespace Main.Wpf.Utilities
                 var userUpdateChannel = updateExtension
                     ? (int) Enum.Parse(typeof(UpdateChannels),
                         JsonHelper.ReadString(Config.Settings.Json, "updateChannel").ToLower())
-                    : (int) Enum.Parse(typeof(UpdateChannels), Settings.Default.updateChannel);
+                    : (int) Enum.Parse(typeof(UpdateChannels), Config.Settings.MainUpdateChannel.ToLower());
 
                 var updateChannels = XmlHelper.ReadStringList(file, "updateChannel");
 

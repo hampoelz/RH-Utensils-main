@@ -59,8 +59,7 @@ namespace Main.Wpf.Utilities
                             break;
 
                         case "-programmUpdateChannel":
-                            Settings.Default.updateChannel = App.Parameters[arg + 1];
-                            Settings.Default.Save();
+                            Config.Settings.MainUpdateChannel = App.Parameters[arg + 1];
                             break;
 
                         case "-skipLogin":

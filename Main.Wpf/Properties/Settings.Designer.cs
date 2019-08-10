@@ -22,17 +22,5 @@ namespace Main.Wpf.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("release")]
-        public string updateChannel {
-            get {
-                return ((string)(this["updateChannel"]));
-            }
-            set {
-                this["updateChannel"] = value;
-            }
-        }
     }
 }

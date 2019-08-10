@@ -68,7 +68,7 @@ namespace Main.Wpf.Pages
             }
 
             MainProgrammUpdateChannel.SelectedIndex = (int) Enum.Parse(typeof(UpdateHelper.UpdateChannels),
-                Settings.Default.updateChannel.ToLower());
+                Config.Settings.MainUpdateChannel.ToLower());
 
             IsDownloading();
 
@@ -184,7 +184,7 @@ namespace Main.Wpf.Pages
                 }
 
                 MainProgrammUpdateChannel.SelectedIndex = (int) Enum.Parse(typeof(UpdateHelper.UpdateChannels),
-                    Settings.Default.updateChannel.ToLower());
+                    Config.Settings.MainUpdateChannel.ToLower());
 
                 CheckUpdatesProgressBar.BeginAnimation(OpacityProperty, fadeOut);
                 CheckUpdatesIcon.BeginAnimation(OpacityProperty, fadeIn);
@@ -203,10 +203,9 @@ namespace Main.Wpf.Pages
         {
             if (!_loaded) return;
 
-            if (Settings.Default.updateChannel == MainProgrammUpdateChannel.SelectedItem.ToString()) return;
+            if (Config.Settings.MainUpdateChannel.ToLower() == MainProgrammUpdateChannel.SelectedItem.ToString()) return;
 
-            Settings.Default.updateChannel = MainProgrammUpdateChannel.SelectedItem.ToString();
-            Settings.Default.Save();
+            Config.Settings.MainUpdateChannel = MainProgrammUpdateChannel.SelectedItem.ToString();
         }
 
         private void ExtensionUpdateChannel_SelectionChanged(object sender, SelectionChangedEventArgs e)

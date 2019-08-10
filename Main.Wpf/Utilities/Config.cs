@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -614,6 +615,78 @@ namespace Main.Wpf.Utilities
                         using (var sw = new StreamWriter(File))
                         {
                             sw.Write(value);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogFile.WriteLog(ex);
+                    }
+                }
+            }
+
+            public static string MainUpdateChannel
+            {
+                get
+                {
+                    try
+                    {
+                        var json = "";
+                        var path = Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ?? throw new InvalidOperationException(), "settings.json");
+
+                        if (!System.IO.File.Exists(path))
+                        {
+                            json = "{\"updateChannel\": \"release\"}";
+                        }
+                        else
+                        {
+                            using (var fs = System.IO.File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            using (var sr = new StreamReader(fs))
+                            {
+                                while (!sr.EndOfStream)
+                                    json = sr.ReadToEnd();
+                            }
+
+                            if (string.IsNullOrEmpty(json)) json = "{\"updateChannel\": \"release\"}";
+                        }
+
+                        return JsonHelper.ReadString(json, "updateChannel").ToLower();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogFile.WriteLog("Error getting Main update channel!");
+                        LogFile.WriteLog(ex);
+
+                        return "release";
+                    }
+                }
+                set
+                {
+                    try
+                    {
+                        var json = "";
+                        var path = Path.Combine(
+                            Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                            throw new InvalidOperationException(), "settings.json");
+
+                        if (!System.IO.File.Exists(path))
+                        {
+                            json = "{\"updateChannel\": \"release\"}";
+                        }
+                        else
+                        {
+                            using (var fs = System.IO.File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            using (var sr = new StreamReader(fs))
+                            {
+                                while (!sr.EndOfStream)
+                                    json = sr.ReadToEnd();
+                            }
+
+                            if (string.IsNullOrEmpty(json)) json = "{\"updateChannel\": \"release\"}";
+                        }
+
+                        using (var sw = new StreamWriter(path))
+                        {
+                            sw.Write(JsonHelper.ChangeValue(json, "updateChannel", value));
                         }
                     }
                     catch (Exception ex)
