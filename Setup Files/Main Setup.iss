@@ -14,7 +14,7 @@ AppUpdatesURL            = https://github.com/rh-utensils/main/releases/
 
 DisableWelcomePage       = no
 
-DefaultDirName           = {userpf}\RH Utensils
+DefaultDirName           = {userpf}\RH Utensils\Main
 DisableDirPage           = true
 
 DisableProgramGroupPage  = yes
@@ -36,19 +36,19 @@ Name: "programsicon"; Description: "Startmenü-Symbol erstellen"; GroupDescriptio
 
 [Dirs]
 Name: "{userpf}\RH Utensils"
-Name: "{app}\Main"
-Name: "{app}\Main\Logs"
+Name: "{app}"
+Name: "{app}\Logs"
 
 [Icons]
-Name: "{userprograms}\RH Utensils\Main"; Filename: "{app}\Main\RH Utensils.exe"; Tasks: programsicon
-Name: "{userdesktop}\RH Utensils Main"; Filename: "{app}\Main\RH Utensils.exe"; Tasks: desktopicon
+Name: "{userprograms}\RH Utensils\Main"; Filename: "{app}\RH Utensils.exe"; Tasks: programsicon
+Name: "{userdesktop}\RH Utensils Main"; Filename: "{app}\RH Utensils.exe"; Tasks: desktopicon
 
 [UninstallDelete]
-Type: filesandordirs; Name: "{app}\Main"
+Type: filesandordirs; Name: "{app}"
 
 [Run]
-Filename: "{tmp}\unzip.exe"; Parameters: "x ""{tmp}\Main.zip"" -y -o""{app}\Main"""; Flags: runhidden; StatusMsg: "Entpacke Programm Dateien ..."
-Filename: "{app}\Main\RH Utensils.exe"; Flags: nowait postinstall skipifsilent unchecked; Description: "RH Utensils Main starten"
+Filename: "{tmp}\unzip.exe"; Parameters: "x ""{tmp}\Main.zip"" -y -o""{app}"""; Flags: runhidden; StatusMsg: "Entpacke Programm Dateien ..."
+Filename: "{app}\RH Utensils.exe"; Flags: nowait postinstall skipifsilent unchecked; Description: "RH Utensils Main starten"
 
 [Code]
 function NetFrameworkIsMissing(): Boolean;
