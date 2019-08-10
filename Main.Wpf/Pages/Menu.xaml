@@ -45,13 +45,14 @@
                 <DataTemplate DataType="utilities:MenuItem">
                     <StackPanel Visibility="Visible" Orientation="Horizontal">
                         <materialDesign:PackIcon Width="30" Height="Auto" VerticalAlignment="Center" Margin="10"
-                                                 Kind="{Binding Icon}"/>
+                                                 Kind="{Binding Icon}" />
                         <TextBlock FontSize="18" VerticalAlignment="Center" Margin="20,0,20,0" Text="{Binding Title}"
-                                   TextTrimming="CharacterEllipsis" Width="150"/>
+                                   TextTrimming="CharacterEllipsis" Width="150" />
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Rectangle VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="0.2" Fill="{DynamicResource MaterialDesignTextBoxBorder}"/>
+        <Rectangle VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="0.2"
+                   Fill="{DynamicResource MaterialDesignTextBoxBorder}" />
     </Grid>
 </Page>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Main.Wpf.Properties;
 using MaterialDesignThemes.Wpf;
 
 namespace Main.Wpf.Utilities

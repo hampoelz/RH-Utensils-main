@@ -631,7 +631,9 @@ namespace Main.Wpf.Utilities
                     try
                     {
                         var json = "";
-                        var path = Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ?? throw new InvalidOperationException(), "settings.json");
+                        var path = Path.Combine(
+                            Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                            throw new InvalidOperationException(), "settings.json");
 
                         if (!System.IO.File.Exists(path))
                         {
@@ -639,7 +641,8 @@ namespace Main.Wpf.Utilities
                         }
                         else
                         {
-                            using (var fs = System.IO.File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            using (var fs = System.IO.File.Open(path, FileMode.Open, FileAccess.Read,
+                                FileShare.ReadWrite))
                             using (var sr = new StreamReader(fs))
                             {
                                 while (!sr.EndOfStream)
@@ -674,7 +677,8 @@ namespace Main.Wpf.Utilities
                         }
                         else
                         {
-                            using (var fs = System.IO.File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            using (var fs = System.IO.File.Open(path, FileMode.Open, FileAccess.Read,
+                                FileShare.ReadWrite))
                             using (var sr = new StreamReader(fs))
                             {
                                 while (!sr.EndOfStream)

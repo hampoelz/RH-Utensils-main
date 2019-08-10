@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
-using Main.Wpf.Properties;
 
 namespace Main.Wpf.Utilities
 {
@@ -205,7 +204,11 @@ namespace Main.Wpf.Utilities
                     batFile.WriteLine("xcopy /v /y /z /e update\\*");
                     batFile.WriteLine("rd /s /q update");
                     batFile.WriteLine(":finish");
-                    batFile.WriteLine("start \"\" \"" + Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ?? throw new InvalidOperationException(), "RH Utensils.exe") + "\" " + string.Join(" ", App.Parameters));
+                    batFile.WriteLine("start \"\" \"" +
+                                      Path.Combine(
+                                          Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                                          throw new InvalidOperationException(), "RH Utensils.exe") + "\" " +
+                                      string.Join(" ", App.Parameters));
                     batFile.WriteLine("(goto) 2>nul & del \"%~f0\"");
                 }
 
@@ -252,8 +255,8 @@ namespace Main.Wpf.Utilities
                     throw new InvalidOperationException(), "updater.exe")))
                 {
                     var ps = new ProcessStartInfo(Path.Combine(
-                            Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
-                            throw new InvalidOperationException(), "updater.exe"))
+                        Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ??
+                        throw new InvalidOperationException(), "updater.exe"))
                     {
                         Arguments = "/VERYSILENT"
                     };

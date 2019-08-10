@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using Main.Wpf.Properties;
 using Main.Wpf.Utilities;
 
 namespace Main.Wpf.Pages
@@ -203,7 +202,8 @@ namespace Main.Wpf.Pages
         {
             if (!_loaded) return;
 
-            if (Config.Settings.MainUpdateChannel.ToLower() == MainProgrammUpdateChannel.SelectedItem.ToString()) return;
+            if (Config.Settings.MainUpdateChannel.ToLower() ==
+                MainProgrammUpdateChannel.SelectedItem.ToString()) return;
 
             Config.Settings.MainUpdateChannel = MainProgrammUpdateChannel.SelectedItem.ToString();
         }
