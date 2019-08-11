@@ -45,6 +45,7 @@ namespace Main.Wpf.Utilities
                 var icons = XmlHelper.ReadStringList(file, "site_Icon");
                 var paths = XmlHelper.ReadStringList(file, "site_Path");
                 var startArguments = XmlHelper.ReadStringList(file, "site_StartArguments");
+                var loadAtStartup = XmlHelper.ReadBoolList(file, "site_LoadAtStartup");
 
                 for (var site = 0; site != titels.Count; ++site)
                     if (titels[site] == "null" || paths[site] == "null") sites.Add(new MenuItem {Space = true});
@@ -53,7 +54,9 @@ namespace Main.Wpf.Utilities
                         {
                             Title = titels[site],
                             Icon = Enum.TryParse(icons[site], out PackIconKind icon) ? icon : PackIconKind.Application,
-                            Path = paths[site], StartArguments = startArguments[site]
+                            Path = paths[site],
+                            StartArguments = startArguments[site],
+                            LoadAtStartup = loadAtStartup[site]
                         });
                 sites.Add(new MenuItem {Space = true});
                 sites.Add(new MenuItem

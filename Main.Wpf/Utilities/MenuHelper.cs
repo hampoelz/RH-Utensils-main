@@ -34,6 +34,7 @@ namespace Main.Wpf.Utilities
         public PackIconKind Icon { get; set; }
         public string Path { get; set; }
         public string StartArguments { get; set; }
+        public bool LoadAtStartup { get; set; }
 
         public bool Space
         {

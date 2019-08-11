@@ -54,6 +54,8 @@ namespace Main.Wpf.Pages
         [Obsolete]
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            if (!(Application.Current.MainWindow is MainWindow mw)) return;
+
             if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName))
                 if (Config.Menu.DefaultMenuState == MenuState.Collapsed || string.Equals(
                         JsonHelper.ReadString(Config.Settings.Json, "menuState"), "collapsed",
@@ -61,17 +63,21 @@ namespace Main.Wpf.Pages
                 {
                     ToggleMenu.IsChecked = false;
 
-                    if (Application.Current.MainWindow is MainWindow mw)
-                    {
-                        mw.Menu.Width = 60;
-                        GridMenu.Width = 60;
+                    mw.Menu.Width = 60;
+                    GridMenu.Width = 60;
 
-                        mw.Index.Margin = new Thickness(60, 0, 0, 0);
-                        mw.IndexGrid.Margin = new Thickness(60, 0, 0, 0);
-                    }
+                    mw.Index.Margin = new Thickness(60, 0, 0, 0);
+                    mw.IndexGrid.Margin = new Thickness(60, 0, 0, 0);
                 }
 
             while (!ConfigHelper._loaded) await Task.Delay(100);
+
+            for (var i = 0; i < Config.Menu.Sites.Count; i++)
+            {
+                var menuItem = Config.Menu.Sites[i];
+
+                if (menuItem.LoadAtStartup) await mw.PreLoadExe(menuItem.Path, menuItem.StartArguments, i);
+            }
 
             if (!string.IsNullOrEmpty(Config.ExtensionDirectoryName) &&
                 int.TryParse(await XmlHelper.ReadString(Config.File, "selectionIndex"),

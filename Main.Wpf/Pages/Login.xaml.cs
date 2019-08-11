@@ -151,7 +151,7 @@ namespace Main.Wpf.Pages
                 await Config.Login.LoggedIn.Set(true);
                 await Config.Login.FirstRun.Set(false);
 
-                await mw.LoadExtensionAsync(true);
+                await mw.LoadExtensionAsync();
 
                 while (!ConfigHelper._loaded) await Task.Delay(100);
 
@@ -218,7 +218,7 @@ namespace Main.Wpf.Pages
             await Config.Login.LoggedIn.Set(true);
             await Config.Login.FirstRun.Set(false);
 
-            await mw.LoadExtensionAsync(true);
+            await mw.LoadExtensionAsync();
 
             while (!ConfigHelper._loaded) await Task.Delay(100);
 
@@ -249,7 +249,7 @@ namespace Main.Wpf.Pages
 
             ShowInfoBox();
 
-            await mw.LoadExtensionAsync(true);
+            await mw.LoadExtensionAsync();
 
             IsEnabled = true;
         }

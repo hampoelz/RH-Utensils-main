@@ -113,11 +113,12 @@ namespace Main.Wpf
         }
 
         [Obsolete]
-        public async Task LoadExtensionAsync(bool wipeAnimation = false)
+        public async Task LoadExtensionAsync()
         {
             try
             {
-                if (wipeAnimation) _wipe.Visibility = Visibility.Visible;
+                WindowTransitionsEnabled = false;
+                _wipe.Visibility = Visibility.Visible;
 
                 await SettingsHelper.StartSync();
 
@@ -134,7 +135,7 @@ namespace Main.Wpf
 
                     Index.Visibility = Visibility.Collapsed;
 
-                    if (wipeAnimation) await RunWipeAnimation();
+                    await RunWipeAnimation();
 
                     await SetExe(Config.Menu.SingleSite.Path, Config.Menu.SingleSite.StartArguments);
                 }
@@ -152,7 +153,9 @@ namespace Main.Wpf
                     Menu.Width = 250;
                     MainGrid.Children.Add(Menu);
 
-                    if (wipeAnimation) await RunWipeAnimation();
+                    while (!Pages.Menu._loaded) await Task.Delay(100);
+
+                    await RunWipeAnimation();
                 }
             }
             catch (Exception ex)
@@ -177,6 +180,67 @@ namespace Main.Wpf
                 await Task.Delay(100);
                 p.Refresh();
             }
+        }
+
+        [Obsolete]
+        public async Task PreLoadExe(string exe, string argument, int id = -1)
+        {
+            while (LoadingExe) await Task.Delay(100);
+
+            LoadingExe = true;
+
+            Pages.Menu.ListViewMenu.IsEnabled = false;
+
+            try
+            {
+                exe = ReplaceVariables.Replace(exe);
+                argument = string.Equals(argument, "null", StringComparison.OrdinalIgnoreCase) ? "" : argument;
+
+                var ps = new ProcessStartInfo(exe)
+                {
+                    Arguments = argument,
+
+                    WindowStyle = ProcessWindowStyle.Minimized
+                };
+
+                var p = Process.Start(ps);
+
+                await WaitForExtension(p);
+
+                BackgroundProcesses.Add((p, id));
+
+                if (p != null) _appWin = p.MainWindowHandle;
+
+                await Task.Delay(100);
+
+                MessageHelper.SendDataMessage(p, "set Name \"" + Config.Informations.Extension.Name + "\"");
+                MessageHelper.SendDataMessage(p, "set Color \"" + Config.Informations.Extension.Color + "\"");
+
+                SettingsHelper.SendSettingsBroadcast();
+
+                if (!string.IsNullOrEmpty(ExtensionsManager.FileToOpen))
+                    MessageHelper.SendDataMessage(p, "open File \"" + ExtensionsManager.FileToOpen + "\"");
+
+                SetParent(_appWin, _panel.Handle);
+                ps.WindowStyle = ProcessWindowStyle.Maximized;
+
+                for (var i = 0; i < BackgroundProcesses.Count; ++i)
+                {
+                    var proc = BackgroundProcesses[i].proc;
+
+                    if (proc != p) continue;
+                    if (proc != null) ShowWindow(proc.MainWindowHandle, SwHide);
+                    break;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogFile.WriteLog(ex);
+            }
+
+            Pages.Menu.ListViewMenu.IsEnabled = true;
+
+            LoadingExe = false;
         }
 
         [Obsolete]
