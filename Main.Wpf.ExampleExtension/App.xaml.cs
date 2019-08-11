@@ -2,7 +2,7 @@
 
 namespace Main.Wpf.ExampleExtension
 {
-    public partial class App : Application
+    public partial class App
     {
     }
 }

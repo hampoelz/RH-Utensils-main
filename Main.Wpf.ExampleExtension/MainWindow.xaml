@@ -4,7 +4,6 @@
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
-                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                    mc:Ignorable="d"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
                    TextElement.FontWeight="Regular"
@@ -24,7 +23,5 @@
 
                    Title="ExampleExtension" Height="670" Width="950" WindowStartupLocation="CenterScreen"
                    Loaded="MetroWindow_Loaded">
-    <Grid x:Name="Grid">
-        <Frame x:Name="Index" NavigationUIVisibility="Hidden" />
-    </Grid>
+    <Frame x:Name="Index" NavigationUIVisibility="Hidden" />
 </metro:MetroWindow>

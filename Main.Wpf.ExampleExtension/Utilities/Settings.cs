@@ -12,6 +12,7 @@ namespace Main.Wpf.ExampleExtension.Utilities
 
         private static string _test;
 
+        [Obsolete]
         public static string Theme
         {
             get => _theme;
@@ -66,11 +67,6 @@ namespace Main.Wpf.ExampleExtension.Utilities
                 Pages.Settings.TestProperty.IsChecked = result;
                 _test = value;
             }
-        }
-
-        public static bool HasProperty(this Type obj, string propertyName)
-        {
-            return obj.GetProperty(propertyName) != null;
         }
     }
 }

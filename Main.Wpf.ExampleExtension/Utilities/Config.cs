@@ -25,6 +25,7 @@ namespace Main.Wpf.ExampleExtension.Utilities
             }
         }
 
+        [Obsolete]
         public static string Color
         {
             get => _color;
