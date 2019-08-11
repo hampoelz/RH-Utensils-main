@@ -58,7 +58,7 @@
   <!--  -->
   <!--Menüeinträge / Seiten | Um weitere Seiten hinzuzufügen einfach kopieren und ändern-->
   <menu>
-    <StartSeite>
+    <home>
       <!--Name der Seite, welche im Menü angezeigt werden soll-->
       <site_Title>Home</site_Title>
       <!--  -->
@@ -68,23 +68,28 @@
       <!--Pfad zur Erweiterungs-Datei welche diese Seite beinhaltet (Es können Platzhalter verwendet werden) | EXE-Datei-->
       <site_Path>{extensionsDirectory}\{extensionName}\{extensionVersion}\ExampleExtension.exe</site_Path>
       <!--  -->
-      <!--Start-Argument mit welchem die oben angegebene Erweiterungs-Datei gestartet werden soll - Wenn Dateizuordnung angegeben wurden kann die der Platzhalter {fileAssociation} verwendet werden um die Datei zu übergeben-->
-      <site_StartArguments>"{fileAssociation}" -page Home</site_StartArguments>
-    </StartSeite>
+      <!--Start-Argument mit welchem die oben angegebene Erweiterungs-Datei gestartet werden soll-->
+      <site_StartArguments>-page Home</site_StartArguments>
+      <!--  -->
+      <!--Soll diese Seite immer beim Start geladen werden auch wenn diese nicht asugewählt wurde-->
+      <site_LoadAtStartup>true</site_LoadAtStartup>
+    </home>
     <!--  -->
     <!--Um einen Abstand einzufügen einfach "null" verwenden-->
-    <Abstand>
+    <space>
       <site_Title>null</site_Title>
       <site_Icon>null</site_Icon>
       <site_Path>null</site_Path>
       <site_StartArguments>null</site_StartArguments>
-    </Abstand>
-    <Einstellungen>
+      <site_LoadAtStartup>false</site_LoadAtStartup>
+    </space>
+    <settings>
       <site_Title>Einstellungen</site_Title>
       <site_Icon>Settings</site_Icon>
       <site_Path>{extensionsDirectory}\{extensionName}\{extensionVersion}\ExampleExtension.exe</site_Path>
       <site_StartArguments>-page Settings</site_StartArguments>
-    </Einstellungen>
+      <site_LoadAtStartup>false</site_LoadAtStartup>
+    </settings>
     <!--Und so weiter ... -->
   </menu>
   <!--  -->
