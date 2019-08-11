@@ -1,5 +1,5 @@
 #define ExtensionName           "ExampleExtension"
-#define ExtensionVersion        "0.2"
+#define ExtensionVersion        "0.2.5"
 #define ExtensionPublisher      "RH Utensils"
 #define ExtensionPublisherURL   "https://rh-utensils.hampoelz.net/"
 #define ExtensionSupportURL     "https://github.com/rh-utensils/main/issues/"

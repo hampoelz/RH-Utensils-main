@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <versionHistory>
+  <v0.2.5>
+    <updateChannel>beta</updateChannel>
+    <version>0.2.5</version>
+    <setup>False</setup>
+    <file>https://github.com/rh-utensils/main/releases/download/0.2.5/ExampleExtension.zip</file>
+  </v0.2.5>
   <v0.2>
     <updateChannel>beta</updateChannel>
     <version>0.2</version>
