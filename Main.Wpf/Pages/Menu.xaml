@@ -21,7 +21,7 @@
         <Grid Height="60" Width="60" Margin="10,10,0,0" HorizontalAlignment="Right" VerticalAlignment="Top">
             <ToggleButton x:Name="_ToggleMenu" IsChecked="True" Height="25" Width="25"
                           Style="{StaticResource MaterialDesignHamburgerToggleButton}"
-                          Checked="Menu_Expanded" Unchecked="Menu_Collapsed" />
+                          Checked="Menu_Expanded" Unchecked="Menu_Collapsed"/>
         </Grid>
 
         <materialDesign:TransitioningContent x:Name="_TrainsitionigContentSlide"
@@ -39,6 +39,11 @@
                     <Setter Property="Width" Value="250" />
                     <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
                     <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
