@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -17,8 +18,11 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using Main.Wpf.Utilities;
 using MaterialDesignThemes.Wpf;
+using Brush = System.Drawing.Brush;
+using Brushes = System.Windows.Media.Brushes;
 using Panel = System.Windows.Forms.Panel;
 using Path = System.IO.Path;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace Main.Wpf
 {
@@ -32,7 +36,8 @@ namespace Main.Wpf
         public static List<(Process proc, int id)> BackgroundProcesses = new List<(Process proc, int id)>();
         private readonly Panel _panel = new Panel();
 
-        private readonly Rectangle _wipe = new Rectangle();
+        private readonly Grid _wipe = new Grid();
+        private readonly StackPanel _wipeContent = new StackPanel();
 
         private IntPtr _appWin;
         public Process CurrentProcess;
@@ -48,7 +53,37 @@ namespace Main.Wpf
             var palette = new PaletteHelper().QueryPalette();
             var hue = palette.PrimarySwatch.PrimaryHues.ToArray()[palette.PrimaryDarkHueIndex];
 
-            _wipe.Fill = new SolidColorBrush(hue.Color);
+            _wipeContent.Opacity = 0;
+            _wipeContent.VerticalAlignment = VerticalAlignment.Center;
+            _wipeContent.HorizontalAlignment = HorizontalAlignment.Center;
+
+            TextBlock _wipeText = new TextBlock();
+            _wipeText.VerticalAlignment = VerticalAlignment.Top;
+            _wipeText.Text = Config.Informations.Extension.Name;
+            _wipeText.FontWeight = FontWeights.UltraBlack;
+            _wipeText.FontSize = 100;
+            _wipeText.Foreground = Brushes.White;
+
+            _wipeContent.Children.Add(_wipeText);
+
+            Grid _wipeGrid = new Grid();
+            _wipeGrid.VerticalAlignment = VerticalAlignment.Center;
+            _wipeGrid.Height = 10;
+
+            _wipeContent.Children.Add(_wipeGrid);
+
+            ProgressBar _wipeProgress = new ProgressBar();
+            _wipeProgress.IsIndeterminate = true;
+            _wipeProgress.VerticalAlignment = VerticalAlignment.Bottom;
+            _wipeProgress.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _wipeProgress.Height = 10;
+            _wipeProgress.Foreground = Brushes.White;
+            _wipeProgress.Background = Brushes.Transparent;
+
+            _wipeContent.Children.Add(_wipeProgress);
+
+            _wipe.Children.Add(_wipeContent);
+            _wipe.Background = new SolidColorBrush(hue.Color);
             _wipe.Margin = new Thickness(0);
             _wipe.Visibility = Visibility.Collapsed;
             System.Windows.Controls.Panel.SetZIndex(_wipe, 100);
@@ -118,7 +153,29 @@ namespace Main.Wpf
             try
             {
                 WindowTransitionsEnabled = false;
+
                 _wipe.Visibility = Visibility.Visible;
+
+                var opacity = new DoubleAnimation
+                {
+                    From = 0,
+                    To = 1,
+                    Duration = TimeSpan.FromMilliseconds(300)
+                };
+                Storyboard.SetTargetProperty(opacity, new PropertyPath(OpacityProperty));
+
+                var sb = new Storyboard();
+                Storyboard.SetTarget(sb, _wipeContent);
+
+                sb.Children.Add(opacity);
+
+                sb.Begin();
+
+                await Task.Delay(300);
+
+                _wipeContent.Opacity = 1;
+
+                sb.Stop();
 
                 await SettingsHelper.StartSync();
 
@@ -187,6 +244,8 @@ namespace Main.Wpf
         {
             while (LoadingExe) await Task.Delay(100);
 
+            IsCloseButtonEnabled = false;
+
             LoadingExe = true;
 
             Pages.Menu.ListViewMenu.IsEnabled = false;
@@ -236,11 +295,15 @@ namespace Main.Wpf
             catch (Exception ex)
             {
                 LogFile.WriteLog(ex);
+
+                IsCloseButtonEnabled = true;
             }
 
             Pages.Menu.ListViewMenu.IsEnabled = true;
 
             LoadingExe = false;
+
+            IsCloseButtonEnabled = true;
         }
 
         [Obsolete]
