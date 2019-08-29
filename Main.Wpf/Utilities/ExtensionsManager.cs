@@ -52,11 +52,6 @@ namespace Main.Wpf.Utilities
 
                             break;
 
-                        case "-config":
-                            Config.File = App.Parameters[arg + 1];
-                            await ConfigHelper.Read();
-                            break;
-
                         case "-programmUpdateChannel":
                             Config.Settings.MainUpdateChannel = App.Parameters[arg + 1];
                             break;
